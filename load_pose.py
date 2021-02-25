@@ -33,21 +33,6 @@ class pose(object):
         self.clusters_named = False
         pass
     
-    global file_attributes
-    
-    file_attributes = {}
-    
-    global plot_box
-    
-    def plot_box(ax_obj, data, fb, color):
-        if fb == 'body':
-            cx, cy, w, h = [float(i) for i in data]
-            top, right, bottom, left = [(cy-h/2), (cx+w/2), (cy+h/2), (cx-w/2)]
-            ax_obj.vlines(x=[right, left], ymin=bottom, ymax=top, color=color)
-            ax_obj.hlines(y=[top, bottom], xmin=left, xmax=right, color=color)
-        elif fb == 'face':
-            ax_obj.vlines(x=[data[1], data[3]], ymin=data[0], ymax=data[2], color=color)
-            ax_obj.hlines(y=[data[0], data[2]], xmin=data[3], xmax=data[1], color=color)
             
     def load_face_data(self, face_data):
         self.face_data_path = os.path.abspath(face_data)
@@ -62,7 +47,6 @@ class pose(object):
         self.fps = self.video_cv2.get(cv2.CAP_PROP_FPS)
         self.vid_path = vid_path
         self.n_frames = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
-        file_attributes['vid_path'] = vid_path
         
     def load_pkl(self, pkl_path):
         self.pkl_path = pkl_path
@@ -70,165 +54,20 @@ class pose(object):
         pkl_open = dict(joblib.load(pkl_path))
         self.vibe_data = pkl_open
         self.n_tracks = len(pkl_open)
-        file_attributes['pkl_path'] = pkl_path
-        
-    def vid_path(self):
-        return self.vid_path
-    
-    def pkl_path(self):
-        return self.pkl_path
-        
-    def display_track(self, trackID):
-        spin_skel = [tuple(i) for i in [
-            [0 , 1],
-            [1 , 2],
-            [2 , 3],
-            [3 , 4],
-            [1 , 5],
-            [5 , 6],
-            [6 , 7],
-            [1 , 8],
-            [8 , 9],
-            [9 ,10],
-            [10,11],
-            [8 ,12],
-            [12,13],
-            [13,14],
-            [0 ,15],
-            [0 ,16],
-            [15,17],
-            [16,18],
-            [21,19],
-            [19,20],
-            [14,21],
-            [11,24],
-            [24,22],
-            [22,23],
-            [0 ,38],
-        ]]
-    
-        plt.ion()
-        
-        video = cv2.VideoCapture(self.vid_path)
-        #retrieving video file parameters
-        #fps = video.get(cv2.CAP_PROP_FPS)
-        #create a list of timestamps for each frame in the video (in ms)
-        #ts = [fps*i for i in range(frameCount)]
-        #convert input timestamp to ms
-        #h, m, s = timestamp.split(':')
-        #conv_ts = (int(h)*3600 + int(m)*60 + int(s))*1000
-        
-        pkl = dict(joblib.load(self.pkl_path))[trackID]
-        joints = pkl['joints3d']
-        boxes = pkl['bboxes']
-        track_frames = pkl['frame_ids']
-        frameCount = len(track_frames)
-    
-        #here, the global flag makes the frameLoc variable available for the nested function to change
-        global frameLoc
-        frameLoc = int(track_frames[0])
-        #frameLoc = np.where(np.asarray(ts)==min(ts, key=lambda x:abs(x-conv_ts)))[0][0]
-        video.set(cv2.CAP_PROP_POS_FRAMES,frameLoc)
-        ret, frame = video.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        global pose_loc
-        pose_loc = 0
-        def switch_frame(event):
-            global frameLoc
-            global pose_loc
-            if event.key == 'right':
-                frameLoc+=1
-                pose_loc+=1
-            elif event.key == 'left':
-                frameLoc-=1
-                pose_loc-=1
-            ax1.clear()
-            video.set(cv2.CAP_PROP_POS_FRAMES,frameLoc)
-            ret, frame = video.read()
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            vid_frame = ax1.imshow(frame)
-            ax1.axis('off')
-            vid_frame.set_data(frame)
-            plot_box(ax1, boxes[pose_loc], 'body', 'red')
-    
-            
-            ts_graph = all_graphs[pose_loc]
-            ax2.clear()
-            ax2._axis3don = False
-            ax2.set_xlim3d(-1,1)
-            ax2.set_ylim3d(-1.3,0.7)
-            ax2.set_zlim3d(-1,1)
-            for key, value in graph_dicts[pose_loc].items():
-                xi = value[0]
-                yi = value[1]
-                zi = value[2]
-                ax2.scatter(xi, yi, zi, color='green')
-                pos = nx.get_node_attributes(ts_graph, 'pos')
-            for i, j in enumerate(ts_graph.edges()):
-                x = np.array((pos[j[0]][0], pos[j[1]][0]))
-                y = np.array((pos[j[0]][1], pos[j[1]][1]))
-                z = np.array((pos[j[0]][2], pos[j[1]][2]))   
-                ax2.plot(x, y, z, color='blue')
-                        
-            fig.canvas.draw()
-    
-        fig = plt.figure(figsize=(20,10), dpi=100)
-        fig.canvas.mpl_connect('key_press_event', switch_frame)
-            
-        ax1 = fig.add_subplot(121)
-        ax1.axis('off')
-        vid_frame = ax1.imshow(frame)
-        plot_box(ax1, boxes[pose_loc], 'body', 'red')
-        
-        
-        all_graphs = []
-        graph_dicts = []
-        for fr in range(frameCount):
-            pkl_frame=None
-            pkl_frame = joints[fr]
-            netDict = {}
-            for i in range(49):
-                netDict.update({i:tuple(pkl_frame[i])})
-            graph_dicts.append(netDict)
-            sk=''
-            sk = nx.Graph()
-            sk.add_nodes_from(netDict.keys())
-            for n, p in netDict.items():
-                sk.nodes[n]['pos']=p
-                sk.add_edges_from(spin_skel)
-            all_graphs.append(sk)
-        
-        ts_graph = all_graphs[pose_loc]
-        ax2 = fig.add_subplot(122, projection='3d')
-        ax2._axis3don = False
-        ax2.set_xlim3d(-1,1)
-        ax2.set_ylim3d(-1.3,0.7)
-        ax2.set_zlim3d(-1,1)
-        for key, value in graph_dicts[pose_loc].items():
-            xi = value[0]
-            yi = value[1]
-            zi = value[2]
-            ax2.scatter(xi, yi, zi, color='green')
-        pos = nx.get_node_attributes(ts_graph, 'pos')
-        for i, j in enumerate(ts_graph.edges()):
-            x = np.array((pos[j[0]][0], pos[j[1]][0]))
-            y = np.array((pos[j[0]][1], pos[j[1]][1]))
-            z = np.array((pos[j[0]][2], pos[j[1]][2]))   
-            ax2.plot(x, y, z, color='blue')
-        ax2.view_init(270,270)
-        
-    def tracks(self):
 
-        #track IDs may skip (i.e., 1, 2, 4, 5), this is normal behavior
-        return sorted(list(pkl_open.keys()))
-    
-    
+
     def cluster_ID(self, metric='cosine', linkage='average', overwrite=False):
+        
+        """
+        Clusters all tracks based on facial encodings attached to each track. 
+        It is recommended to use the cosine metric and average linkage for best results.
+        Outputs a dictionary where keys are cluster ID's and values are lists of tracks.
+        
+        """
         
         if overwrite:
             self.clusters=None
         
-        self.is_clustered = True
         
         if (self.is_clustered & overwrite==False):
             raise Exception('Pose object has already been clustered. Set overwrite=True to overwite previous clustering.')
@@ -349,6 +188,7 @@ class pose(object):
         sorted_dict = dict(zip([i for i in range(0, len(t))], t))
         
         self.clusters = sorted_dict
+        self.is_clustered = True
     
     def annotate(self, output_path=None, image_folder=None, tracking_method='bbox', 
     vibe_batch_size=225, mesh_out=False, run_smplify=False, render=False, wireframe=False,
