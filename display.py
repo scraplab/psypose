@@ -74,7 +74,7 @@ def plot_box(ax_obj, data, fb, color):
 
 def track(pose, trackID):
     video = pose.video_cv2
-    pkl = pose.vibe_data
+    pkl = pose.pose_data
     
     plt.ion()
     
@@ -176,11 +176,13 @@ def track(pose, trackID):
         z = np.array((pos[j[0]][2], pos[j[1]][2]))   
         ax2.plot(x, y, z, color='blue')
     ax2.view_init(270,270)
+    fig.suptitle(str(trackID), fontsize=50)
 
 #plot = show_pose(video, pickle, 6)
 
 
 def display_pkl(vid, pkl, timestamp, out_folder, out_name):
+    vid = pose_obj.vid
     import shutil
     import matplotlib
     matplotlib.use('Agg')
@@ -218,7 +220,7 @@ def display_pkl(vid, pkl, timestamp, out_folder, out_name):
         sk.add_nodes_from(netDict.keys())
         for n, p in netDict.items():
             sk.nodes[n]['pos']=p
-        sk.add_edges_from(skeleton_edges)
+        sk.add_edges_from(spin_skel)
             
         ax2 = fig.add_subplot(122, projection='3d')
         ax2._axis3don = False

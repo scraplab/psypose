@@ -52,11 +52,11 @@ class pose(object):
         self.pkl_path = pkl_path
         global pkl_open
         pkl_open = dict(joblib.load(pkl_path))
-        self.vibe_data = pkl_open
+        self.pose_data = pkl_open
         self.n_tracks = len(pkl_open)
 
 
-    def cluster_ID(self, metric='cosine', linkage='average', overwrite=False):
+    def cluster_ID(self, metric='cosine', linkage='average', overwrite=False, use_cooccurence=True):
         
         """
         Clusters all tracks based on facial encodings attached to each track. 
@@ -65,15 +65,15 @@ class pose(object):
         
         """
         
-        if overwrite:
-            self.clusters=None
+        # if overwrite:
+        #     self.clusters=None
         
         
-        if (self.is_clustered & overwrite==False):
-            raise Exception('Pose object has already been clustered. Set overwrite=True to overwite previous clustering.')
+        # if (self.is_clustered & overwrite==False):
+        #     raise Exception('Pose object has already been clustered. Set overwrite=True to overwite previous clustering.')
         
         face_data = self.face_data
-        vibe_data = self.vibe_data
+        vibe_data = self.pose_data
 
         fr_ids = []  
         # here, iterating through all rows of the face_rec data frame (all available frames)
@@ -130,7 +130,11 @@ class pose(object):
         # Here, I'm going to compute the between-track distances using only co-occuring tracks
         # I'll first create a co-occurence matrix
         n_tracks = len(np.unique(face_data['track_id']))
+        
+        # Getting a list of track ID's with faces in the,. 
+    
         opt_tracks = np.unique(face_data['track_id']).tolist()
+        # Initialize empty co-occurence matrix
         cooc = np.zeros((n_tracks, n_tracks))
         for i, track1 in enumerate(opt_tracks):
             frames_1 = vibe_data.get(track1).get('frame_ids')
@@ -152,12 +156,7 @@ class pose(object):
         intra_track_encodings = [pd_to_arr(face_data[face_data['track_id']==tr]['encodings']) for tr in opt_tracks]
         intra_track_distances = np.array([np.mean(pdist(encs, metric=metric)) for encs in intra_track_encodings])
         intra_track_distances = intra_track_distances[~np.isnan(intra_track_distances)]
-        #plt.hist(intra_track_distances, alpha=0.5, label='intra')
-        #plt.hist(inter_track_distances, alpha=0.5, label='inter')
-        #plt.legend()
-        #plt.show()
-        
-        
+
         all_distances = np.concatenate((inter_track_distances, intra_track_distances))
 
         all_distances = all_distances.reshape(-1,1)
@@ -294,11 +293,11 @@ class pose(object):
         if encoder=='default':
             encoder = utils.default_encoding
         elif encoder=='facenet':
-            from psypose.models.facenet.src.models import facenet_keras
+            from psypose.models import facenet_keras
             encoder = facenet_keras.encode
         elif encoder=='deepface':
-            # to be implmented
-            print('Not yet implemented')
+            from psypose.models import deepface
+            encoder = deepface.encode
         
         encodings = [encoder(image) for image in face_imgs]
         face_df['encodings'] = encodings

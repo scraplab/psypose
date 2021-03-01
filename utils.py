@@ -109,7 +109,4 @@ def default_encoding(face_array):
     encoding = face_recognition.face_encodings(resized_array)[0]
     return encoding
 
-def facenet_encoding(face_array):
-    resized_array = resize_image()
-    
     
