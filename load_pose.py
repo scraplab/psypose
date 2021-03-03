@@ -24,8 +24,9 @@ from pliers.extractors import merge_results, FaceRecognitionFaceLocationsExtract
 from pliers.stimuli import VideoStim
 from pliers.filters import FrameSamplingFilter
 from pliers.converters import VideoFrameCollectionIterator
+import ast
 
-
+from psypose.models import facenet_keras, deepface
 class pose(object):
     
     def __init__(self):
@@ -33,13 +34,18 @@ class pose(object):
         self.clusters_named = False
         pass
     
-            
     def load_face_data(self, face_data):
         self.face_data_path = os.path.abspath(face_data)
-        global face_data_opened
-        face_data_opened = pd.read_csv(face_data,
-                               converters = {'location':utils.string2list, 'encodings':utils.from_np_array})
-        self.face_data = face_data_opened
+        # face_data_opened = pd.read_csv(face_data,
+        #                        converters = {'location':utils.string2list, 'encodings':utils.from_np_array})
+        
+        face_data_array = np.genfromtxt(face_data, delimiter=',')
+        n_frames = face_data_array.shape[0]
+        face_df = pd.DataFrame(columns=['frame_ids', 'locations', 'encodings'])
+        face_df['frame_ids'] = face_data_array[:,0]
+        face_df['locations'] = [face_data_array[i,1:5] for i in range(n_frames)]
+        face_df['encodings'] = [face_data_array[i,5:] for i in range(n_frames)]
+        self.face_data = face_df
         
     def load_video(self, vid_path):
         vid_path = os.path.abspath(vid_path)
@@ -82,7 +88,7 @@ class pose(object):
         # the VIBE bounding box. If True, then that frame will get that track ID  
         for r in range(len(face_data)):
             row = face_data.iloc[r]
-            frame = row['frameID']
+            frame = row['frame_ids']
             track_id_list = []
             for t in np.unique(list(vibe_data.keys())):
                 track = vibe_data.get(t)
@@ -92,7 +98,7 @@ class pose(object):
             for track_id in track_id_list:
                 box_loc = np.where(vibe_data.get(track_id).get('frame_ids')==frame)[0][0]
                 box = vibe_data.get(track_id).get('bboxes')[box_loc]
-                if utils.check_match(box, row['location']):
+                if utils.check_match(box, row['locations']):
                     track_designation = int(track_id)
                     break
                 else:
@@ -269,7 +275,7 @@ class pose(object):
             for frame in range(arr.shape[0]):
                 arr[frame,:]=enc[frame]
             return arr
-    
+        print('Parsing video data...')
         vid = VideoStim(self.vid_path)
         vid_filt = FrameSamplingFilter(every=every).transform(vid)
         frame_conv = VideoFrameCollectionIterator()
@@ -278,34 +284,60 @@ class pose(object):
         ext_loc = FaceRecognitionFaceLocationsExtractor()
         #for this, change to model='cnn' for GPU use on discovery
 
-        print("Extracting face locations")
+        print("\nExtracting face locations...")
         # This is using pliers, which uses dlib for extraction face locations (SOTA)
         face_locs_data = ext_loc.transform(vid_frames)
         #remove frames without faces
         face_locs_data = [obj for obj in face_locs_data if len(obj.raw) != 0]
         # convert to dataframe and remove frames with no faces
-        face_df = pd.DataFrame(dict(zip(['frame_ids', 'locations'],
-                                               [[obj.stim.frame_num for obj in face_locs_data],
-                                                [obj.raw for obj in face_locs_data if len(obj.raw) != 0]])))
-        face_imgs = [utils.crop_image(obj.stim.data, obj.raw[0]) for obj in face_locs_data]
+
+        frame_ids = [obj.stim.frame_num for obj in face_locs_data]
+        locations = [obj.raw for obj in face_locs_data if len(obj.raw) != 0]
         
-        print("Extracting face encodings")
+        # expanding multi-face frames
+        frame_ids_expanded = []
+        bboxes_expanded = []
+        face_imgs = []
+        for f, frame in enumerate(frame_ids):
+            face_bboxes = locations[f]
+            frame_img = utils.frame2array(frame, self.video_cv2)
+            for i in face_bboxes:
+                frame_ids_expanded.append(frame)
+                bboxes_expanded.append(i)
+                face_imgs.append(utils.crop_image(frame_img, i))
+                
+        bboxes = np.array(bboxes_expanded)
+                
+        # face_df = pd.DataFrame(dict(zip(['frame_ids', 'locations'],
+        #                                [frame_ids_expanded, bboxes_expanded])))
+                                               
+        print("\nExtracting face encodings...")
+        
         if encoder=='default':
-            encoder = utils.default_encoding
+            encoding_length = 128
+            encode = utils.default_encoding
         elif encoder=='facenet':
-            from psypose.models import facenet_keras
-            encoder = facenet_keras.encode
+            encoding_length = 128
+            encode = facenet_keras.encode
         elif encoder=='deepface':
-            from psypose.models import deepface
-            encoder = deepface.encode
+            encoding_length = 2622
+            encode = deepface.encode
         
-        encodings = [encoder(image) for image in face_imgs]
+        out_array = np.empty((len(frame_ids_expanded), 5+encoding_length))
+        encodings = [encode(image) for image in face_imgs]
+        out_array[:,0], out_array[:,1:5], out_array[:, 5:] = frame_ids_expanded, bboxes, np.array(encodings)
+        
+        face_df = pd.DataFrame(columns=['frame_ids', 'bboxes', 'encodings'])
+        face_df['frame_ids'] = frame_ids_expanded
+        face_df['bboxes'] = bboxes_expanded
         face_df['encodings'] = encodings
         
-        self.face_data_opened = face_df
+        self.face_data = face_df
+        
         if out != None:
             print('Saving results...')
-            face_df.to_csv(out)
+            np.savetxt(out, out_array, delimiter=',')
+        self.faces_encoded = True
     
     ## add face locations and face encodings as separate self properties?
 

@@ -14,9 +14,17 @@ import pandas as pd
 import face_recognition
 
 def from_np_array(array_string):
+    if 'e' in array_string:
+        out = array_string.strip('[]').split(' ')
+        out = [i.strip('\n') for i in out]
+        out = [ast.literal_eval(i) for i in out]
+        return out
     # converter function for interpreting face data csv
-    array_string = ','.join(array_string.replace('[ ', '[').split())
-    return np.array(ast.literal_eval(array_string))
+    else:
+        array_string = ','.join(array_string.replace('[ ', '[').split())
+    return array_string
+#return np.array(ast.literal_eval(array_string))
+
     
 def string2list(string):
     # converter function for interpreting face data csv
@@ -25,7 +33,13 @@ def string2list(string):
     else:
         vals = [float(i) for i in string[1:-1].replace(',', '').split(' ') if i!='']
     return vals
-    
+
+def string_is_int(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
 
 def ts_to_frame(ts, framerate):
     h, m, s = ts.split(':')
@@ -55,6 +69,7 @@ def frame2array(frame_no, video_opened):
     video_opened.set(cv2.CAP_PROP_POS_FRAMES,frame_no)
     ret, frame = video_opened.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    cv2.destroyAllWindows()
     return frame
 
 def resize_image(array, newsize):

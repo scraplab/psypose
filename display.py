@@ -334,8 +334,8 @@ def cluster(pose, cluster_num):
     images = []
     for r in range(len(cluster_face_data)):
         row = cluster_face_data.iloc[r]
-        frame = row['frameID']
-        top, right, bottom, left = [int(pos) for pos in row['location']]
+        frame = row['frame_ids']
+        top, right, bottom, left = [int(pos) for pos in row['locations']]
         image = psypose.utils.frame2array(frame, pose.video_cv2)[top:bottom, left:right]
         image = psypose.utils.resize_image(image, (100,100))
         images.append(image)
