@@ -36,8 +36,6 @@ class pose(object):
     
     def load_face_data(self, face_data):
         self.face_data_path = os.path.abspath(face_data)
-        # face_data_opened = pd.read_csv(face_data,
-        #                        converters = {'location':utils.string2list, 'encodings':utils.from_np_array})
         
         face_data_array = np.genfromtxt(face_data, delimiter=',')
         n_frames = face_data_array.shape[0]
