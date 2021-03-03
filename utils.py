@@ -99,11 +99,15 @@ def evaluate_pred_ID(charList, ground, pred):
     for i, char in enumerate(chars[1:]):
         tn, fp, fn, tp = confusion_matrix(ground[:,i], pred[:,i]).ravel()
         overall = (tp+tn)/len(ground[:,i])
+        # percent of positives that are true
         t_pos_acc = tp/np.sum(ground[:,i])
+        # percent of negatives that are true
         t_neg_acc = tn/(len(ground[:,i])-np.sum(ground[:,i]))
-        # out of all predicted positives which are false
+        # perent of positives that are false
         false_pos = fp/np.sum(pred[:,i])
+        # percent of negatives that are false
         false_neg = fn/(len(pred[:,i]) - np.sum(pred[:,i]))
+        # True proportion of all frames that are positive
         tot_pos = np.sum(ground[:,i]) / ground.shape[0]
         acc_df[char] = [overall, t_pos_acc, t_neg_acc, false_pos, false_neg, tot_pos]
 

@@ -69,15 +69,14 @@ class pose(object):
         
         """
         
-        # if overwrite:
-        #     self.clusters=None
+        if overwrite:
+            self.clusters=None
         
-        
-        # if (self.is_clustered & overwrite==False):
-        #     raise Exception('Pose object has already been clustered. Set overwrite=True to overwite previous clustering.')
+        if self.is_clustered and not overwrite:
+            raise Exception('Pose object has already been clustered. Set overwrite=True to overwite previous clustering.')
         
         face_data = self.face_data
-        vibe_data = self.pose_data
+        pose_data = self.pose_data
 
         fr_ids = []  
         # here, iterating through all rows of the face_rec data frame (all available frames)
@@ -88,22 +87,25 @@ class pose(object):
             row = face_data.iloc[r]
             frame = row['frame_ids']
             track_id_list = []
-            for t in np.unique(list(vibe_data.keys())):
-                track = vibe_data.get(t)
+            for t in np.unique(list(pose_data.keys())):
+                track = pose_data.get(t)
                 track_frames = track.get('frame_ids')
                 if frame in track_frames:
                     track_id_list.append(t)
-            for track_id in track_id_list:
-                box_loc = np.where(vibe_data.get(track_id).get('frame_ids')==frame)[0][0]
-                box = vibe_data.get(track_id).get('bboxes')[box_loc]
-                if utils.check_match(box, row['locations']):
-                    track_designation = int(track_id)
-                    break
-                else:
-                    # track designation is 0 if the face is not within body box,
-                    # those rows will be removed.
-                    track_designation = 0
-            fr_ids.append(track_designation)
+            if len(track_id_list)!=0:
+                for track_id in track_id_list:
+                    box_loc = np.where(pose_data.get(track_id).get('frame_ids')==frame)[0][0]
+                    box = pose_data.get(track_id).get('bboxes')[box_loc]
+                    if utils.check_match(box, row['locations']):
+                        track_designation = int(track_id)
+                        break
+                    else:
+                        # track designation is 0 if the face is not within body box,
+                        # those rows will be removed.
+                        track_designation = 0
+                fr_ids.append(track_designation)
+            else:
+                fr_ids.append(0)
         face_data['track_id'] = fr_ids
         #removing face encodings with no match
         face_data = face_data[face_data['track_id']!=0]
@@ -141,9 +143,9 @@ class pose(object):
         # Initialize empty co-occurence matrix
         cooc = np.zeros((n_tracks, n_tracks))
         for i, track1 in enumerate(opt_tracks):
-            frames_1 = vibe_data.get(track1).get('frame_ids')
+            frames_1 = pose_data.get(track1).get('frame_ids')
             for j, track2 in enumerate(opt_tracks):
-                frames_2 = vibe_data.get(track2).get('frame_ids')
+                frames_2 = pose_data.get(track2).get('frame_ids')
                 if len(np.intersect1d(frames_1, frames_2))>0:
                     cooc[i][j]=True
         cooc = cooc[np.tril_indices_from(cooc, k=-1)]
@@ -249,7 +251,7 @@ class pose(object):
                 continue
             arr_placement = int(np.where(char_order==character)[0]) 
             for track in tracklist:
-                track_frames = self.vibe_data.get(track).get('frame_ids')
+                track_frames = self.pose_data.get(track).get('frame_ids')
                 char_auto[:,arr_placement][track_frames] = 1
         char_frame = pd.DataFrame(char_auto, columns=character_order)
         char_frame['frame_ids'] = np.arange(self.n_frames)

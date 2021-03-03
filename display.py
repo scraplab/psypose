@@ -339,9 +339,9 @@ def cluster(pose, cluster_num):
         image = psypose.utils.frame2array(frame, pose.video_cv2)[top:bottom, left:right]
         image = psypose.utils.resize_image(image, (100,100))
         images.append(image)
-    random.shuffle(images)
     if len(images) > 16:
-        images = random.choices(images, k=16)
+        selection = np.arange(0, len(images), len(images)//16)
+        images = [images[i] for i in selection][:16]
     fig = plt.figure(figsize=(10,10))
     for i, img in enumerate(images):
         sub = fig.add_subplot(4, 4, i+1)
