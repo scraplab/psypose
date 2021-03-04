@@ -10,6 +10,7 @@ import os
 import joblib
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
 from mpl_toolkits.mplot3d import Axes3D
 import cv2
 import networkx as nx
@@ -19,6 +20,8 @@ import scipy.stats
 import random
 import psypose.utils 
 from keras.preprocessing.image import img_to_array, load_img
+import shutil
+from psypose import utils
 
 #matplotlib.get_backend()
 
@@ -180,87 +183,13 @@ def track(pose, trackID):
 
 #plot = show_pose(video, pickle, 6)
 
+def show_frame():
+    #coming soon
 
-def display_pkl(vid, pkl, timestamp, out_folder, out_name):
-    vid = pose_obj.vid
-    import shutil
-    import matplotlib
-    matplotlib.use('Agg')
-    os.mkdir('display_intermediate')
-    img_path = str(os.getcwd()+'/display_intermediate/')
-    video = cv2.VideoCapture(vid)
-    #retrieving video file parameters
-    fps = video.get(cv2.CAP_PROP_FPS)
-    frameCount = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    #create a list of timestamps for each frame in the video (in ms)
-    ts = [fps*i for i in range(frameCount)]
-    #convert input timestamp to ms
-    h, m, s = timestamp.split(':')
-    conv_ts = (int(h)*3600 + int(m)*60 + int(s))*1000
+    print('no')
     
-    frameLoc = np.where(np.asarray(ts)==min(ts, key=lambda x:abs(x-conv_ts)))[0][0]
-    remaining_frames = [i for i in range(frameCount)][frameLoc:]
-    joints = dict(joblib.load(pkl))[1]['joints3d']
-    for fr, cur_frame in enumerate(remaining_frames):
-        video.set(cv2.CAP_PROP_POS_FRAMES,cur_frame)
-        ret, frame = video.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        pkl_frame = joints[cur_frame]
-        fig = plt.figure(figsize=(20,10), dpi=100)
-            
-        ax1 = fig.add_subplot(121)
-        ax1.axis('off')
-        ax1.imshow(frame)
-        
-        netDict = {}
-        for i in range(49):
-            netDict.update({i:tuple(pkl_frame[i])})
-        sk=None
-        sk = nx.Graph()
-        sk.add_nodes_from(netDict.keys())
-        for n, p in netDict.items():
-            sk.nodes[n]['pos']=p
-        sk.add_edges_from(spin_skel)
-            
-        ax2 = fig.add_subplot(122, projection='3d')
-        ax2._axis3don = False
-        ax2.set_xlim3d(-1,1)
-        ax2.set_ylim3d(-1.3,0.7)
-        ax2.set_zlim3d(-1,1)
-        for key, value in netDict.items():
-            xi = value[0]
-            yi = value[1]
-            zi = value[2]
-            ax2.scatter(xi, yi, zi, color='green')
-        pos = nx.get_node_attributes(sk, 'pos')
-        for i, j in enumerate(sk.edges()):
-            x = np.array((pos[j[0]][0], pos[j[1]][0]))
-            y = np.array((pos[j[0]][1], pos[j[1]][1]))
-            z = np.array((pos[j[0]][2], pos[j[1]][2]))   
-            ax2.plot(x, y, z, color='blue')
-        ax2.view_init(270, 270)
-        fig.canvas.draw()
-        plt.savefig(img_path+'img_%09d.png' % fr)
-        plt.close()
-        print('Frame '+str(fr+1)+'/'+str(len(remaining_frames)))
-    images = glob.glob(img_path+'*.png')
-    images.sort()
-    img_array = []
-    for filename in images:
-        img = cv2.imread(filename)
-        height, width, layers = img.shape
-        size = (width,height)
-        img_array.append(img)
-    #frames_second = float(fps)
-    #print(frames_second)
-    fps = int(round(fps))
-    out = cv2.VideoWriter(out_folder+out_name+'.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, size)
-    for i in range(len(img_array)):
-        out.write(img_array[i])
-    cv2.destroyAllWindows()
-    out.release()
-    shutil.rmtree(img_path)
-        
+    
+tt
 #display_pkl(video, pickle, '00:00:00', '/Users/f004swn/Documents/')
 
 #pickle = '/Users/f004swn/Documents/Code/pose_data/500_cut_unsquish.pkl'

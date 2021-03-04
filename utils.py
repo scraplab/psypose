@@ -82,6 +82,12 @@ def crop_image(array, bbox):
     new_img = array[top:bottom, left:right, :]
     return new_img
 
+def crop_image_body(array, data):
+    cx, cy, w, h = [float(i) for i in data]
+    top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
+    new_img = array[top:bottom, left:right, :]
+    return new_img
+
 def evaluate_pred_ID(charList, ground, pred):
     
     #ground and pred need to be same-shape np arrays
@@ -127,5 +133,18 @@ def default_encoding(face_array):
     resized_array = resize_image(face_array, (150, 150))
     encoding = face_recognition.face_encodings(resized_array)[0]
     return encoding
+
+def write2vid(img_arr, fps, out_name, out_size):
+    """
+    Takes numpy array and writes each frame to a video file.
+    """
+    out = cv2.VideoWriter(out_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, out_size)
+    for i in range(len(img_arr)):
+        print(str(i+1)+'/'+str(len(img_arr)))
+        img_color = cv2.cvtColor(img_arr[i], cv2.COLOR_BGR2RGB)
+        out.write(img_color)
+    cv2.destroyAllWindows()
+    out.release()
+
 
     
