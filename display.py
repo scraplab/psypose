@@ -189,7 +189,66 @@ def show_frame():
     print('no')
     
     
-tt
+def render_track(pose, track, outdir=None):
+    if not outdir:
+        outdir=str(track)+'.mp4'
+    vid = pose.video_cv2
+    #frameCount = pose.n_frames
+    fps = pose.fps
+    
+    joints = pose.pose_data[track]['joints3d']
+    frame_ids =  pose.pose_data[track]['frame_ids']
+    bboxes = pose.pose_data[track]['bboxes']
+    
+    matplotlib.use('Agg')
+    
+    img_array = np.empty((len(frame_ids), 720, 1280, 3), dtype='uint8')
+    px = px = 1/plt.rcParams['figure.dpi']
+    
+    for fr, cur_frame in enumerate(frame_ids):
+        frame = utils.frame2array(cur_frame, vid)
+        pkl_frame = joints[fr]
+        fig = plt.figure(figsize=(1280*px, 720*px))
+        
+        ax1 = fig.add_subplot(121)
+        ax1.axis('off')
+        ax1.imshow(utils.crop_image_body(frame, bboxes[fr]))
+        #plot_box(ax1, bboxes[fr], 'body', 'red')
+        
+        netDict = {}
+        for i in range(49):
+            netDict.update({i:tuple(pkl_frame[i])})
+        sk=None
+        sk = nx.Graph()
+        sk.add_nodes_from(netDict.keys())
+        for n, p in netDict.items():
+            sk.nodes[n]['pos']=p
+        sk.add_edges_from(spin_skel)
+        
+        ax2 = fig.add_subplot(122, projection='3d')
+        ax2._axis3don = False
+        ax2.set_xlim3d(-0.5,0.5)
+        ax2.set_ylim3d(-0.75,0.5)
+        ax2.set_zlim3d(-0.5,0.55)
+        for key, value in netDict.items():
+            xi = value[0]
+            yi = value[1]
+            zi = value[2]
+            ax2.scatter(xi, yi, zi, color='green')
+        pos = nx.get_node_attributes(sk, 'pos')
+        for i, j in enumerate(sk.edges()):
+            x = np.array((pos[j[0]][0], pos[j[1]][0]))
+            y = np.array((pos[j[0]][1], pos[j[1]][1]))
+            z = np.array((pos[j[0]][2], pos[j[1]][2]))   
+            ax2.plot(x, y, z, color='blue')
+        ax2.view_init(270, 270)
+        fig.canvas.draw()
+        out_frame = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+        ##############################
+        out_frame = out_frame.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+        img_array[fr,:,:,:] = out_frame
+        plt.close()
+    utils.write2vid(img_array, fps, outdir, (1280, 720))
 #display_pkl(video, pickle, '00:00:00', '/Users/f004swn/Documents/')
 
 #pickle = '/Users/f004swn/Documents/Code/pose_data/500_cut_unsquish.pkl'
