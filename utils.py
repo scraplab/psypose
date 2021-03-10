@@ -12,6 +12,8 @@ import time
 import cv2
 import pandas as pd
 import face_recognition
+from scenedetect import VideoManager, SceneManager
+from scenedetect.detectors import ContentDetector
 
 def from_np_array(array_string):
     if 'e' in array_string:
@@ -83,7 +85,7 @@ def crop_image(array, bbox):
     return new_img
 
 def crop_image_body(array, data):
-    cx, cy, w, h = [float(i) for i in data]
+    cx, cy, w, h = [i for i in data]
     top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
     new_img = array[top:bottom, left:right, :]
     return new_img
@@ -145,6 +147,20 @@ def write2vid(img_arr, fps, out_name, out_size):
         out.write(img_color)
     cv2.destroyAllWindows()
     out.release()
+    
+def get_shots(vidpath, downscale_factor, threshold):
+    print('Detecting cuts...')
+    video = VideoManager([vidpath])
+    video.set_downscale_factor(downscale_factor)
+    scene_manager = SceneManager()
+    scene_manager.add_detector(ContentDetector(threshold=threshold))
+    video.start()
+    scene_manager.detect_scenes(frame_source=video)
+    shot_list = scene_manager.get_scene_list()
+    cut_tuples = []
+    for shot in shot_list:
+        cut_tuples.append((shot[0].get_frames(), shot[1].get_frames()))
+    return cut_tuples
 
 
     
