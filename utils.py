@@ -14,6 +14,7 @@ import pandas as pd
 import face_recognition
 from scenedetect import VideoManager, SceneManager
 from scenedetect.detectors import ContentDetector
+import tqdm
 
 def from_np_array(array_string):
     if 'e' in array_string:
@@ -158,7 +159,7 @@ def get_shots(vidpath, downscale_factor, threshold):
     scene_manager.detect_scenes(frame_source=video)
     shot_list = scene_manager.get_scene_list()
     cut_tuples = []
-    for shot in shot_list:
+    for shot in tqdm(shot_list):
         cut_tuples.append((shot[0].get_frames(), shot[1].get_frames()))
     return cut_tuples
 
