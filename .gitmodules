@@ -1,3 +1,6 @@
 [submodule "MEVA"]
 	path = MEVA
 	url = https://github.com/ZhengyiLuo/MEVA.git
+[submodule "multi-person-tracker"]
+	path = multi-person-tracker
+	url = https://github.com/mkocabas/multi-person-tracker.git
