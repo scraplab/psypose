@@ -150,6 +150,20 @@ def write2vid(img_arr, fps, out_name, out_size):
     out.release()
     
 def get_shots(vidpath, downscale_factor, threshold):
+    """
+    
+
+    Parameters
+    ----------
+    vidpath : Path to video file.
+    downscale_factor : Factor by which to downscale video to improve speed.
+    threshold : Cut detection threshold.
+
+    Returns
+    -------
+    cut_tuples : A list of tuples where each tuple contains the in- and out-frame of each shot.
+
+    """
     print('Detecting cuts...')
     video = VideoManager([vidpath])
     video.set_downscale_factor(downscale_factor)
@@ -163,5 +177,35 @@ def get_shots(vidpath, downscale_factor, threshold):
         cut_tuples.append((shot[0].get_frames(), shot[1].get_frames()))
     return cut_tuples
 
+def video_to_array(cap):
+    
+    """
+    Takes video file and converts it into a numpy array with uint8 encoding.
+    """
+    
+    frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    buf = np.empty((frameCount, h, w, 3), np.dtype('uint8'))
+    # Initialize frame counter
+    fc = 0
+    ret = True
+    pbar = tqdm(total=frameCount)
+    while (fc < frameCount  and ret):
+        # cap.read() returns a bool if the frame was retrieved along with the frame as a numpy array
+        ret, frame = cap.read()
+        # cv2 reads images as blue-green-red, which needs to be converted into red-green-blue
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # fill empty array with video frame
+        buf[fc] = frame
+        fc += 1
+        pbar.update(1)
+    pbar.close()
+
+    cap.release()
+
+    #cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    return buf
 
     

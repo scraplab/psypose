@@ -20,6 +20,7 @@ from scipy.spatial.distance import pdist, squareform, cdist
 from sklearn.cluster import AgglomerativeClustering
 #os.system('cd ..')
 from psypose import utils
+from psypose.multi_person_tracker.multi_person_tracker.mpt import MPT
 from pliers.extractors import merge_results, FaceRecognitionFaceLocationsExtractor, FaceRecognitionFaceEncodingsExtractor  
 from pliers.stimuli import VideoStim
 from pliers.filters import FrameSamplingFilter
@@ -30,6 +31,7 @@ import pdb
 import os.path as osp
 sys.path.append(os.getcwd())
 
+
 # this won't work on macOS
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
 
@@ -39,8 +41,8 @@ import torch
 import colorsys
 import yaml
 from tqdm import tqdm
-from multi_person_tracker import MPT
-from torch.utils.data import DataLoader
+#from multi_person_tracker import MPT
+from torch.utils.data import TensorDataset, DataLoader
 
 #MEVA specific stuff
 from MEVA.meva.lib.meva_model import MEVA, MEVA_demo
@@ -82,6 +84,7 @@ class pose(object):
         self.fps = self.video_cv2.get(cv2.CAP_PROP_FPS)
         self.vid_path = vid_path
         self.n_frames = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.video_shape = (int(self.video_cv2.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.video_cv2.get(cv2.CAP_PROP_FRAME_WIDTH)))
         
     def load_pkl(self, pkl_path):
         self.pkl_path = pkl_path
@@ -366,7 +369,7 @@ class pose(object):
     # def consolidate_clusters(self):
     #     tot_frames = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
     
-    def annotate_pose(self, output_path=None, image_folder=None, tracking_method='bbox', 
+    def annotate_pose(self, output_path=None, tracking_method='bbox', 
     vibe_batch_size=225, mesh_out=False, run_smplify=False, render=False, wireframe=False,
     sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs', tracker_batch_size=12,
     detector='yolo', yolo_img_size=416, exp='', cfg=''):
@@ -374,8 +377,11 @@ class pose(object):
         # ========= Run shot detection ========= #
         
         shots = utils.get_shots(self.vid_path)
+        # Here, shots is a list of tuples (each tuple contains the in and out frames of each shot)
         
-        ##########################################
+        # ========= Prepare video for pose annotation ========= #
+        
+        cv2_array = utils.video_to_array(self.video_cv2)
         
         MIN_NUM_FRAMES=25
         
@@ -391,7 +397,7 @@ class pose(object):
         output_path = os.path.join(output_folder, filename)
         os.makedirs(output_path, exist_ok=True)
      
-        image_folder, num_frames, img_shape = video_to_images(video_file, return_info=True)
+        num_frames, img_shape = self.n_frames, self.video_shape
     
         print(f'Input video number of frames {num_frames}')
         orig_height, orig_width = img_shape[:2]
@@ -409,7 +415,9 @@ class pose(object):
             output_format='dict',
             yolo_img_size=yolo_img_size,
         )
-        tracking_results = mot(image_folder)
+        
+        
+        tracking_results = mot(cv2_array)
     
         # remove tracklets if num_frames is less than MIN_NUM_FRAMES
         for person_id in list(tracking_results.keys()):
@@ -440,7 +448,6 @@ class pose(object):
         model.load_state_dict(ckpt)
         model.eval()
         print(f'Loaded pretrained weights from \"{pretrained_file}\"')
-        # ========= MEVA Model ========= #
     
         
         # ========= Run MEVA on each person ========= #
