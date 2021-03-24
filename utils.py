@@ -149,13 +149,13 @@ def write2vid(img_arr, fps, out_name, out_size):
     cv2.destroyAllWindows()
     out.release()
     
-def get_shots(vidpath, downscale_factor, threshold):
+def get_shots(video, downscale_factor, threshold):
     """
     
 
     Parameters
     ----------
-    vidpath : Path to video file.
+    video_manager : scenedetect VideoManager object.
     downscale_factor : Factor by which to downscale video to improve speed.
     threshold : Cut detection threshold.
 
@@ -165,7 +165,7 @@ def get_shots(vidpath, downscale_factor, threshold):
 
     """
     print('Detecting cuts...')
-    video = VideoManager([vidpath])
+    #video = VideoManager([vidpath])
     video.set_downscale_factor(downscale_factor)
     scene_manager = SceneManager()
     scene_manager.add_detector(ContentDetector(threshold=threshold))
@@ -181,7 +181,11 @@ def video_to_array(cap):
     
     """
     Takes video file and converts it into a numpy array with uint8 encoding.
+    
+    cap : either a numpy array or scenedetect.VideoManager object
     """
+    if isinstance(cap, VideoManager):
+        cap.start()
     
     frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))

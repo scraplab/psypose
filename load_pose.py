@@ -5,6 +5,7 @@ Created on Thu Jan  7 13:50:03 2021
 
 @author: f004swn
 """
+
 import os
 import joblib
 import numpy as np
@@ -30,6 +31,8 @@ import sys
 import pdb
 import os.path as osp
 import nibabel as nib
+from scenedetect import VideoManager, SceneManager
+from scenedetect.detectors import ContentDetector
 sys.path.append(os.getcwd())
 
 
@@ -89,6 +92,7 @@ class pose(object):
     def load_video(self, vid_path):
         vid_path = os.path.abspath(vid_path)
         self.video_cv2 = cv2.VideoCapture(vid_path)
+        #self.video_cv2 = VideoManager([vid_path])
         self.fps = self.video_cv2.get(cv2.CAP_PROP_FPS)
         self.vid_path = vid_path
         self.framecount = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -385,7 +389,7 @@ class pose(object):
         
         # ========= Run shot detection ========= #
         
-        shots = utils.get_shots(self.vid_path)
+        shots, cv2_array = utils.get_shots(self.video_cv2)
         # Here, shots is a list of tuples (each tuple contains the in and out frames of each shot)
         
         # ========= Prepare video for pose annotation ========= #
@@ -474,7 +478,6 @@ class pose(object):
                 continue
     
             dataset = Inference(
-                image_folder=image_folder,
                 frames=frames,
                 bboxes=bboxes,
                 joints2d=joints2d,
