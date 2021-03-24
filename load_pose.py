@@ -29,6 +29,7 @@ import ast
 import sys
 import pdb
 import os.path as osp
+import nibabel as nib
 sys.path.append(os.getcwd())
 
 
@@ -67,6 +68,13 @@ class pose(object):
         self.clusters_named = False
         pass
     
+    def load_fmri(self, fmri_path, TR):
+        self.fmri_path = fmri_path
+        self.brain_data = nib.load(fmri_path).get_fdata()
+        self.TR = TR
+        # all timeseries will be in milliseconds for accuracy.
+        self.brain_time = [1000*TR for tr in range(self.brain_data.shape[0])]
+        
     def load_face_data(self, face_data):
         self.face_data_path = os.path.abspath(face_data)
         
@@ -83,7 +91,8 @@ class pose(object):
         self.video_cv2 = cv2.VideoCapture(vid_path)
         self.fps = self.video_cv2.get(cv2.CAP_PROP_FPS)
         self.vid_path = vid_path
-        self.n_frames = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.framecount = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.video_time = [(1/self.fps)*1000*frame for frame in range(self.framecount)]
         self.video_shape = (int(self.video_cv2.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.video_cv2.get(cv2.CAP_PROP_FRAME_WIDTH)))
         
     def load_pkl(self, pkl_path):
