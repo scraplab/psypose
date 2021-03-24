@@ -2,3 +2,6 @@
 	path = MEVA
 	url = https://github.com/ZhengyiLuo/MEVA.git
 
+[submodule "psypose_mpt"]
+	path = psypose_mpt
+	url = https://github.com/scraplab/psypose_mpt.git
