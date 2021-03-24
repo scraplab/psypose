@@ -20,7 +20,7 @@ from scipy.spatial.distance import pdist, squareform, cdist
 from sklearn.cluster import AgglomerativeClustering
 #os.system('cd ..')
 from psypose import utils
-from psypose.multi_person_tracker.multi_person_tracker.mpt import MPT
+from psypose.psypose_mpt.multi_person_tracker.mpt import MPT
 from pliers.extractors import merge_results, FaceRecognitionFaceLocationsExtractor, FaceRecognitionFaceEncodingsExtractor  
 from pliers.stimuli import VideoStim
 from pliers.filters import FrameSamplingFilter
@@ -67,7 +67,7 @@ class pose(object):
         self.is_clustered = False
         self.clusters_named = False
         pass
-    
+            
     def load_fmri(self, fmri_path, TR):
         self.fmri_path = fmri_path
         self.brain_data = nib.load(fmri_path).get_fdata()
