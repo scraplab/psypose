@@ -92,7 +92,7 @@ class pose(object):
     def load_video(self, vid_path):
         vid_path = os.path.abspath(vid_path)
         self.video_cv2 = cv2.VideoCapture(vid_path)
-        #self.video_cv2 = VideoManager([vid_path])
+        #self.video_scenedetect = VideoManager([vid_path])
         self.fps = self.video_cv2.get(cv2.CAP_PROP_FPS)
         self.vid_path = vid_path
         self.framecount = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -384,33 +384,27 @@ class pose(object):
     
     def annotate_pose(self, output_path=None, tracking_method='bbox', 
     vibe_batch_size=225, mesh_out=False, run_smplify=False, render=False, wireframe=False,
-    sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs', tracker_batch_size=12,
+    sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs',
     detector='yolo', yolo_img_size=416, exp='', cfg=''):
         
         # ========= Run shot detection ========= #
         
-        shots, cv2_array = utils.get_shots(self.video_cv2)
+        shots = utils.get_shots(self.vid_path)
         # Here, shots is a list of tuples (each tuple contains the in and out frames of each shot)
         
         # ========= Prepare video for pose annotation ========= #
-        
         cv2_array = utils.video_to_array(self.video_cv2)
-        
-        MIN_NUM_FRAMES=25
+    
+   #     MIN_NUM_FRAMES=1
         
         torch.cuda.set_device(gpu_id)
         device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    
-        video_file = self.vid_path
-    
-        if not os.path.isfile(video_file):
-            exit(f'Input video \"{video_file}\" does not exist!')
-    
-        filename = os.path.splitext(os.path.basename(video_file))[0]
+
+        filename = os.path.splitext(os.path.basename(self.vid_path))[0]
         output_path = os.path.join(output_folder, filename)
         os.makedirs(output_path, exist_ok=True)
      
-        num_frames, img_shape = self.n_frames, self.video_shape
+        num_frames, img_shape = self.n_frames, self.video_shape # Move this to the loop for each shot
     
         print(f'Input video number of frames {num_frames}')
         orig_height, orig_width = img_shape[:2]
@@ -419,23 +413,25 @@ class pose(object):
     
         # ========= Run tracking ========= #
         
-        # run multi object tracker
+        # Initialize tracker
         mot = MPT(
             device=device,
-            batch_size=tracker_batch_size,
+            #batch_size=tracker_batch_size,
+            batch_size=1,
             display=display,
             detector_type=detector,
             output_format='dict',
             yolo_img_size=yolo_img_size,
         )
         
-        
-        tracking_results = mot(cv2_array)
+        print("Running pose estimation shot-by-shot...")
+        tracking_results = mot(cv2_array, shots)
+            
     
-        # remove tracklets if num_frames is less than MIN_NUM_FRAMES
-        for person_id in list(tracking_results.keys()):
-            if tracking_results[person_id]['frames'].shape[0] < MIN_NUM_FRAMES:
-                del tracking_results[person_id]
+            # # remove tracklets if num_frames is less than MIN_NUM_FRAMES
+            # for person_id in list(tracking_results.keys()):
+            #     if tracking_results[person_id]['frames'].shape[0] < MIN_NUM_FRAMES:
+            #         del tracking_results[person_id]
         
     
         # ========= MEVA Model ========= #
@@ -559,8 +555,8 @@ class pose(object):
         joblib.dump(vibe_results, os.path.join(output_path, "meva_output.pkl"))
         self.pose_data = vibe_results
     
-        shutil.rmtree(image_folder)
         print('================= END =================')
             
-
-    
+t = pose()
+t.load_video('/Users/f004swn/Documents/Code/pose_data/500_cut/500_cut_unsquish.mp4')    
+t.annotate_pose()

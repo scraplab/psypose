@@ -149,13 +149,13 @@ def write2vid(img_arr, fps, out_name, out_size):
     cv2.destroyAllWindows()
     out.release()
     
-def get_shots(video, downscale_factor, threshold):
+def get_shots(video_path, downscale_factor=None, threshold=30):
     """
     
 
     Parameters
     ----------
-    video_manager : scenedetect VideoManager object.
+    video_path : scenedetect VideoManager object.
     downscale_factor : Factor by which to downscale video to improve speed.
     threshold : Cut detection threshold.
 
@@ -165,7 +165,7 @@ def get_shots(video, downscale_factor, threshold):
 
     """
     print('Detecting cuts...')
-    #video = VideoManager([vidpath])
+    video = VideoManager([video_path])
     video.set_downscale_factor(downscale_factor)
     scene_manager = SceneManager()
     scene_manager.add_detector(ContentDetector(threshold=threshold))
@@ -175,6 +175,7 @@ def get_shots(video, downscale_factor, threshold):
     cut_tuples = []
     for shot in tqdm(shot_list):
         cut_tuples.append((shot[0].get_frames(), shot[1].get_frames()))
+    video.release()
     return cut_tuples
 
 def video_to_array(cap):
@@ -195,6 +196,7 @@ def video_to_array(cap):
     fc = 0
     ret = True
     pbar = tqdm(total=frameCount)
+    print("Loading video into memory...")
     while (fc < frameCount  and ret):
         # cap.read() returns a bool if the frame was retrieved along with the frame as a numpy array
         ret, frame = cap.read()
@@ -211,5 +213,10 @@ def video_to_array(cap):
     #cv2.waitKey(0)
     cv2.destroyAllWindows()
     return buf
+
+def find_nearest(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return idx
 
     
