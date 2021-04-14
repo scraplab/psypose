@@ -130,3 +130,5 @@ dmypy.json
 
 models/model_weights
 models/__pycache__
+
+**/.DS_Store
