@@ -15,6 +15,32 @@ import face_recognition
 from scenedetect import VideoManager, SceneManager
 from scenedetect.detectors import ContentDetector
 import tqdm
+import os.path as osp
+import os
+import subprocess
+
+def video_to_images(vid_file, img_folder=None, return_info=False):
+    if img_folder is None:
+        img_folder = osp.join('/tmp', osp.basename(vid_file).replace('.', '_'))
+
+    os.makedirs(img_folder, exist_ok=True)
+
+    command = ['ffmpeg',
+               '-i', vid_file,
+               '-f', 'image2',
+               '-v', 'error',
+               f'{img_folder}/%06d.png']
+    print(f'Running \"{" ".join(command)}\"')
+    subprocess.call(command)
+
+    print(f'Images saved to \"{img_folder}\"')
+
+    img_shape = cv2.imread(osp.join(img_folder, '000001.png')).shape
+
+    if return_info:
+        return img_folder, len(os.listdir(img_folder)), img_shape
+    else:
+        return img_folder
 
 def from_np_array(array_string):
     if 'e' in array_string:

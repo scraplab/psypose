@@ -381,9 +381,3 @@ class pose(object):
         
     # def consolidate_clusters(self):
     #     tot_frames = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
-    
-
-            
-t = pose()
-t.load_video('/Users/f004swn/Documents/Code/pose_data/500_cut/500_cut_unsquish.mp4')    
-t.annotate_pose()
