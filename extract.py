@@ -26,8 +26,6 @@ import sys
 
 sys.path.append(os.getcwd())
 
-
-
 from psypose.models import facenet_keras, deepface
 
 def annotate(pose, output_path=None, tracking_method='bbox', 
@@ -43,8 +41,12 @@ def annotate(pose, output_path=None, tracking_method='bbox',
      # Run pose estimation and get pose data
      
      pose_data = estimate_pose(pose.vid_path)
-     return pose_data
      
+     pose_data = utils.split_tracks(pose_data, shots)
+     
+     return pose_data
+
+
      
 
  
