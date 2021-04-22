@@ -16,7 +16,8 @@ import numpy as np
 import cv2
 import glob
 import pandas as pd
-from psypose import utils, pose_estimation
+from psypose import utils
+from psypose.pose_estimation import estimate_pose
 from pliers.extractors import merge_results, FaceRecognitionFaceLocationsExtractor, FaceRecognitionFaceEncodingsExtractor  
 from pliers.stimuli import VideoStim
 from pliers.filters import FrameSamplingFilter

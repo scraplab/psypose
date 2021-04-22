@@ -199,7 +199,7 @@ def get_shots(video_path, downscale_factor=None, threshold=30):
     scene_manager.detect_scenes(frame_source=video)
     shot_list = scene_manager.get_scene_list()
     cut_tuples = []
-    for shot in tqdm(shot_list):
+    for shot in shot_list:
         cut_tuples.append((shot[0].get_frames(), shot[1].get_frames()))
     video.release()
     return cut_tuples
