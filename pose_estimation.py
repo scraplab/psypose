@@ -21,6 +21,7 @@ import joblib
 import shutil
 import colorsys
 import numpy as np
+import atexit
 from tqdm import tqdm
 from multi_person_tracker import MPT
 from torch.utils.data import DataLoader
@@ -39,6 +40,7 @@ from psypose.MEVA.meva.utils.demo_utils import (
 from psypose.utils import video_to_images
 
 MIN_NUM_FRAMES = 25
+
 
 
 def estimate_pose(video_file, save_pkl=False, image_folder='images_intermediate', output_path=None, tracking_method='bbox', 
@@ -288,7 +290,14 @@ def estimate_pose(video_file, save_pkl=False, image_folder='images_intermediate'
         images_to_video(img_folder=output_img_folder, output_vid_file=save_name)
         shutil.rmtree(output_img_folder)
 
-    shutil.rmtree(image_folder)
+    def clean_image_folder():
+        fold = image_folder
+        if osp.exists(fold) and osp.isdir(fold):
+            shutil.rmtree(fold)
+
+    atexit.register(clean_image_folder)
+
+
     print('========FINISHED POSE ESTIMATION========')
     os.chdir(return_dir)
     return meva_results
