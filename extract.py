@@ -42,7 +42,7 @@ def annotate(pose, output_path=None, tracking_method='bbox',
      
      # Run pose estimation and get pose data
      
-     pose_data = pose_estimation(pose.vid_path)
+     pose_data = estimate_pose(pose.vid_path)
      
      
 
