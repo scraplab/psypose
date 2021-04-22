@@ -9,7 +9,9 @@ Created on Wed Apr 21 16:45:24 2021
 import os
 import sys
 import os.path as osp
-sys.path.append(os.getcwd()+'/MEVA')
+return_dir = os.getcwd()
+os.chdir('MEVA')
+sys.path.append(os.getcwd())
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
 
 import cv2
@@ -39,10 +41,10 @@ from psypose.utils import video_to_images
 MIN_NUM_FRAMES = 25
 
 
-def estimate_pose(video_file, save_pkl=False, image_folder='images_intermediate', render_preview=False, output_path=None, tracking_method='bbox', 
+def estimate_pose(video_file, save_pkl=False, image_folder='images_intermediate', output_path=None, tracking_method='bbox', 
     vibe_batch_size=225, tracker_batch_size=12, mesh_out=False, run_smplify=False, render=False, wireframe=False,
     sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs',
-    detector='yolo', yolo_img_size=416, exp='', cfg=''):
+    detector='yolo', yolo_img_size=416, exp='train_meva_2', cfg='train_meva_2'):
     torch.cuda.set_device(gpu_id)
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -53,7 +55,7 @@ def estimate_pose(video_file, save_pkl=False, image_folder='images_intermediate'
     output_path = os.path.join(output_folder, filename)
     os.makedirs(output_path, exist_ok=True)
  
-    image_folder, num_frames, img_shape = video_to_images(video_file, return_info=True)
+    image_folder, num_frames, img_shape = video_to_images(video_file, img_folder=image_folder, return_info=True)
 
     print(f'Input video number of frames {num_frames}')
     orig_height, orig_width = img_shape[:2]
@@ -204,7 +206,8 @@ def estimate_pose(video_file, save_pkl=False, image_folder='images_intermediate'
 
     # meva_results = joblib.load(os.path.join(output_path, "meva_output.pkl"))
 
-    if render_preview or not len(meva_results) == 0:
+    #if render_preview or not len(meva_results) == 0:
+    if render:
         # ========= Render results as a single video ========= #
         renderer = Renderer(resolution=(orig_width, orig_height), orig_img=True, wireframe=wireframe)
 
@@ -287,6 +290,7 @@ def estimate_pose(video_file, save_pkl=False, image_folder='images_intermediate'
 
     shutil.rmtree(image_folder)
     print('========FINISHED POSE ESTIMATION========')
+    os.chdir(return_dir)
     return meva_results
 
 
