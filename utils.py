@@ -14,7 +14,7 @@ import pandas as pd
 import face_recognition
 from scenedetect import VideoManager, SceneManager
 from scenedetect.detectors import ContentDetector
-import tqdm
+from tqdm import tqdm
 import os.path as osp
 import os
 import subprocess
