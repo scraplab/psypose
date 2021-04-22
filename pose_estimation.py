@@ -9,7 +9,7 @@ Created on Wed Apr 21 16:45:24 2021
 import os
 import sys
 import os.path as osp
-sys.path.append(os.getcwd())
+sys.path.append(os.getcwd()+'/MEVA')
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
 
 import cv2
