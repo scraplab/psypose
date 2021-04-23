@@ -39,7 +39,6 @@ from psypose.MEVA.meva.utils.demo_utils import (
 
 from psypose.utils import video_to_images
 
-MIN_NUM_FRAMES = 25
 
 
 
@@ -47,6 +46,9 @@ def estimate_pose(video_file, save_pkl=False, image_folder='images_intermediate'
     vibe_batch_size=225, tracker_batch_size=12, mesh_out=False, run_smplify=False, render=False, wireframe=False,
     sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs',
     detector='yolo', yolo_img_size=416, exp='train_meva_2', cfg='train_meva_2'):
+    
+    MIN_NUM_FRAMES = 1
+
     torch.cuda.set_device(gpu_id)
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -138,7 +140,7 @@ def estimate_pose(video_file, save_pkl=False, image_folder='images_intermediate'
 
         with torch.no_grad():
 
-            pred_cam, pred_pose, pred_betas, pred_joints3d, norm_joints2d = [], [], [], [], []
+            pred_cam, pred_pose, pred_betas, pred_joints3d = [], [], [], []
             data_chunks = dataset.iter_data() 
 
             for idx in range(len(data_chunks)):
