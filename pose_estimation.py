@@ -132,7 +132,6 @@ def estimate_pose(pose, save_pkl=False, image_folder='images_intermediate', outp
             image_folder=image_folder,
             frames=frames,
             bboxes=bboxes,
-            joints2d=joints2d,
             scale=bbox_scale,
         )
 
@@ -188,7 +187,6 @@ def estimate_pose(pose, save_pkl=False, image_folder='images_intermediate', outp
             'pose': pred_pose,
             'betas': pred_betas,
             'joints3d': pred_joints3d,
-            'joints2d': joints2d,
             'bboxes': bboxes,
             'frame_ids': frames,
         }
