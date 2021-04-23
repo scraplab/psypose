@@ -38,8 +38,12 @@ def annotate(pose, output_path=None):
      # Run pose estimation and get pose data
      
      pose_data = estimate_pose(pose)
-     
+     # Split tracks based on shot detection
      pose_data = utils.split_tracks(pose_data, shots)
+     
+     # Add pose data to the pose object
+     pose.pose_data = pose_data
+     pose.n_tracks = len(pose_data)
      
      return pose_data
 
