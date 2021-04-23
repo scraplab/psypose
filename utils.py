@@ -260,20 +260,19 @@ def split_tracks(data, shots):
         frames = data[track]['frame_ids']
         for shot in shots:
             out = shot[1]-1
-            if (out in frames) and (frames[-1] == out+1):
+            if (out in frames) and (frames[-1] != out):
                 split = True
-                cut_idx = np.where(frames==out)[0]
-                first_half, second_half = split_track(cut_idx, track)
+                cut_idx = np.where(frames==out)[0][0]
+                first_half, second_half = split_track(cut_idx, data[track])
                 add_track = [first_half, second_half]
         if split:
             for sp in add_track:
                 tracks_split.append(sp)
         else:
-            tracks_split.append(track)
+            tracks_split.append(data[track])
 
     out = {}
     for i, track in enumerate(tracks_split):
         out[i] = track
     return out
-
     
