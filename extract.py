@@ -28,10 +28,7 @@ sys.path.append(os.getcwd())
 
 from psypose.models import facenet_keras, deepface
 
-def annotate(pose, output_path=None, tracking_method='bbox', 
-    vibe_batch_size=225, mesh_out=False, run_smplify=False, render=False, wireframe=False,
-    sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs',
-    detector='yolo', yolo_img_size=416, exp='train_meva_2', cfg='train_meva_2'):
+def annotate(pose, output_path=None):
         
      # ========= Run shot detection ========= #
      
@@ -40,7 +37,7 @@ def annotate(pose, output_path=None, tracking_method='bbox',
      
      # Run pose estimation and get pose data
      
-     pose_data = estimate_pose(pose.vid_path)
+     pose_data = estimate_pose(pose)
      
      pose_data = utils.split_tracks(pose_data, shots)
      

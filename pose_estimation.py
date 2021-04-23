@@ -42,12 +42,15 @@ from psypose.utils import video_to_images
 
 
 
-def estimate_pose(video_file, save_pkl=False, image_folder='images_intermediate', output_path=None, tracking_method='bbox', 
+def estimate_pose(pose, save_pkl=False, image_folder='images_intermediate', output_path=None, tracking_method='bbox', 
     vibe_batch_size=225, tracker_batch_size=12, mesh_out=False, run_smplify=False, render=False, wireframe=False,
     sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs',
     detector='yolo', yolo_img_size=416, exp='train_meva_2', cfg='train_meva_2'):
     
-    MIN_NUM_FRAMES = 1
+    video_file = pose.vid_path
+    
+    # setting minimum number of frames to reflect minimum track length to half a second
+    MIN_NUM_FRAMES = round(pose.fps/2)
 
     torch.cuda.set_device(gpu_id)
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
