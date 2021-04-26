@@ -28,7 +28,7 @@ sys.path.append(os.getcwd())
 
 from psypose.models import facenet_keras, deepface
 
-def annotate(pose, output_path=None):
+def annotate(pose, face_encoding_model='deepface', output_path=None):
         
      # ========= Run shot detection ========= #
      
@@ -44,6 +44,7 @@ def annotate(pose, output_path=None):
      # Add pose data to the pose object
      pose.pose_data = pose_data
      pose.n_tracks = len(pose_data)
+     pose.shots = shots
      
      return pose_data
 
