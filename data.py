@@ -12,6 +12,7 @@ import numpy as np
 import cv2
 #import matplotlib
 import nibabel as nib
+from tqdm import tqdm
 
 import pandas as pd
 
@@ -22,6 +23,8 @@ from pliers.stimuli import VideoStim
 from pliers.filters import FrameSamplingFilter
 from pliers.converters import VideoFrameCollectionIterator
 
+import torch
+
 
 from psypose.models import facenet_keras, deepface
 class pose(object):
@@ -29,6 +32,7 @@ class pose(object):
     def __init__(self):
         self.is_clustered = False
         self.clusters_named = False
+        self.shots = None
         pass
             
     def load_fmri(self, fmri_path, TR):
@@ -66,9 +70,6 @@ class pose(object):
         self.pose_data = pkl_open
         self.n_tracks = len(pkl_open)
 
-
-
-        
     def encode_faces(self, overwrite=False, encoder='default', use_TR=False, every=None, out=None):
         if every==None:
             # encode every frame if sampling parameter not defined
@@ -86,7 +87,10 @@ class pose(object):
         frame_conv = VideoFrameCollectionIterator()
         vid_frames = frame_conv.transform(vid_filt)
         
-        ext_loc = FaceRecognitionFaceLocationsExtractor()
+        if torch.cuda.is_available():
+            ext_loc = FaceRecognitionFaceLocationsExtractor(model='cnn')
+        else:
+            ext_loc = FaceRecognitionFaceLocationsExtractor()
         #for this, change to model='cnn' for GPU use on discovery
 
         print("\nExtracting face locations...")
