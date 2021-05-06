@@ -16,8 +16,11 @@ import numpy as np
 import cv2
 import glob
 import pandas as pd
+
 from psypose import utils
 from psypose.pose_estimation import estimate_pose
+from psypose.models import facenet_keras, deepface
+
 from pliers.extractors import merge_results, FaceRecognitionFaceLocationsExtractor, FaceRecognitionFaceEncodingsExtractor  
 from pliers.stimuli import VideoStim
 from pliers.filters import FrameSamplingFilter
@@ -26,7 +29,6 @@ import sys
 
 sys.path.append(os.getcwd())
 
-from psypose.models import facenet_keras, deepface
 
 def annotate(pose, face_encoding_model='deepface', output_path=None):
         
