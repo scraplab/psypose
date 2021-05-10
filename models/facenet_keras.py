@@ -15,7 +15,7 @@ from PIL import Image
 import os
 print(os.getcwd())
 
-model_path = 'psypose/models/model_weights/facenet_keras.h5'
+model_path = 'models/model_weights/facenet_keras.h5'
 model = load_model(model_path, compile=False)
 #facenet expects that the pixel values be standardized 
 
