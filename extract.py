@@ -29,7 +29,7 @@ sys.path.append(os.getcwd())
 
 
 def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepface', 
-             every=1, output_path=None):
+             every=1, output_path=None, save_results=True):
         
      ########## Run shot detection ##########
      
@@ -53,7 +53,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      
      detector = Detector(face_model = face_box_model, au_model = au_model)
      
-     pose.face_data = detector.detect_video(pose.vid_path, every=every)
+     pose.face_data = detector.detect_video(pose.vid_path, skip_frames=every)
      
      ########## Extract face identify encodings ##########
      
@@ -63,9 +63,9 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      if output_path==None:
          output_path = pose.vid_name
          os.makedirs(output_path, exist_ok=True)
-         
-     pose.face_data.to_csv('psypose_faces.csv')
-     joblib.dump(pose.pose_data, os.path.join(output_path, 'psypose_bodies.pkl'))
+     if save_results:
+         pose.face_data.to_csv('psypose_faces.csv')
+         joblib.dump(pose.pose_data, os.path.join(output_path, 'psypose_bodies.pkl'))
      
      return pose_data
 
