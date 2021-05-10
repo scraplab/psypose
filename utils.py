@@ -82,6 +82,7 @@ def frame_to_ts(frame, fps):
     return ts
 
 def check_match(bod, fac):
+    # need to update this because of newly added py-feat face detection
     cx, cy, w, h = [float(i) for i in bod]
     top_b, right_b, bottom_b, left_b = [(cy-h/2), (cx+w/2), (cy+h/2), (cx-w/2)]
     top_f, right_f, bottom_f, left_f = [float(i) for i in fac]
@@ -108,6 +109,12 @@ def resize_image(array, newsize):
 
 def crop_image(array, bbox):
     top, right, bottom, left = bbox
+    new_img = array[top:bottom, left:right, :]
+    return new_img
+
+def crop_image_wh(array, data):
+    cx, cy, w, h = [i for i in data]
+    top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
     new_img = array[top:bottom, left:right, :]
     return new_img
 
@@ -275,4 +282,17 @@ def split_tracks(data, shots):
     for i, track in enumerate(tracks_split):
         out[i] = track
     return out
+
+def get_bbox(row):
+    x, y, w, h = row[['FaceRectX', 'FaceRectY', 'FaceRectWidth', 'FaceRectHeight']]
+    return [x, y, w, h]
+    
+def crop_face(array, data):
+    cx, cy, w, h = [i for i in data]
+    top, right, bottom, left = [int(round(i)) for i in [cy, (cx+w), (cy+h), cx]]
+    new_img = array[top:bottom, left:right, :]
+    return new_img
+
+
+    
     

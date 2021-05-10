@@ -183,11 +183,11 @@ def track(pose, trackID):
 
 #plot = show_pose(video, pickle, 6)
 
-def show_frame():
-    #coming soon
-
-    print('no')
-    
+def frame(pose, frame_number):
+    out = utils.frame2array(frame_number, pose.video_cv2)
+    plt.axis('off')
+    plt.imshow(out)
+    del out
     
 def render_track(pose, track, outdir=None):
     if not outdir:
@@ -336,6 +336,8 @@ def cluster(pose, cluster_num):
         sub.axis('off')
         sub.imshow(img, interpolation='nearest')
     fig.suptitle(str(cluster_num), fontsize=50)
+    
+#def face(pose, face_loc):
 
     
 
