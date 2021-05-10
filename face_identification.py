@@ -7,57 +7,19 @@ Created on Mon Apr 26 11:30:19 2021
 """
 
 import numpy as np
+import pandas as pd
+from tqdm import tqdm
+from psypose import utils
+from psypose.models import facenet_keras, deepface
 
-
-def encode_faces(pose_object, overwrite=False, encoder='default', use_TR=False, every=None, out=None):
-    if every==None:
-        # encode every frame if sampling parameter not defined
-        every=1
-        
-    def get_data(trans, parameter):
-        enc = trans[parameter]
-        arr = np.zeros((enc.shape[0], len(enc[0])))
-        for frame in range(arr.shape[0]):
-            arr[frame,:]=enc[frame]
-        return arr
-    print('\nParsing video data...')
-    vid = VideoStim(self.vid_path)
-    vid_filt = FrameSamplingFilter(every=every).transform(vid)
-    frame_conv = VideoFrameCollectionIterator()
-    vid_frames = frame_conv.transform(vid_filt)
+def add_face_id(pose, overwrite=False, encoder='default', use_TR=False, out=None):
     
-    if torch.cuda.is_available():
-        ext_loc = FaceRecognitionFaceLocationsExtractor(model='cnn')
-    else:
-        ext_loc = FaceRecognitionFaceLocationsExtractor()
-    #for this, change to model='cnn' for GPU use on discovery
+    face_df = pd.DataFrame(pose.face_data)
+    # Remove possible nan rows
+    face_df = face_df.dropna(axis=0)
+    faces_to_process = int(face_df.shape[0])
+    unique_frames = [int(i) for i in np.unique(face_df['frame'])]
 
-    print("\nExtracting face locations...")
-    # This is using pliers, which uses dlib for extraction face locations (SOTA)
-    face_locs_data = ext_loc.transform(vid_frames)
-    #remove frames without faces
-    face_locs_data = [obj for obj in face_locs_data if len(obj.raw) != 0]
-    # convert to dataframe and remove frames with no faces
-
-    frame_ids = [obj.stim.frame_num for obj in face_locs_data]
-    locations = [obj.raw for obj in face_locs_data if len(obj.raw) != 0]
-    
-    # expanding multi-face frames
-    frame_ids_expanded = []
-    bboxes_expanded = []
-    face_imgs = []
-    for f, frame in enumerate(frame_ids):
-        face_bboxes = locations[f]
-        frame_img = utils.frame2array(frame, self.video_cv2)
-        for i in face_bboxes:
-            frame_ids_expanded.append(frame)
-            bboxes_expanded.append(i)
-            face_imgs.append(utils.crop_image(frame_img, i))
-            
-    bboxes = np.array(bboxes_expanded)
-
-    print("\nExtracting face encodings...")
-    
     if encoder=='default':
         encoding_length = 128
         encode = utils.default_encoding
@@ -68,20 +30,28 @@ def encode_faces(pose_object, overwrite=False, encoder='default', use_TR=False, 
         encoding_length = 2622
         encode = deepface.encode
     
-    out_array = np.empty((len(frame_ids_expanded), 5+encoding_length))
-    encodings = []
-    for image in tqdm(face_imgs):
-        encodings.append(encode(image))
-    out_array[:,0], out_array[:,1:5], out_array[:, 5:] = frame_ids_expanded, bboxes, np.array(encodings)
+    encoding_array = np.empty((faces_to_process, encoding_length))
+        
+    print("\nEncoding face identities...")
+    pbar = tqdm(total=faces_to_process)
+    counter = -1
+    for frame in unique_frames:
+        img = utils.frame2array(frame, pose.video_cv2)
+        sub = face_df[face_df['frame']==frame]
+        for loc in range(sub.shape[0]):
+            row = sub.iloc[loc]
+            bbox = row[['FaceRectX', 'FaceRectY', 'FaceRectWidth', 'FaceRectHeight']]
+            face_cropped = utils.crop_face(img, bbox)
+            encoding = encode(face_cropped)
+            counter+=1
+            encoding_array[counter] = encoding
+            pbar.update(1)
+    pbar.close()
+            
+    encoding_columns = ['enc'+str(i) for i in range(encoding_length)]
+    face_df[encoding_columns] = encoding_array
     
-    face_df = pd.DataFrame(columns=['frame_ids', 'bboxes', 'encodings'])
-    face_df['frame_ids'] = frame_ids_expanded
-    face_df['bboxes'] = bboxes_expanded
-    face_df['encodings'] = encodings
-    
-    self.face_data = face_df
-    
-    if out != None:
-        print('Saving results...')
-        np.savetxt(out, out_array, delimiter=',')
-    self.faces_encoded = True
+    face_df = face_df.reset_index()
+
+    pose.face_data = face_df
+    pose.faces_encoded = True
