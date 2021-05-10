@@ -19,20 +19,17 @@ import pandas as pd
 
 from psypose import utils
 from psypose.pose_estimation import estimate_pose
-from psypose.face_identification 
+from psypose.face_identification import add_face_id
 
-from pliers.extractors import merge_results, FaceRecognitionFaceLocationsExtractor, FaceRecognitionFaceEncodingsExtractor  
-from pliers.stimuli import VideoStim
-from pliers.filters import FrameSamplingFilter
-from pliers.converters import VideoFrameCollectionIterator
 import sys
 
-from py-feat.detector import Detector
+from feat.detector import Detector
 
 sys.path.append(os.getcwd())
 
 
-def annotate(pose, face_encoding_model='deepface', every=1, output_path=None):
+def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepface', 
+             every=1, output_path=None):
         
      ########## Run shot detection ##########
      
@@ -54,7 +51,7 @@ def annotate(pose, face_encoding_model='deepface', every=1, output_path=None):
      
      ########## Run face detection + face feature extraction ##########
      
-     detector = Detector(face_model = "retinaface", au_model = "rf")
+     detector = Detector(face_model = face_box_model, au_model = au_model)
      
      pose.face_data = detector.detect_video(pose.vid_path, every=every)
      
@@ -70,7 +67,6 @@ def annotate(pose, face_encoding_model='deepface', every=1, output_path=None):
      pose.face_data.to_csv('psypose_faces.csv')
      joblib.dump(pose.pose_data, os.path.join(output_path, 'psypose_bodies.pkl'))
      
-    
      return pose_data
 
 
