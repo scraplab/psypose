@@ -43,19 +43,25 @@ class pose(object):
         # all timeseries will be in milliseconds for accuracy.
         self.brain_time = [1000*TR for tr in range(self.brain_data.shape[0])]
         
+    # def load_face_data(self, face_data):
+    #     self.face_data_path = os.path.abspath(face_data)
+        
+    #     face_data_array = np.genfromtxt(face_data, delimiter=',')
+    #     n_frames = face_data_array.shape[0]
+    #     face_df = pd.DataFrame(columns=['frame_ids', 'locations', 'encodings'])
+    #     face_df['frame_ids'] = face_data_array[:,0]
+    #     face_df['locations'] = [face_data_array[i,1:5] for i in range(n_frames)]
+    #     face_df['encodings'] = [face_data_array[i,5:] for i in range(n_frames)]
+    #     self.face_data = face_df
+        
     def load_face_data(self, face_data):
+        #expects py-feat face df in csv
         self.face_data_path = os.path.abspath(face_data)
-        
-        face_data_array = np.genfromtxt(face_data, delimiter=',')
-        n_frames = face_data_array.shape[0]
-        face_df = pd.DataFrame(columns=['frame_ids', 'locations', 'encodings'])
-        face_df['frame_ids'] = face_data_array[:,0]
-        face_df['locations'] = [face_data_array[i,1:5] for i in range(n_frames)]
-        face_df['encodings'] = [face_data_array[i,5:] for i in range(n_frames)]
-        self.face_data = face_df
-        
+        self.face_data = pd.read_csv(face_data)
+
     def load_video(self, vid_path):
         vid_path = os.path.abspath(vid_path)
+        self.vid_name = os.path.splitext(os.path.basename(vid_path))[0]
         self.video_cv2 = cv2.VideoCapture(vid_path)
         #self.video_scenedetect = VideoManager([vid_path])
         self.fps = self.video_cv2.get(cv2.CAP_PROP_FPS)
