@@ -40,8 +40,6 @@ from psypose.MEVA.meva.utils.demo_utils import (
 from psypose.utils import video_to_images
 
 
-
-
 def estimate_pose(pose, save_pkl=False, image_folder='images_intermediate', output_path=None, tracking_method='bbox', 
     vibe_batch_size=225, tracker_batch_size=12, mesh_out=False, run_smplify=False, render=False, wireframe=False,
     sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs',
@@ -52,8 +50,12 @@ def estimate_pose(pose, save_pkl=False, image_folder='images_intermediate', outp
     # setting minimum number of frames to reflect minimum track length to half a second
     MIN_NUM_FRAMES = round(pose.fps/2)
 
-    torch.cuda.set_device(gpu_id)
-    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    if torch.cuda.is_available():
+        torch.cuda.set_device(gpu_id)
+        device = torch.device('cuda')
+    else:
+        device = torch.device('cpu')
+
 
     if not os.path.isfile(video_file):
         exit(f'Input video \"{video_file}\" does not exist!')
