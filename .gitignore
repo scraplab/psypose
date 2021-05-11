@@ -128,7 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-models/model_weights
-models/__pycache__
+psypose/models/model_weights
+psypose/models/__pycache__
 
 **/.DS_Store
