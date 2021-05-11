@@ -41,9 +41,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      pose_data = estimate_pose(pose)
      # Split tracks based on shot detection
      pose_data = utils.split_tracks(pose_data, shots)
-     
-     pose.pose_data = pose_data
-     
+          
      # Add pose data to the pose object
      pose.pose_data = pose_data
      pose.n_tracks = len(pose_data)
@@ -53,7 +51,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      
      detector = Detector(face_model = face_box_model, au_model = au_model)
      
-     pose.face_data = detector.detect_video(pose.vid_path, skip_frames=every)
+     pose.face_data = detector.detect_video(pose.vid_path, skip_frames = every)
      
      ########## Extract face identify encodings ##########
      
@@ -61,11 +59,12 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      
      ########## Saving results ##########
      if output_path==None:
-         output_path = pose.vid_name
-         os.makedirs(output_path, exist_ok=True)
+         output_path = '../'
+         
      if save_results:
-         pose.face_data.to_csv('psypose_faces.csv')
-         joblib.dump(pose.pose_data, os.path.join(output_path, 'psypose_bodies.pkl'))
+         os.makedirs(output_path+'/'+pose.vid_name, exist_ok=True)
+         pose.face_data.to_csv(output_path+'/'+pose.vid_name+'/psypose_faces.csv')
+         joblib.dump(pose.pose_data, os.path.join(output_path+'/'+pose.vid_name+'/psypose_bodies.pkl'))
      
      return pose_data
 
