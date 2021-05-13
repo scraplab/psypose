@@ -19,14 +19,8 @@ import pandas as pd
 #os.system('cd ..')
 from psypose import utils
 
-from pliers.stimuli import VideoStim
-from pliers.filters import FrameSamplingFilter
-from pliers.converters import VideoFrameCollectionIterator
-
 import torch
 
-
-from psypose.models import facenet_keras, deepface
 class pose(object):
     
     def __init__(self):

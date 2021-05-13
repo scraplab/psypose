@@ -9,11 +9,15 @@ Created on Wed Apr 21 16:45:24 2021
 import os
 import sys
 import os.path as osp
-return_dir = os.getcwd()
-os.chdir('MEVA')
-sys.path.append(os.getcwd())
+
+sys.path.append('psypose/MEVA')
+sys.path.append('psypose/MEVA/meva')
+sys.path.append('psypose/MEVA/meva/cfg')
+
+
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
 
+print('hey')
 import cv2
 import time
 import torch
@@ -39,16 +43,21 @@ from psypose.MEVA.meva.utils.demo_utils import (
 
 from psypose.utils import video_to_images
 
+out_dir = os.getcwd()
 
-def estimate_pose(pose, save_pkl=False, image_folder='images_intermediate', output_path=None, tracking_method='bbox', 
+def estimate_pose(pose, save_pkl=False, image_folder=out_dir+'/images_intermediate', output_path=None, tracking_method='bbox', 
     vibe_batch_size=225, tracker_batch_size=12, mesh_out=False, run_smplify=False, render=False, wireframe=False,
     sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs',
     detector='yolo', yolo_img_size=416, exp='train_meva_2', cfg='train_meva_2'):
+
+    return_dir = os.getcwd()
+    os.chdir('psypose/MEVA')
     
     video_file = pose.vid_path
     
     # setting minimum number of frames to reflect minimum track length to half a second
-    MIN_NUM_FRAMES = round(pose.fps/2)
+    MIN_NUM_FRAMES = 25
+    #MIN_NUM_FRAMES = round(pose.fps/2)
 
     if torch.cuda.is_available():
         torch.cuda.set_device(gpu_id)
@@ -61,8 +70,8 @@ def estimate_pose(pose, save_pkl=False, image_folder='images_intermediate', outp
         exit(f'Input video \"{video_file}\" does not exist!')
 
     filename = os.path.splitext(os.path.basename(video_file))[0]
-    output_path = os.path.join(output_folder, filename)
-    os.makedirs(output_path, exist_ok=True)
+    #output_path = os.path.join(output_folder, filename)
+    #os.makedirs(output_path, exist_ok=True)
  
     image_folder, num_frames, img_shape = video_to_images(video_file, img_folder=image_folder, return_info=True)
 
@@ -107,7 +116,7 @@ def estimate_pose(pose, save_pkl=False, image_folder='images_intermediate', outp
     ).to(device)
 
     
-    ckpt = torch.load(pretrained_file)
+    ckpt = torch.load(pretrained_file, map_location=device)
     # print(f'Performance of pretrained model on 3DPW: {ckpt["performance"]}')
     ckpt = ckpt['gen_state_dict']
     model.load_state_dict(ckpt)
@@ -126,9 +135,9 @@ def estimate_pose(pose, save_pkl=False, image_folder='images_intermediate', outp
 
         bboxes = tracking_results[person_id]['bbox']
         frames = tracking_results[person_id]['frames']
-        if len(frames) < 90:
-            print(f"!!!tracklet < 90 frames: {len(frames)} frames")
-            continue
+    #    if len(frames) < 90:
+    #        print(f"!!!tracklet < 90 frames: {len(frames)} frames")
+    #        continue
 
         dataset = Inference(
             image_folder=image_folder,
@@ -206,10 +215,10 @@ def estimate_pose(pose, save_pkl=False, image_folder='images_intermediate', outp
     print(f'Total time spent: {total_time:.2f} seconds (including model loading time).')
     print(f'Total FPS (including model loading time): {num_frames / total_time:.2f}.')
 
-    if save_pkl:
-        print(f'Saving output results to \"{os.path.join(output_path, "meva_output.pkl")}\".')
+   # if save_pkl:
+   #     print(f'Saving output results to \"{os.path.join(output_path, "meva_output.pkl")}\".')
     
-        joblib.dump(meva_results, os.path.join(output_path, "meva_output.pkl"))
+   #     joblib.dump(meva_results, os.path.join(output_path, "meva_output.pkl"))
 
     # meva_results = joblib.load(os.path.join(output_path, "meva_output.pkl"))
 
@@ -296,15 +305,16 @@ def estimate_pose(pose, save_pkl=False, image_folder='images_intermediate', outp
         shutil.rmtree(output_img_folder)
 
     def clean_image_folder():
-        fold = image_folder
-        if osp.exists(fold) and osp.isdir(fold):
-            shutil.rmtree(fold)
+        if osp.exists(image_folder) and osp.isdir(image_folder):
+            shutil.rmtree(image_folder)
 
     atexit.register(clean_image_folder)
+    os.chdir(return_dir)
 
 
     print('========FINISHED POSE ESTIMATION========')
-    os.chdir(return_dir)
     return meva_results
+
+
 
 
