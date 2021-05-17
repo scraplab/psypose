@@ -4,10 +4,10 @@ cd model_weights
 gdown "https://drive.google.com/uc?id=1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g"
 gdown "https://drive.google.com/uc?id=1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv"
 
-cd ../MEVA/scripts
+cd ../../MEVA/scripts
 mkdir -p data
 cd data
-gdown "https://drive.google.com/uc?id=1E_Xo_o7kwHh3t5sjIxwMCvNv2_542eGE"
+gdown "https://drive.google.com/uc?id=14CjsrGqzZeQ_H76ZYCiWwX4e-VAyxt_Q"
 unzip meva_data.zip
 rm meva_data.zip
 cd ..
