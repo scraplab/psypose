@@ -21,7 +21,7 @@ import subprocess
 
 def video_to_images(vid_file, img_folder=None, return_info=False):
     if img_folder is None:
-        img_folder = osp.join('/tmp', osp.basename(vid_file).replace('.', '_'))
+        img_folder = osp.join('/scratch', osp.basename(vid_file).replace('.', '_'))
 
     os.makedirs(img_folder, exist_ok=True)
 

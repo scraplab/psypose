@@ -97,6 +97,10 @@ def estimate_pose(pose, save_pkl=False, image_folder=out_dir+'/images_intermedia
     for person_id in list(tracking_results.keys()):
         if tracking_results[person_id]['frames'].shape[0] < MIN_NUM_FRAMES:
             del tracking_results[person_id]
+
+    print('Track lengths: /n')
+    for person_id in list(tracking_results.keys()):
+        print(str(tracking_results[person_id]['frames'].shape[0]))
     
 
     # ========= MEVA Model ========= #
