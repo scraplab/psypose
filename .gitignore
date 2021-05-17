@@ -132,6 +132,7 @@ psypose/models/model_weights
 psypose/models/__pycache__
 
 **/.DS_Store
+**/__pycache__
 
 #Don't track content of these folders
 meva/trained_models/
