@@ -65,7 +65,7 @@ class Inference(Dataset):
         else:
             return norm_img
 
-    def iter_data(self, fr_num = 90, overlap = 20):
+    def iter_data(self, fr_num = 25, overlap = 6):
 
         images = np.array([cv2.cvtColor(cv2.imread(img_name), cv2.COLOR_BGR2RGB) for img_name in self.image_file_names])
         bboxes = self.bboxes
