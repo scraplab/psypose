@@ -8,7 +8,7 @@ Created on Tue May 11 13:34:17 2021
 
 __author__ = """Landry Bulls """
 __email__ = 'Landry.S.Bulls@Dartmouth.edu'
-__all__ = ['extract', 'data', 'utils', 'display', 'regressors']
+__all__ = ['extract', 'data', 'utils', 'display', 'regressors', 'MEVA']
 
 from psypose.data import pose
 from psypose.extract import annotate
