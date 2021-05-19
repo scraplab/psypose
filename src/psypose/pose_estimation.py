@@ -17,7 +17,6 @@ sys.path.append('psypose/MEVA/meva/cfg')
 
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
 
-print('hey')
 import cv2
 import time
 import torch
