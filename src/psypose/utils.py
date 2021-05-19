@@ -11,7 +11,7 @@ import ast
 import time
 import cv2
 import pandas as pd
-import face_recognition
+#import face_recognition
 from scenedetect import VideoManager, SceneManager
 from scenedetect.detectors import ContentDetector
 from tqdm import tqdm
@@ -164,11 +164,11 @@ def get_data(trans, parameter):
         arr[frame,:]=enc[frame]
     return arr
 
-def default_encoding(face_array):
-    # This is a janky implmementation. Right?
-    resized_array = resize_image(face_array, (150, 150))
-    encoding = face_recognition.face_encodings(resized_array)[0]
-    return encoding
+#def default_encoding(face_array):
+#    # This is a janky implmementation. Right?
+#    resized_array = resize_image(face_array, (150, 150))
+#    encoding = face_recognition.face_encodings(resized_array)[0]
+#    return encoding
 
 def write2vid(img_arr, fps, out_name, out_size):
     """

@@ -20,10 +20,10 @@ def add_face_id(pose, overwrite=False, encoder='deepface', use_TR=False, out=Non
     faces_to_process = int(face_df.shape[0])
     unique_frames = [int(i) for i in np.unique(face_df['frame'])]
 
-    if encoder=='default':
-        encoding_length = 128
-        encode = utils.default_encoding
-    elif encoder=='facenet':
+    #if encoder=='default':
+    #    encoding_length = 128
+    #    encode = utils.default_encoding
+    if encoder=='facenet':
         encoding_length = 128
         encode = facenet_keras.encode
     elif encoder=='deepface':
