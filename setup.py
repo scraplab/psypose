@@ -13,5 +13,5 @@ setup(name='psypose',
       author_email='Landry.S.Bulls@dartmouth.edu',
       license='MIT',
       packages=['psypose'],
-      install_requires=requirements
+      install_requires=requirements,
       zip_safe=False)
