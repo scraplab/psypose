@@ -5,7 +5,7 @@ from pathlib import Path
 from setuptools import setup, find_packages
 
 
-requirements_path = Path(__file__).resolve().dirname().joinpath('requirements.txt')
+requirements_path = Path(__file__).resolve().parent.joinpath('requirements.txt')
 requirements = requirements_path.read_text().splitlines()
 
 setup(name='psypose',
