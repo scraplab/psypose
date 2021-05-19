@@ -3,6 +3,7 @@ face-recognition
 nibabel
 networkx
 scikit-learn
+scenedetect
 pyyaml
 future
 tqdm
