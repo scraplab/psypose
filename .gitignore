@@ -44,6 +44,7 @@ src/psypose/meva/data/
 *.gif
 
 *.xml
+*.idea
 
 
 **images_intermediate
