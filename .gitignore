@@ -11,17 +11,17 @@
 .spyproject
 
 
-psypose/models/model_weights
-psypose/models/__pycache__
+src/psypose/models/model_weights
+src/psypose/models/__pycache__
 
 **/.DS_Store
 **/__pycache__
 
 #Don't track content of these folders
-psypose/meva/trained_models/
-psypose/meva/someOtherfoler/
-psypose/meva/results/
-psypose/meva/data/
+src/psypose/meva/trained_models/
+src/psypose/meva/someOtherfoler/
+src/psypose/meva/results/
+src/psypose/meva/data/
 
 
 
@@ -37,5 +37,11 @@ psypose/meva/data/
 *.rar
 *.tar
 *.zip
+*.npy
+*.pkl
+*.p
+*.npz
+*.gif
 
-images_intermediate
+
+**images_intermediate
