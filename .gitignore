@@ -43,5 +43,7 @@ src/psypose/meva/data/
 *.npz
 *.gif
 
+*.xml
+
 
 **images_intermediate
