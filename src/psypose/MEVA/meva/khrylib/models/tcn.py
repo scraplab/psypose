@@ -1,6 +1,6 @@
 import torch.nn as nn
 from torch.nn.utils import weight_norm
-from meva.khrylib.utils.torch import *
+from psypose.MEVA.meva.khrylib.utils.torch import *
 
 
 class Chomp1d(nn.Module):

@@ -8,11 +8,11 @@ sys.path.append(os.getcwd())
 import numpy as np
 from torch import nn
 from torch.nn import functional as F
-from meva.khrylib.models.mlp import MLP
-from meva.khrylib.models.rnn import RNN
-from meva.khrylib.utils.torch import *
-from meva.lib.vae_recs import *
-from meva.utils.config import Config
+from psypose.MEVA.meva.khrylib.models.mlp import MLP
+from psypose.MEVA.meva.khrylib.models.rnn import RNN
+from psypose.MEVA.meva.khrylib.utils.torch import *
+from psypose.MEVA.meva.lib.vae_recs import *
+from psypose.MEVA.meva.utils.config import Config
 
 
 

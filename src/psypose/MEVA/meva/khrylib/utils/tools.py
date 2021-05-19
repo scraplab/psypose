@@ -3,7 +3,7 @@ import os
 import shutil
 from os import path
 from PIL import Image
-from meva.khrylib.utils.math import *
+from psypose.MEVA.meva.khrylib.utils.math import *
 import cv2
 
 

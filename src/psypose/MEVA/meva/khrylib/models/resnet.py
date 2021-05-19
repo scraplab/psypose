@@ -1,6 +1,6 @@
 from torch import nn
 from torchvision import models
-from meva.khrylib.utils.torch import *
+from psypose.MEVA.meva.khrylib.utils.torch import *
 
 
 class ResNet(nn.Module):

@@ -1,5 +1,5 @@
 from torch import nn
-from meva.khrylib.utils.torch import *
+from psypose.MEVA.meva.khrylib.utils.torch import *
 
 
 class MobileNet(nn.Module):

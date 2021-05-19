@@ -12,9 +12,9 @@ import os.path as osp
 from pytube import YouTube
 from collections import OrderedDict
 
-from meva.utils.smooth_bbox import get_smooth_bbox_params, get_all_bbox_params
-from meva.utils.geometry import rotation_matrix_to_angle_axis
-from meva.utils.image_utils import get_single_image_crop_demo
+from psypose.MEVA.meva.utils.smooth_bbox import get_smooth_bbox_params, get_all_bbox_params
+from psypose.MEVA.meva.utils.geometry import rotation_matrix_to_angle_axis
+from psypose.MEVA.meva.utils.image_utils import get_single_image_crop_demo
 
 
 def preprocess_video(video, joints2d, bboxes, frames, scale=1.0, crop_size=224):

@@ -1,4 +1,4 @@
-from meva.khrylib.utils.math import *
+from psypose.MEVA.meva.khrylib.utils.math import *
 
 
 def get_body_qposaddr(model):

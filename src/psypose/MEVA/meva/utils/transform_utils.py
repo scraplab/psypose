@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import torch 
 
-from meva.utils.torch_geometry_transforms import *
+from psypose.MEVA.meva.utils.torch_geometry_transforms import *
 from torch.nn import functional as F
 
 

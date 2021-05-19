@@ -10,9 +10,9 @@ from torch.utils.data import Dataset
 from torchvision.transforms.functional import to_tensor
 from collections import defaultdict
 
-from meva.utils.smooth_bbox import get_all_bbox_params, smooth_bbox_params
-from meva.utils.image_utils import get_single_image_crop_demo
-from meva.utils.tools import get_chunk_with_overlap
+from psypose.MEVA.meva.utils.smooth_bbox import get_all_bbox_params, smooth_bbox_params
+from psypose.MEVA.meva.utils.image_utils import get_single_image_crop_demo
+from psypose.MEVA.meva.utils.tools import get_chunk_with_overlap
 
 
 class Inference(Dataset):

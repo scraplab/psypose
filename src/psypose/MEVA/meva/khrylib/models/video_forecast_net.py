@@ -1,7 +1,7 @@
 import torch.nn as nn
-from meva.khrylib.models.tcn import TemporalConvNet
-from meva.khrylib.models.rnn import RNN
-from meva.khrylib.utils.torch import *
+from psypose.MEVA.meva.khrylib.models.tcn import TemporalConvNet
+from psypose.MEVA.meva.khrylib.models.rnn import RNN
+from psypose.MEVA.meva.khrylib.utils.torch import *
 
 
 class VideoForecastNet(nn.Module):

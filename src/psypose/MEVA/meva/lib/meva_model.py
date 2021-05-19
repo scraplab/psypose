@@ -10,13 +10,13 @@ import os.path as osp
 import torch.nn as nn
 import torch.nn.functional as F
 
-from meva.utils.video_config import MEVA_DATA_DIR
-from meva.lib.spin import Regressor, hmr
-from meva.lib.smpl import SMPL, SMPL_MODEL_DIR, H36M_TO_J14, SMPL_MEAN_PARAMS
-from meva.utils.transform_utils import convert_orth_6d_to_mat, convert_orth_6d_to_aa, convert_mat_to_6d, rotation_matrix_to_angle_axis
+from psypose.MEVA.meva.utils.video_config import MEVA_DATA_DIR
+from psypose.MEVA.meva.lib.spin import Regressor, hmr
+from psypose.MEVA.meva.lib.smpl import SMPL, SMPL_MODEL_DIR, H36M_TO_J14, SMPL_MEAN_PARAMS
+from psypose.MEVA.meva.utils.transform_utils import convert_orth_6d_to_mat, convert_orth_6d_to_aa, convert_mat_to_6d, rotation_matrix_to_angle_axis
 
-from meva.utils.config import Config
-from meva.lib.model import *
+from psypose.MEVA.meva.utils.config import Config
+from psypose.MEVA.meva.lib.model import *
 
 def projection(pred_joints, pred_camera):
     pred_cam_t = torch.stack([pred_camera[:, 1],
@@ -149,7 +149,7 @@ class Regressor(nn.Module):
                 gender = gender
             ).to(next(self.smpl.parameters()).device)
         else:
-            from meva.lib.smpl import SMPL
+            from psypose.MEVA.meva.lib.smpl import SMPL
             self.smpl = SMPL(
                 SMPL_MODEL_DIR,
                 batch_size=64,
@@ -191,7 +191,7 @@ class Regressor(nn.Module):
         pred_rotmat = convert_orth_6d_to_mat(pred_pose).view(batch_size , 24, 3, 3)
 
         ############### SMOOTH ###############
-        # from meva.utils.geometry import smooth_pose_mat
+        # from psypose.MEVA.meva.utils.geometry import smooth_pose_mat
         # pred_rotmat = torch.tensor(smooth_pose_mat(pred_rotmat.cpu().numpy(), ratio = 0.3)).float().to(pred_rotmat.device)
         ############### SMOOTH ###############
 
@@ -375,7 +375,7 @@ class MEVA_demo(MEVA):
 if __name__ == "__main__":
     from kinematic_synthesis.utils.config import Config
     from kinematic_synthesis.lib.model import *
-    from meva.dataloaders import *
+    from psypose.MEVA.meva.dataloaders import *
     from torch.utils.data import DataLoader
     
     meva_model = MEVA(90)

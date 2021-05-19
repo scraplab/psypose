@@ -1,8 +1,8 @@
 # This script is borrowed from https://github.com/mkocabas/VIBE
 # Adhere to their licence to use this script
 
-from meva.dataloaders import Dataset3D
-from meva.utils.video_config import THREEDPW_DIR
+from psypose.MEVA.meva.dataloaders import Dataset3D
+from psypose.MEVA.meva.utils.video_config import THREEDPW_DIR
 
 class ThreeDPW(Dataset3D):
     def __init__(self, split, seqlen, overlap=0.75, debug=False):

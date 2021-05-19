@@ -23,9 +23,9 @@ import os.path as osp
 import joblib
 
 from torch.utils.data import Dataset
-from meva.utils.video_config import VIBE_DB_DIR
-from meva.utils.kp_utils import convert_kps
-from meva.utils.image_utils import normalize_2d_kp, transfrom_keypoints, split_into_chunks
+from psypose.MEVA.meva.utils.video_config import VIBE_DB_DIR
+from psypose.MEVA.meva.utils.kp_utils import convert_kps
+from psypose.MEVA.meva.utils.image_utils import normalize_2d_kp, transfrom_keypoints, split_into_chunks
 
 logger = logging.getLogger(__name__)
 
@@ -168,7 +168,7 @@ class Dataset3D(Dataset):
         #     target['valid'] = torch.from_numpy(self.db['valid'][start_index:end_index+1])
 
         if self.debug:
-            from meva.utils.image_utils import get_single_image_crop
+            from psypose.MEVA.meva.utils.image_utils import get_single_image_crop
 
             if self.dataset_name == 'mpii3d':
                 video = self.db['img_name'][start_index:end_index+1]

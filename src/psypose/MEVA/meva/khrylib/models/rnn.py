@@ -1,5 +1,5 @@
 import torch.nn as nn
-from meva.khrylib.utils.torch import *
+from psypose.MEVA.meva.khrylib.utils.torch import *
 
 
 class RNN(nn.Module):

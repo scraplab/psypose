@@ -10,10 +10,10 @@ import os.path as osp
 from progress.bar import Bar
 from tqdm import tqdm
 
-from meva.utils.video_config import MEVA_DATA_DIR
-from meva.utils.vibe_utils import move_dict_to_device, AverageMeter
+from psypose.MEVA.meva.utils.video_config import MEVA_DATA_DIR
+from psypose.MEVA.meva.utils.vibe_utils import move_dict_to_device, AverageMeter
 
-from meva.utils.eval_utils import (
+from psypose.MEVA.meva.utils.eval_utils import (
     compute_accel,
     compute_error_accel,
     compute_error_verts,
@@ -197,7 +197,7 @@ class Trainer():
 
             if self.debug:
                 print('==== Visualize ====')
-                from meva.utils.vis import batch_visualize_vid_preds
+                from psypose.MEVA.meva.utils.vis import batch_visualize_vid_preds
                 video = target_3d['video']
                 dataset = 'spin'
                 vid_tensor = batch_visualize_vid_preds(video, preds[-1], target_3d.copy(),
@@ -259,7 +259,7 @@ class Trainer():
 
             # <============= DEBUG
             if self.debug and self.valid_global_step % self.debug_freq == 0:
-                from meva.utils.vis import batch_visualize_vid_preds
+                from psypose.MEVA.meva.utils.vis import batch_visualize_vid_preds
                 video = target['video']
                 dataset = 'common'
                 vid_tensor = batch_visualize_vid_preds(video, preds[-1], target, vis_hmr=False, dataset=dataset)

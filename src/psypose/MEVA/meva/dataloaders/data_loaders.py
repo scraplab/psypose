@@ -1,4 +1,4 @@
-from meva.dataloaders.dataset_amass import DatasetAMASS
+from psypose.MEVA.meva.dataloaders.dataset_amass import DatasetAMASS
 
 def get_dataset_cfg(cfg, mode = "all"):
     data_specs = cfg.data_specs

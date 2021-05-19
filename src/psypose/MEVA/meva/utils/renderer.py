@@ -6,7 +6,7 @@ import trimesh
 import pyrender
 import numpy as np
 from pyrender.constants import RenderFlags
-from meva.lib.smpl import get_smpl_faces
+from psypose.MEVA.meva.lib.smpl import get_smpl_faces
 
 
 class WeakPerspectiveCamera(pyrender.Camera):

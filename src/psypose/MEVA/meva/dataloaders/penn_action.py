@@ -1,8 +1,8 @@
 # This script is borrowed from https://github.com/mkocabas/VIBE
 # Adhere to their licence to use this script
 
-from meva.dataloaders import Dataset2D
-from meva.utils.video_config import PENNACTION_DIR
+from psypose.MEVA.meva.dataloaders import Dataset2D
+from psypose.MEVA.meva.utils.video_config import PENNACTION_DIR
 
 
 class PennAction(Dataset2D):

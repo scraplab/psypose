@@ -1,8 +1,8 @@
 # This script is borrowed from https://github.com/mkocabas/VIBE
 # Adhere to their licence to use this script
 
-from meva.dataloaders import Dataset3D
-from meva.utils.video_config import H36M_DIR
+from psypose.MEVA.meva.dataloaders import Dataset3D
+from psypose.MEVA.meva.utils.video_config import H36M_DIR
 
 
 class H36M(Dataset3D):

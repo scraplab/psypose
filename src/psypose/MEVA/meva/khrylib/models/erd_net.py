@@ -1,7 +1,7 @@
-from meva.khrylib.utils.torch import *
+from psypose.MEVA.meva.khrylib.utils.torch import *
 from torch import nn
-from meva.khrylib.models.rnn import RNN
-from meva.khrylib.models.mlp import MLP
+from psypose.MEVA.meva.khrylib.models.rnn import RNN
+from psypose.MEVA.meva.khrylib.models.mlp import MLP
 
 
 class ERDNet(nn.Module):

@@ -1,4 +1,4 @@
-from meva.khrylib.utils import *
+from psypose.MEVA.meva.khrylib.utils import *
 import re
 from skimage.util.shape import view_as_windows
 

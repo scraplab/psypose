@@ -9,8 +9,8 @@ from smplx.body_models import ModelOutput
 from smplx.lbs import vertices2joints
 from scipy.spatial.transform import Rotation as sRot
 
-from meva.utils.transform_utils import vertizalize_smpl_root
-from meva.utils.video_config import MEVA_DATA_DIR
+from psypose.MEVA.meva.utils.transform_utils import vertizalize_smpl_root
+from psypose.MEVA.meva.utils.video_config import MEVA_DATA_DIR
 
 
 # Map joints to SMPL joints

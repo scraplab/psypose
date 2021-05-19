@@ -1,10 +1,10 @@
-from meva.khrylib.utils.torch import *
+from psypose.MEVA.meva.khrylib.utils.torch import *
 from torch import nn
-from meva.khrylib.models.resnet import ResNet
-from meva.khrylib.models.tcn import TemporalConvNet
-from meva.khrylib.models.rnn import RNN
-from meva.khrylib.models.mlp import MLP
-from meva.khrylib.models.mobile_net import MobileNet
+from psypose.MEVA.meva.khrylib.models.resnet import ResNet
+from psypose.MEVA.meva.khrylib.models.tcn import TemporalConvNet
+from psypose.MEVA.meva.khrylib.models.rnn import RNN
+from psypose.MEVA.meva.khrylib.models.mlp import MLP
+from psypose.MEVA.meva.khrylib.models.mobile_net import MobileNet
 
 
 class VideoRegNet(nn.Module):

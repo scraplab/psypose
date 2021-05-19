@@ -8,11 +8,11 @@ import os.path as osp
 import torch.nn as nn
 import torchvision.models.resnet as resnet
 
-from meva.utils.video_config import MEVA_DATA_DIR
-from meva.utils.geometry import rotation_matrix_to_angle_axis, rot6d_to_rotmat
-from meva.lib.smpl import SMPL, SMPL_MODEL_DIR, H36M_TO_J14, SMPL_MEAN_PARAMS
+from psypose.MEVA.meva.utils.video_config import MEVA_DATA_DIR
+from psypose.MEVA.meva.utils.geometry import rotation_matrix_to_angle_axis, rot6d_to_rotmat
+from psypose.MEVA.meva.lib.smpl import SMPL, SMPL_MODEL_DIR, H36M_TO_J14, SMPL_MEAN_PARAMS
 
-from meva.utils.transform_utils import (
+from psypose.MEVA.meva.utils.transform_utils import (
     convert_orth_6d_to_mat, compute_orth6d_from_rotation_matrix
 )
 
@@ -268,7 +268,7 @@ class Regressor(nn.Module):
         pred_rotmat = rot6d_to_rotmat(pred_pose).reshape(batch_size, 24, 3, 3)
 
         ############### SMOOTH ###############
-        # from meva.utils.geometry import smooth_pose_mat
+        # from psypose.MEVA.meva.utils.geometry import smooth_pose_mat
         # pred_rotmat = torch.tensor(smooth_pose_mat(pred_rotmat.cpu().numpy(), ratio = 0.5)).float().to(pred_rotmat.device)
         ############### SMOOTH ###############
 

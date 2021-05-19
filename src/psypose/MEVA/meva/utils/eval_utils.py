@@ -4,11 +4,11 @@
 import torch
 import numpy as np
 
-from meva.utils.transform_utils import (
+from psypose.MEVA.meva.utils.transform_utils import (
     convert_aa_to_orth6d, convert_orth_6d_to_aa, vertizalize_smpl_root,
     rotation_matrix_to_angle_axis, rot6d_to_rotmat, convert_orth_6d_to_mat
 )
-from meva.lib.smpl import SMPL, SMPL_MODEL_DIR, H36M_TO_J14, SMPL_MEAN_PARAMS
+from psypose.MEVA.meva.lib.smpl import SMPL, SMPL_MODEL_DIR, H36M_TO_J14, SMPL_MEAN_PARAMS
 
 def compute_accel(joints):
     """
@@ -82,8 +82,8 @@ def compute_error_verts(pred_verts, target_verts=None, target_theta=None):
     """
 
     if target_verts is None:
-        from meva.lib.smpl import SMPL_MODEL_DIR
-        from meva.lib.smpl import SMPL
+        from psypose.MEVA.meva.lib.smpl import SMPL_MODEL_DIR
+        from psypose.MEVA.meva.lib.smpl import SMPL
         device = 'cpu'
         smpl = SMPL(
             SMPL_MODEL_DIR,

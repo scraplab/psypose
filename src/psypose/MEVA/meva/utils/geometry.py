@@ -4,7 +4,7 @@
 import torch
 import numpy as np
 from torch.nn import functional as F
-from meva.utils.transformations import quaternion_from_matrix, quaternion_slerp, quaternion_matrix
+from psypose.MEVA.meva.utils.transformations import quaternion_from_matrix, quaternion_slerp, quaternion_matrix
 
 def batch_rodrigues(axisang):
     # This function is borrowed from https://github.com/MandyMo/pytorch_HMR/blob/master/src/util.py#L37

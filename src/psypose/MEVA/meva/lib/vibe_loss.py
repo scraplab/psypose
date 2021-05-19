@@ -4,7 +4,7 @@
 import torch
 import torch.nn as nn
 
-from meva.utils.geometry import batch_rodrigues
+from psypose.MEVA.meva.utils.geometry import batch_rodrigues
 
 class VIBELoss(nn.Module):
     def __init__(

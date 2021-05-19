@@ -7,11 +7,11 @@ import numpy as np
 from torch import nn
 from torch.nn import functional as F
 
-from meva.khrylib.models.mlp import MLP
-from meva.khrylib.models.rnn import RNN
-from meva.khrylib.utils.torch import *
+from psypose.MEVA.meva.khrylib.models.mlp import MLP
+from psypose.MEVA.meva.khrylib.models.rnn import RNN
+from psypose.MEVA.meva.khrylib.utils.torch import *
 
-from meva.utils.transform_utils import (
+from psypose.MEVA.meva.utils.transform_utils import (
     convert_aa_to_orth6d, convert_orth_6d_to_aa, vertizalize_smpl_root,
     rotation_matrix_to_angle_axis, convert_orth_6d_to_mat, perspective_projection_cam
 )

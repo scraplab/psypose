@@ -1,8 +1,8 @@
 # This script is borrowed from https://github.com/mkocabas/VIBE
 # Adhere to their licence to use this script
 
-from meva.dataloaders import Dataset3D
-from meva.utils.video_config import MPII3D_DIR
+from psypose.MEVA.meva.dataloaders import Dataset3D
+from psypose.MEVA.meva.utils.video_config import MPII3D_DIR
 
 
 class MPII3D(Dataset3D):
