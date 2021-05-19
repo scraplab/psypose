@@ -30,11 +30,11 @@ from multi_person_tracker import MPT
 from torch.utils.data import DataLoader
 
 
-from psypose.MEVA.meva.lib.meva_model import MEVA_demo
-from psypose.MEVA.meva.utils.renderer import Renderer
-from psypose.MEVA.meva.dataloaders.inference import Inference
-from psypose.MEVA.meva.utils.video_config import update_cfg
-from psypose.MEVA.meva.utils.demo_utils import (
+from MEVA.meva.lib.meva_model import MEVA_demo
+from MEVA.meva.utils.renderer import Renderer
+from MEVA.meva.dataloaders.inference import Inference
+from MEVA.meva.utils.video_config import update_cfg
+from MEVA.meva.utils.demo_utils import (
     convert_crop_cam_to_orig_img,
     prepare_rendering_results,
     images_to_video
