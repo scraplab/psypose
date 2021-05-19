@@ -12,6 +12,6 @@ setup(name='psypose',
       author='SCRAP Lab',
       author_email='Landry.S.Bulls@dartmouth.edu',
       license='MIT',
-      packages=find_packages(),
+      packages=['psypose'],
       install_requires=requirements
       zip_safe=False)
