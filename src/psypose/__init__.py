@@ -12,4 +12,5 @@ __all__ = ['extract', 'data', 'utils', 'display', 'regressors']
 
 from psypose.data import pose
 from psypose.extract import annotate
+from psypose import MEVA
 
