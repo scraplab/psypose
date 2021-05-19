@@ -17,7 +17,7 @@ pytube
 filterpy
 h5py
 scikit-image
-opencv-python==3.4.11.43
+opencv-python>=3.4.11.43
 torch
 torchvision
 tensorboard==2.0
