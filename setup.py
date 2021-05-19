@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
+import glob
+meva_files = []
+dirs = glob.glob('MEVA/*')
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
@@ -13,6 +16,6 @@ setup(name='psypose',
       author='SCRAP Lab',
       author_email='Landry.S.Bulls@dartmouth.edu',
       license='MIT',
-      packages=['psypose'],
+      packages=find_packages(),
       install_requires=requirements,
       zip_safe=False)
