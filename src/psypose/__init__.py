@@ -16,6 +16,7 @@ import zipfile36 as zipfile
 import shutil
 
 return_dir = os.getcwd()
+print(return_dir)
 os.chdir('models/model_weights')
 # face encoding models:
 print('Downloading facenet weights...')
