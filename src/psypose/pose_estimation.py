@@ -43,7 +43,7 @@ from psypose.MEVA.meva.utils.demo_utils import (
 from psypose.utils import video_to_images
 
 out_dir = os.getcwd()
-dirname = osp.dirname(__file__)+'/MEVA/'
+dir_name = osp.dirname(__file__)+'/MEVA/'
 
 def estimate_pose(pose, save_pkl=False, image_folder=out_dir+'/images_intermediate', output_path=None, tracking_method='bbox', 
     vibe_batch_size=225, tracker_batch_size=12, mesh_out=False, run_smplify=False, render=False, wireframe=False,
