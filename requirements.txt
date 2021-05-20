@@ -23,7 +23,7 @@ scikit-image
 opencv-python>=3.4.11.43
 torch
 torchvision
-tensorboard==2.0
+tensorboard>=2.0
 smplx @ git+https://github.com/ZhengyiLuo/smplx.git
 yolov3 @ git+https://github.com/mkocabas/yolov3-pytorch.git
 torchvision @ git+https://github.com/pytorch/vision.git
