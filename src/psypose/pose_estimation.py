@@ -50,7 +50,7 @@ def estimate_pose(pose, save_pkl=False, image_folder=out_dir+'/images_intermedia
     detector='yolo', yolo_img_size=416, exp='train_meva_2', cfg='train_meva_2'):
 
     return_dir = os.getcwd()
-    os.chdir('psypose/MEVA')
+    os.chdir('MEVA')
     
     video_file = pose.vid_path
     
