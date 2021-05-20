@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
-import glob
-meva_files = []
-dirs = glob.glob('MEVA/*')
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()

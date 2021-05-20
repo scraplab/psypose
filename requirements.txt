@@ -1,4 +1,6 @@
 py-feat
+gdown
+zipfile36
 face-recognition
 nibabel
 networkx
