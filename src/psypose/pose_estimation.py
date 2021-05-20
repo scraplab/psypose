@@ -43,14 +43,15 @@ from psypose.MEVA.meva.utils.demo_utils import (
 from psypose.utils import video_to_images
 
 out_dir = os.getcwd()
+dirname = osp.dirname(__file__)+'/MEVA/'
 
 def estimate_pose(pose, save_pkl=False, image_folder=out_dir+'/images_intermediate', output_path=None, tracking_method='bbox', 
     vibe_batch_size=225, tracker_batch_size=12, mesh_out=False, run_smplify=False, render=False, wireframe=False,
     sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs',
     detector='yolo', yolo_img_size=416, exp='train_meva_2', cfg='train_meva_2'):
 
-    return_dir = os.getcwd()
-    os.chdir('MEVA')
+    #return_dir = os.getcwd()
+    #os.chdir('MEVA')
     
     video_file = pose.vid_path
     
@@ -103,9 +104,9 @@ def estimate_pose(pose, save_pkl=False, image_folder=out_dir+'/images_intermedia
     
 
     # ========= MEVA Model ========= #
-    pretrained_file = f"results/meva/{exp}/model_best.pth.tar"
+    pretrained_file = dir_name+"results/meva/{exp}/model_best.pth.tar"
 
-    config_file = osp.join("meva/cfg", f"{cfg}.yml")
+    config_file = osp.join(dir_name+"meva/cfg", f"{cfg}.yml")
     cfg = update_cfg(config_file)
     model = MEVA_demo(
         n_layers=cfg.MODEL.TGRU.NUM_LAYERS,
