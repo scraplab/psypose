@@ -19,8 +19,6 @@ src/psypose/models/__pycache__
 #Don't track content of these folders
 src/psypose/meva/trained_models/
 src/psypose/meva/someOtherfoler/
-src/psypose/meva/results/
-src/psypose/meva/data/
 
 
 
