@@ -38,13 +38,13 @@ if not os.path.isfile(pp_path+'/models/model_weights/facenet_keras.h5'):
 	os.chdir('..')
 
 	os.rename(pp_path+"/MEVA/data/meva_data/model_1000.p", pp_path+"/MEVA/results/meva/vae_rec_2/models/model_1000.p")
-	shutil.move(pp_path+"/MEVA/data/meva_data/model_1000.p", pp_path+"/MEVA/results/meva/vae_rec_2/models/model_1000.p")
-	os.replace(pp_path+"/MEVA/data/meva_data/model_1000.p", pp_path+"/MEVA/results/meva/vae_rec_2/models/model_1000.p")
+	#shutil.move(pp_path+"/MEVA/data/meva_data/model_1000.p", pp_path+"/MEVA/results/meva/vae_rec_2/models/model_1000.p")
+	#os.replace(pp_path+"/MEVA/data/meva_data/model_1000.p", pp_path+"/MEVA/results/meva/vae_rec_2/models/model_1000.p")
 
 
 	os.rename(pp_path+"MEVA/data/meva_data/spin_model_checkpoint.pth.tar", pp_path+"MEVA/results/meva/train_meva_2/spin_model_checkpoint.pth.tar")
-	shutil.move(pp_path+"MEVA/data/meva_data/spin_model_checkpoint.pth.tar", pp_path+"MEVA/results/meva/train_meva_2/spin_model_checkpoint.pth.tar")
-	os.replace(pp_path+"MEVA/data/meva_data/spin_model_checkpoint.pth.tar", pp_path+"MEVA/results/meva/train_meva_2/spin_model_checkpoint.pth.tar")
+	#shutil.move(pp_path+"MEVA/data/meva_data/spin_model_checkpoint.pth.tar", pp_path+"MEVA/results/meva/train_meva_2/spin_model_checkpoint.pth.tar")
+	#os.replace(pp_path+"MEVA/data/meva_data/spin_model_checkpoint.pth.tar", pp_path+"MEVA/results/meva/train_meva_2/spin_model_checkpoint.pth.tar")
 
 	os.chdir(return_dir)
 else:
