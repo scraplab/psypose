@@ -343,7 +343,7 @@ def check_data_files(prompt_confirmation=True):
                 dest_path = PSYPOSE_DATA_DIR.joinpath()
                 print(f"downloading {fname} ...")
                 try:
-                    download_from_drive(gdrive_id, dest_path)
+                    download_from_gdrive(gdrive_id, dest_path)
                 except (MissingSchema, OSError) as e:
                     errors[item[0]] = e
 
