@@ -104,7 +104,7 @@ def estimate_pose(pose, save_pkl=False, image_folder=out_dir+'/images_intermedia
     
 
     # ========= MEVA Model ========= #
-    pretrained_file = PSYPOSE_DATA_DIR.join_path("model_best.pth.tar")
+    pretrained_file = PSYPOSE_DATA_DIR.joinpath("model_best.pth.tar")
 
     config_file = osp.join(dir_name+"meva/cfg", f"{cfg}.yml")
     cfg = update_cfg(config_file)

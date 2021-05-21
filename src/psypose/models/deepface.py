@@ -14,7 +14,7 @@ import cv2
 from psypose.utils import PSYPOSE_DATA_DIR
 
 
-modelfile = PSYPOSE_DATA_DIR.join_path('vgg_face_weights.h5')
+modelfile = PSYPOSE_DATA_DIR.joinpath('vgg_face_weights.h5')
 
 def face_model(mod_weights):
     model = Sequential()
