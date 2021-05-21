@@ -21,6 +21,6 @@ setup(name='psypose',
       author_email='Landry.S.Bulls@dartmouth.edu',
       license='MIT',
       packages=find_packages(),
-
+      package_data=meva_cfg_files,
       install_requires=requirements,
       zip_safe=False)
