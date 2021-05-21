@@ -344,8 +344,9 @@ def check_data_files(prompt_confirmation=True):
                 print(f"downloading {fname} ...")
                 try:
                     download_from_drive(gdrive_id, dest_path)
-                except MissingSchema, OSError as e:
+                except (MissingSchema, OSError) as e:
                     errors[item[0]] = e
+
             if any(errors):
                 print(
                          f"Failed to download {len(errors)} files. See stack "
