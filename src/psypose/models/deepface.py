@@ -11,6 +11,7 @@ from keras.layers import Dropout, ZeroPadding2D, Convolution2D, MaxPooling2D, Fl
 from keras import Sequential
 from keras.applications.resnet import preprocess_input
 import cv2
+from psypose.utils import PSYPOSE_DATA_DIR
 
 
 modelfile = PSYPOSE_DATA_DIR.join_path('vgg_face_weights.h5')

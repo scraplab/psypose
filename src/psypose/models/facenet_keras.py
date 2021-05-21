@@ -9,6 +9,7 @@ Created on Tue Feb  2 17:40:20 2021
 from keras.models import load_model
 import numpy as np
 from PIL import Image
+from psypose.utils import PSYPOSE_DATA_DIR
 
 # How to set this path so that it imports automatically? Will this work 
 # if the package is pip installed?

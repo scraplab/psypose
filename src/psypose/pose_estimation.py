@@ -40,7 +40,7 @@ from psypose.MEVA.meva.utils.demo_utils import (
     images_to_video
 )
 
-from psypose.utils import video_to_images
+from psypose.utils import PSYPOSE_DATA_DIR, video_to_images
 
 out_dir = os.getcwd()
 dir_name = osp.dirname(__file__)+'/MEVA/'
