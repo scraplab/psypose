@@ -16,7 +16,7 @@ from psypose.utils import PSYPOSE_DATA_DIR
 import os
 print(os.getcwd())
 
-model_path = PSYPOSE_DATA_PATH.join_path('facenet_keras.h5')
+model_path = PSYPOSE_DATA_DIR.join_path('facenet_keras.h5')
 model = load_model(model_path, compile=False)
 #facenet expects that the pixel values be standardized 
 
