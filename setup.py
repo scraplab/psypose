@@ -6,12 +6,12 @@ from setuptools import setup, find_packages
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
-meva_cfg_files = ['MEVA/meva/cfg/train_meva_1.yml',
-                  'MEVA/meva/cfg/train_meva_2.yml',
-                  'MEVA/meva/cfg/train_meva.yml',
-                  'MEVA/meva/cfg/train_vae.yml',
-                  'MEVA/meva/cfg/vae_rec_1.yml',
-                  'MEVA/meva/cfg/vae_rec_2.yml']
+meva_cfg_files = ['psypose/MEVA/meva/cfg/train_meva_1.yml',
+                  'psypose/MEVA/meva/cfg/train_meva_2.yml',
+                  'psypose/MEVA/meva/cfg/train_meva.yml',
+                  'psypose/MEVA/meva/cfg/train_vae.yml',
+                  'psypose/MEVA/meva/cfg/vae_rec_1.yml',
+                  'psypose/MEVA/meva/cfg/vae_rec_2.yml']
 
 setup(name='psypose',
       version='0.0.1',
