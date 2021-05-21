@@ -10,9 +10,9 @@ import os
 import sys
 import os.path as osp
 
-sys.path.append('psypose/MEVA')
-sys.path.append('psypose/MEVA/meva')
-sys.path.append('psypose/MEVA/meva/cfg')
+#sys.path.append('psypose/MEVA')
+#sys.path.append('psypose/MEVA/meva')
+#sys.path.append('psypose/MEVA/meva/cfg')
 
 
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
@@ -42,7 +42,7 @@ from psypose.MEVA.meva.utils.demo_utils import (
 
 from psypose.utils import video_to_images
 
-out_dir = os.getcwd()
+#out_dir = os.getcwd()
 dir_name = osp.dirname(__file__)+'/MEVA/'
 
 def estimate_pose(pose, save_pkl=False, image_folder=out_dir+'/images_intermediate', output_path=None, tracking_method='bbox', 
@@ -104,7 +104,7 @@ def estimate_pose(pose, save_pkl=False, image_folder=out_dir+'/images_intermedia
     
 
     # ========= MEVA Model ========= #
-    pretrained_file = dir_name+"results/meva/{exp}/model_best.pth.tar"
+    pretrained_file = PSYPOSE_DATA_DIR.join_path("model_best.pth.tar")
 
     config_file = osp.join(dir_name+"meva/cfg", f"{cfg}.yml")
     cfg = update_cfg(config_file)

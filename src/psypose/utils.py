@@ -18,6 +18,10 @@ from tqdm import tqdm
 import os.path as osp
 import os
 import subprocess
+import traceback
+from pathlib import Path
+import gdown
+from requests.exceptions import MissingSchema
 
 def video_to_images(vid_file, img_folder=None, return_info=False):
     if img_folder is None:
@@ -292,6 +296,80 @@ def crop_face(array, data):
     top, right, bottom, left = [int(round(i)) for i in [cy, (cx+w), (cy+h), cx]]
     new_img = array[top:bottom, left:right, :]
     return new_img
+
+
+
+
+PSYPOSE_DATA_FILES = {
+    'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
+    'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
+    'meva_data.zip': '1l5pUrV5ReapGd9uaBXrGsJ9eMQcOEqmD'
+    }
+
+PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
+
+def check_data_files(prompt_confirmation=True):
+    missing_files = PSYPOSE_DATA_FILES.copy()
+    if PSYPOSE_DATA_DIR.is_dir():
+        for fname in PSYPOSE_DATA_FILES.keys():
+            expected_loc = PSYPOSE_DATA_DIR.joinpath(fname)
+            if expected_loc.suffix in {'zip', 'gz', 'tgz', 'bz2'}:
+                expected_loc = expected_loc.with_suffix('')
+            if expected_loc.exists():
+                missing_files.pop(fname)
+    if any(missing_files):
+        if prompt_confirmation:
+            msg = (
+                      f"Psypose needs to download {len(missing_files)} files "
+                      f"in order to run:\n\t{', '.join(missing_files.keys())}"
+                      "\n\tDo you want to download them now?\n[Y/n] \n"
+            )
+            while True:
+                response = input(msg).lower().strip()
+                if response in ('y', ''):
+                    confirmed = True
+                    break
+                elif response == 'n':
+                    confirmed = False
+                    break
+        else:
+            confirmed = True
+        if confirmed:
+            if not PSYPOSE_DATA_DIR.is_dir():
+                print(f"creating {PSYPOSE_DATA_DIR} ...")
+                PSYPOSE_DATA_DIR.mkdir(parents=False, exist_ok=False)
+            errors = {}
+            for fname, gdrive_id in missing_files.items():
+                dest_path = PSYPOSE_DATA_DIR.joinpath()
+                print(f"downloading {fname} ...")
+                try:
+                    download_from_drive(gdrive_id, dest_path)
+                except MissingSchema, OSError as e:
+                    errors[item[0]] = e
+            if any(errors):
+                print(
+                         f"Failed to download {len(errors)} files. See stack "
+                         f"trace{'s' if len(errors) > 1 else ''} below for "
+                         "more info:\n"
+                )
+                for fname, e in errors.items():
+                    print(f"{fname.upper()}:")
+                    traceback.print_exception(type(e), e, e.__traceback__)
+                    print('='*40, end='\n\n')
+        else:
+            warnings.warn(
+                             "missing required files. Some Psypose "
+                             "functionality may be unavailable"
+            )
+
+def download_from_gdrive(gdrive_id, dest_path):
+    url = f"https://drive.google.com/uc?id={drive_id}"
+    gdown.download(url, str(dest_path))
+    if dest_path.suffix in {'zip', 'gz', 'tgz', 'bz2'}:
+        print(f"extracting {dest_path} ...")
+        gdown.extractall(str(dest_path))
+        print(f"removing {dest_path} ...")
+        dest_path.unlink()
 
 
     
