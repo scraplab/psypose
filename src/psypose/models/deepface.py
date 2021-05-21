@@ -13,7 +13,7 @@ from keras.applications.resnet import preprocess_input
 import cv2
 
 
-modelfile = __file__[:-11]+'model_weights/vgg_face_weights.h5'
+modelfile = PSYPOSE_DATA_DIR.join_path('vgg_face_weights.h5')
 
 def face_model(mod_weights):
     model = Sequential()
