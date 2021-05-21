@@ -364,7 +364,7 @@ def check_data_files(prompt_confirmation=True):
             )
 
 def download_from_gdrive(gdrive_id, dest_path):
-    url = f"https://drive.google.com/uc?id={drive_id}"
+    url = f"https://drive.google.com/uc?id={gdrive_id}"
     gdown.download(url, str(dest_path))
     if dest_path.suffix in {'zip', 'gz', 'tgz', 'bz2'}:
         print(f"extracting {dest_path} ...")
