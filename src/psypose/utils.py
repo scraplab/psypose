@@ -47,6 +47,7 @@ def video_to_images(vid_file, img_folder=None, return_info=False):
         return img_folder
 
 def from_np_array(array_string):
+    # this is old
     if 'e' in array_string:
         out = array_string.strip('[]').split(' ')
         out = [i.strip('\n') for i in out]
@@ -75,11 +76,11 @@ def string_is_int(s):
         return False
 
 def ts_to_frame(ts, framerate):
+    # converts a timestamp to frame
     h, m, s = ts.split(':')
     conv_ts = (int(h)*60*60 + int(m)*60 + int(s))*framerate
     return round(conv_ts)
     
-    #and possibly need to convert frame numbers to timestamps
 def frame_to_ts(frame, fps):
     seconds = round(frame//fps)
     ts = time.strftime('%H:%M:%S', time.gmtime(seconds))
@@ -100,6 +101,7 @@ def check_match(bod, fac):
         return False
     
 def frame2array(frame_no, video_opened):
+    # returns a video from as a numpy array in uint8
     video_opened.set(cv2.CAP_PROP_POS_FRAMES,frame_no)
     ret, frame = video_opened.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -117,12 +119,16 @@ def crop_image(array, bbox):
     return new_img
 
 def crop_image_wh(array, data):
+    # The _wh means it is taking the py-feat face bounding box format
+    # Top-left corner x and y, then the width and height of the box from that point
     cx, cy, w, h = [i for i in data]
+    # I don't think this calculation is right:
     top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
     new_img = array[top:bottom, left:right, :]
     return new_img
 
 def crop_image_body(array, data):
+    # you can now just use on crop image function because the body and face bboxes are in the same format
     cx, cy, w, h = [i for i in data]
     top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
     new_img = array[top:bottom, left:right, :]
@@ -160,13 +166,7 @@ def evaluate_pred_ID(charList, ground, pred):
     return acc_df
 
             
-def get_data(trans, parameter):
-    # Extracts desired data from pliers dataframe format
-    enc = trans[parameter]
-    arr = np.zeros((enc.shape[0], len(enc[0])))
-    for frame in range(arr.shape[0]):
-        arr[frame,:]=enc[frame]
-    return arr
+
 
 #def default_encoding(face_array):
 #    # This is a janky implmementation. Right?
@@ -201,7 +201,7 @@ def get_shots(video_path, downscale_factor=None, threshold=30):
     cut_tuples : A list of tuples where each tuple contains the in- and out-frame of each shot.
 
     """
-    print('Detecting cuts...')
+    print('\nDetecting cuts...')
     video = VideoManager([video_path])
     video.set_downscale_factor(downscale_factor)
     scene_manager = SceneManager()
@@ -233,9 +233,9 @@ def video_to_array(cap):
     fc = 0
     ret = True
     pbar = tqdm(total=frameCount)
-    print("Loading video into memory...")
+    print("\nLoading video into memory...\n")
     while (fc < frameCount  and ret):
-        # cap.read() returns a bool if the frame was retrieved along with the frame as a numpy array
+        # cap.read() returns a bool (ret) if the frame was retrieved along with the frame as a numpy array
         ret, frame = cap.read()
         # cv2 reads images as blue-green-red, which needs to be converted into red-green-blue
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -252,13 +252,14 @@ def video_to_array(cap):
     return buf
 
 def find_nearest(array, value):
+    # finds the nearest value in an array and returns the index
+    # used for finding a frame from approximate timestamp
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
     return idx
 
-
-
 def split_track(idx, track):
+    # splits all items in a pose estimation track based on a detected cut
     A, B = {}, {}
     for key in list(track.keys()):
         A[key], B[key] = track[key][:idx], track[key][idx:]
@@ -271,13 +272,13 @@ def split_tracks(data, shots):
         frames = data[track]['frame_ids']
         for shot in shots:
             out = shot[1]-1
-            if (out in frames) and (frames[-1] != out):
+            if (out in frames) and (frames[-1] != out): # if the last frame in a shot is not the last frame in a track,
                 split = True
-                cut_idx = np.where(frames==out)[0][0]
+                cut_idx = np.where(frames==out)[0][0] + 1 # not sure if this is the problem
                 first_half, second_half = split_track(cut_idx, data[track])
-                add_track = [first_half, second_half]
+                split_track = [first_half, second_half]
         if split:
-            for sp in add_track:
+            for sp in split_track:
                 tracks_split.append(sp)
         else:
             tracks_split.append(data[track])
@@ -288,6 +289,7 @@ def split_tracks(data, shots):
     return out
 
 def get_bbox(row):
+    # gets bboxes from py-feat output
     x, y, w, h = row[['FaceRectX', 'FaceRectY', 'FaceRectWidth', 'FaceRectHeight']]
     return [x, y, w, h]
     
@@ -297,18 +299,19 @@ def crop_face(array, data):
     new_img = array[top:bottom, left:right, :]
     return new_img
 
-
-
-
+# Paxton Fitzpatrick authored this section
 PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
     'meva_data.zip': '1l5pUrV5ReapGd9uaBXrGsJ9eMQcOEqmD'
     }
 
+# Here, the ~ is referencing the user's HOME directory, this is syntax for expanduser(),
+# which references the user's file system.
+
 PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
 
-def check_data_files(prompt_confirmation=True):
+def check_data_files(prompt_confirmation=False):
     missing_files = PSYPOSE_DATA_FILES.copy()
     if PSYPOSE_DATA_DIR.is_dir():
         for fname in PSYPOSE_DATA_FILES.keys():
@@ -335,6 +338,7 @@ def check_data_files(prompt_confirmation=True):
         else:
             confirmed = True
         if confirmed:
+            print('\nDownloading Psypose model weights...')
             if not PSYPOSE_DATA_DIR.is_dir():
                 print(f"creating {PSYPOSE_DATA_DIR} ...")
                 PSYPOSE_DATA_DIR.mkdir(parents=False, exist_ok=False)
