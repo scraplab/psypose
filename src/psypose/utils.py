@@ -313,7 +313,7 @@ PSYPOSE_DATA_FILES = {
 # if 'get_ipython' in locals() and 'colab' in str(get_ipython()):
 #     print('Colab detected!')
 PSYPOSE_DATA_DIR = Path('/content/.psypose')
-else:
+#else:
     # # Here, the ~ is referencing the user's HOME directory, this is syntax for expanduser(),
     # # which references the user's file system.
     # print('Colab not detected...')
