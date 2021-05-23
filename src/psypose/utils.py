@@ -311,10 +311,12 @@ PSYPOSE_DATA_FILES = {
 # Checking if this is a colab notebook. Not doing this results in improper downloads.
 
 if 'get_ipython' in locals() and 'colab' in str(get_ipython()):
+    print('Colab detected!')
     PSYPOSE_DATA_DIR = Path('/content/.psypose')
 else:
     # Here, the ~ is referencing the user's HOME directory, this is syntax for expanduser(),
     # which references the user's file system.
+    print('Colab not detected...')
     PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
 
 def check_data_files(prompt_confirmation=False):
