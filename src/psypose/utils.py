@@ -22,8 +22,7 @@ import traceback
 from pathlib import Path
 import gdown
 from requests.exceptions import MissingSchema
-import zipfile36 as zipfile
-
+import zipfile
 
 def video_to_images(vid_file, img_folder=None, return_info=False):
     if img_folder is None:
@@ -312,7 +311,7 @@ PSYPOSE_DATA_FILES = {
 PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
 
 
-def check_data_files(prompt_confirmation=True):
+def check_data_files(prompt_confirmation=False):
     missing_files = PSYPOSE_DATA_FILES.copy()
     if PSYPOSE_DATA_DIR.is_dir():
         for fname in PSYPOSE_DATA_FILES.keys():
@@ -372,7 +371,9 @@ def download_from_gdrive(gdrive_id, dest_path):
     gdown.download(url, str(dest_path), quiet=False)
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
-        zipfile.extractall(str(dest_path))
+        z = zipfile.ZipFile(str(dest_path))
+        z.extractall()
+        #zipfile.extractall(str(dest_path))
         print(f"removing {dest_path} ...")
         dest_path.unlink()
     
