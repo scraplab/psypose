@@ -22,6 +22,8 @@ import traceback
 from pathlib import Path
 import gdown
 from requests.exceptions import MissingSchema
+import zipfile36 as zipfile
+
 
 def video_to_images(vid_file, img_folder=None, return_info=False):
     if img_folder is None:
@@ -370,7 +372,7 @@ def download_from_gdrive(gdrive_id, dest_path):
     gdown.download(url, str(dest_path), quiet=False)
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
-        gdown.extractall(str(dest_path))
+        zipfile.extractall(str(dest_path))
         print(f"removing {dest_path} ...")
         dest_path.unlink()
     
