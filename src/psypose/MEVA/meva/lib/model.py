@@ -60,6 +60,8 @@ def get_models(cfg, iter = -1):
         pass
     elif iter  == -2:
         # Find the largest trained iteration
+        print("trying to get data frame this folder/files: ")
+        print(str(glob.glob(osp.join(cfg.model_dir, "*"))))
         cp_path = sorted(glob.glob(osp.join(cfg.model_dir, "*")), reverse= True)[0]
         print("loading {} model from checkpoint: {}".format(model_name, cp_path))
         model_cp = pickle.load(open(cp_path, "rb"))

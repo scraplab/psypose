@@ -305,7 +305,7 @@ PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
     #'meva_data.zip': '1l5pUrV5ReapGd9uaBXrGsJ9eMQcOEqmD'
-    'meva_data.zip': '1I-PBlNpQluqQlJq2UZ1ji62fD54kGADc',
+    'meva_data.zip': '1v6OX9KEK3TsVUK2P9GXp0XVTldxqZ9a9',
 }
 
 
