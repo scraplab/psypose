@@ -1,13 +1,15 @@
 import yaml
 import os
+from sys import exit
+from psypose.utils import MEVA_CFG_DIR
 
 
 class Config:
 
-    def __init__(self, cfg_id, work_dir = ""):
+    def __init__(self, cfg_id, work_dir = MEVA_CFG_DIR):
         self.id = cfg_id
         
-        cfg_name = os.path.join(work_dir, 'meva/cfg/%s.yml' % cfg_id)
+        cfg_name = os.path.join(work_dir, '%s.yml' % cfg_id)
         if not os.path.exists(cfg_name):
             print("Config file doesn't exist: %s" % cfg_name)
             exit(0)

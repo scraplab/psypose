@@ -376,5 +376,7 @@ def download_from_gdrive(gdrive_id, dest_path):
         #zipfile.extractall(str(dest_path))
         print(f"removing {dest_path} ...")
         dest_path.unlink()
+
+MEVA_CFG_DIR = osp.join(osp.basename(__file__), "MEVA", "meva", "cfg")
     
     

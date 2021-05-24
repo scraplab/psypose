@@ -98,15 +98,15 @@ def estimate_pose(pose, save_pkl=False, image_folder=out_dir+'/images_intermedia
         if tracking_results[person_id]['frames'].shape[0] < MIN_NUM_FRAMES:
             del tracking_results[person_id]
 
-    print('Track lengths: /n')
-    for person_id in list(tracking_results.keys()):
-        print(str(tracking_results[person_id]['frames'].shape[0]))
+    # print('Track lengths: /n')
+    # for person_id in list(tracking_results.keys()):
+    #     print(str(tracking_results[person_id]['frames'].shape[0]))
     
 
     # ========= MEVA Model ========= #
-    pretrained_file = PSYPOSE_DATA_DIR.joinpath("model_best.pth.tar")
+    pretrained_file = PSYPOSE_DATA_DIR.joinpath("meva_data", "model_best.pth.tar")
 
-    config_file = osp.join(dir_name+"meva/cfg", f"{cfg}.yml")
+    config_file = osp.join(dir_name, "meva", "cfg", f"{cfg}.yml")
     cfg = update_cfg(config_file)
     model = MEVA_demo(
         n_layers=cfg.MODEL.TGRU.NUM_LAYERS,
