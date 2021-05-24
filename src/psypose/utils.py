@@ -299,40 +299,32 @@ def crop_face(array, data):
     new_img = array[top:bottom, left:right, :]
     return new_img
 
-# Paxton Fitzpatrick authored this section
+
 PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
     'meva_data.zip': '1l5pUrV5ReapGd9uaBXrGsJ9eMQcOEqmD'
-    }
+}
 
 
+PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
 
-# Checking if this is a colab notebook. Not doing this results in improper downloads.
 
-# if 'get_ipython' in locals() and 'colab' in str(get_ipython()):
-#     print('Colab detected!')
-PSYPOSE_DATA_DIR = Path('/content/.psypose')
-#else:
-    # # Here, the ~ is referencing the user's HOME directory, this is syntax for expanduser(),
-    # # which references the user's file system.
-    # print('Colab not detected...')
-    # PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
-
-def check_data_files(prompt_confirmation=False):
+def check_data_files(prompt_confirmation=True):
     missing_files = PSYPOSE_DATA_FILES.copy()
     if PSYPOSE_DATA_DIR.is_dir():
         for fname in PSYPOSE_DATA_FILES.keys():
             expected_loc = PSYPOSE_DATA_DIR.joinpath(fname)
-            if expected_loc.suffix in {'zip', 'gz', 'tgz', 'bz2'}:
+            if expected_loc.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
                 expected_loc = expected_loc.with_suffix('')
             if expected_loc.exists():
                 missing_files.pop(fname)
     if any(missing_files):
         if prompt_confirmation:
             msg = (
-                      f"Psypose needs to download {len(missing_files)} files "
-                      f"in order to run:\n\t{', '.join(missing_files.keys())}"
+                      f"Psypose needs to download {len(missing_files)} "
+                      f"file{'s' if len(missing_files) > 1 else ''} in order "
+                      f"to run:\n\t{', '.join(missing_files.keys())}"
                       "\n\tDo you want to download them now?\n[Y/n] \n"
             )
             while True:
@@ -346,19 +338,17 @@ def check_data_files(prompt_confirmation=False):
         else:
             confirmed = True
         if confirmed:
-            print('\nDownloading Psypose model weights...')
             if not PSYPOSE_DATA_DIR.is_dir():
                 print(f"creating {PSYPOSE_DATA_DIR} ...")
                 PSYPOSE_DATA_DIR.mkdir(parents=False, exist_ok=False)
             errors = {}
             for fname, gdrive_id in missing_files.items():
-                dest_path = PSYPOSE_DATA_DIR.joinpath()
+                dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
                 print(f"downloading {fname} ...")
                 try:
                     download_from_gdrive(gdrive_id, dest_path)
                 except (MissingSchema, OSError) as e:
                     errors[item[0]] = e
-
             if any(errors):
                 print(
                          f"Failed to download {len(errors)} files. See stack "
@@ -374,16 +364,14 @@ def check_data_files(prompt_confirmation=False):
                              "missing required files. Some Psypose "
                              "functionality may be unavailable"
             )
-
+            
 def download_from_gdrive(gdrive_id, dest_path):
     url = f"https://drive.google.com/uc?id={gdrive_id}"
-    gdown.download(url, str(dest_path), quiet=False)
-    if dest_path.suffix in {'zip', 'gz', 'tgz', 'bz2'}:
+    gdown.download(url, str(dest_path))
+    if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
         gdown.extractall(str(dest_path))
         print(f"removing {dest_path} ...")
         dest_path.unlink()
-
-
     
     

@@ -14,9 +14,9 @@ import gdown
 import os
 import zipfile36 as zipfile
 import shutil
-#from psypose.utils import check_data_files
+from psypose.utils import check_data_files
 
-#check_data_files()
+check_data_files()
 
 from psypose.data import pose
 from psypose.extract import annotate
