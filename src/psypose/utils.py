@@ -277,9 +277,9 @@ def split_tracks(data, shots):
                 split = True
                 cut_idx = np.where(frames==out)[0][0] + 1 # not sure if this is the problem
                 first_half, second_half = split_track(cut_idx, data[track])
-                split_track = [first_half, second_half]
+                track_segmented = [first_half, second_half]
         if split:
-            for sp in split_track:
+            for sp in track_segmented:
                 tracks_split.append(sp)
         else:
             tracks_split.append(data[track])
