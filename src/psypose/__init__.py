@@ -12,7 +12,6 @@ __all__ = ['extract', 'data', 'utils', 'display', 'regressors', 'MEVA']
 
 import gdown
 import os
-import zipfile36 as zipfile
 import shutil
 from psypose.utils import check_data_files
 

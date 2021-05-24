@@ -372,7 +372,7 @@ def download_from_gdrive(gdrive_id, dest_path):
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
         z = zipfile.ZipFile(str(dest_path))
-        z.extractall()
+        z.extractall(PSYPOSE_DATA_DIR)
         #zipfile.extractall(str(dest_path))
         print(f"removing {dest_path} ...")
         dest_path.unlink()
