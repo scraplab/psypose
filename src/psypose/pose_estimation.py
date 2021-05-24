@@ -45,13 +45,15 @@ from psypose.utils import PSYPOSE_DATA_DIR, video_to_images
 out_dir = os.getcwd()
 dir_name = osp.dirname(__file__)+'/MEVA/'
 
-def estimate_pose(pose, save_pkl=False, image_folder=out_dir+'/images_intermediate', output_path=None, tracking_method='bbox', 
+def estimate_pose(pose, save_pkl=False, image_folder=None, output_path=None, tracking_method='bbox', 
     vibe_batch_size=225, tracker_batch_size=12, mesh_out=False, run_smplify=False, render=False, wireframe=False,
     sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs',
     detector='yolo', yolo_img_size=416, exp='train_meva_2', cfg='train_meva_2'):
 
     #return_dir = os.getcwd()
     #os.chdir('MEVA')
+    if not image_folder:
+        image_folder = osp.join(PSYPOSE_DATA_DIR, pose.vid_name)
     
     video_file = pose.vid_path
     
