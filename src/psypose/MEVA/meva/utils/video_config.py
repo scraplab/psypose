@@ -10,7 +10,7 @@ sys.path.append(os.getcwd())
 import argparse
 from yacs.config import CfgNode as CN
 
-from psypose.utils import PSYPOSE_DATA_DIR
+from psypose.utils import PSYPOSE_DATA_DIR, MEVA_DATA_DIR
 
 # CONSTANTS
 # You may modify them at will
@@ -24,12 +24,12 @@ MOVI_DIR = '/hdd/zen/data/video_pose/movi'
 PENNACTION_DIR = '/hdd/zen/data/video_pose/pennaction'
 POSETRACK_DIR = '/hdd/zen/data/video_pose/posetrack'
 SURREAL_DIR = '/hdd/zen/data/video_pose/surreal/SURREAL'
-MEVA_DATA_DIR = osp.join(PSYPOSE_DATA_DIR, "meva_data")
+MEVA_DATA_DIR = MEVA_DATA_DIR
 
 # Configuration variables
 cfg = CN()
 
-cfg.OUTPUT_DIR = 'results'
+cfg.OUTPUT_DIR = osp.join(MEVA_DATA_DIR, 'results')
 cfg.EXP_NAME = 'default'
 cfg.DEVICE = 'cuda'
 cfg.DEBUG = True

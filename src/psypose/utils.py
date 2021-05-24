@@ -202,7 +202,7 @@ def get_shots(video_path, downscale_factor=None, threshold=30):
     cut_tuples : A list of tuples where each tuple contains the in- and out-frame of each shot.
 
     """
-    print('Detecting cuts...')
+    #print('Detecting cuts...')
     video = VideoManager([video_path])
     video.set_downscale_factor(downscale_factor)
     scene_manager = SceneManager()
@@ -304,12 +304,14 @@ def crop_face(array, data):
 PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
-    'meva_data.zip': '1l5pUrV5ReapGd9uaBXrGsJ9eMQcOEqmD'
+    #'meva_data.zip': '1l5pUrV5ReapGd9uaBXrGsJ9eMQcOEqmD'
+    'meva_data.zip': '1I-PBlNpQluqQlJq2UZ1ji62fD54kGADc',
 }
 
 
 PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
-
+MEVA_CFG_DIR = osp.join(osp.dirname(__file__), "MEVA", "meva", "cfg")
+MEVA_DATA_DIR = osp.join(PSYPOSE_DATA_DIR, 'meva_data')
 
 def check_data_files(prompt_confirmation=False):
     missing_files = PSYPOSE_DATA_FILES.copy()
@@ -377,6 +379,5 @@ def download_from_gdrive(gdrive_id, dest_path):
         print(f"removing {dest_path} ...")
         dest_path.unlink()
 
-MEVA_CFG_DIR = osp.join(osp.dirname(__file__), "MEVA", "meva", "cfg")
-    
+
     
