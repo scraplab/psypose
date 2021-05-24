@@ -10,6 +10,8 @@ sys.path.append(os.getcwd())
 import argparse
 from yacs.config import CfgNode as CN
 
+from psypose.utils import PSYPOSE_DATA_DIR
+
 # CONSTANTS
 # You may modify them at will
 VIBE_DB_DIR = '/hdd/zen/data/video_pose/vibe_db'
@@ -22,7 +24,7 @@ MOVI_DIR = '/hdd/zen/data/video_pose/movi'
 PENNACTION_DIR = '/hdd/zen/data/video_pose/pennaction'
 POSETRACK_DIR = '/hdd/zen/data/video_pose/posetrack'
 SURREAL_DIR = '/hdd/zen/data/video_pose/surreal/SURREAL'
-MEVA_DATA_DIR = 'data/meva_data'
+MEVA_DATA_DIR = osp.join(PSYPOSE_DATA_DIR, "meva_data")
 
 # Configuration variables
 cfg = CN()
@@ -116,18 +118,18 @@ def update_cfg(cfg_file):
     return cfg.clone()
 
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg', type=str, help='cfg file path')
+# def parse_args():
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('--cfg', type=str, help='cfg file path')
 
-    args = parser.parse_args()
-    print(args, end='\n\n')
+#     args = parser.parse_args()
+#     print(args, end='\n\n')
 
-    cfg_file = osp.join("meva/cfg", f"{args.cfg}.yml")
-    print(f"loading from {cfg_file}")
-    if args.cfg is not None:
-        cfg = update_cfg(cfg_file)
-    else:
-        cfg = get_cfg_defaults()
+#     cfg_file = osp.join("meva/cfg", f"{args.cfg}.yml")
+#     print(f"loading from {cfg_file}")
+#     if args.cfg is not None:
+#         cfg = update_cfg(cfg_file)
+#     else:
+#         cfg = get_cfg_defaults()
 
-    return cfg, cfg_file
+#     return cfg, cfg_file

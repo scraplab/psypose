@@ -202,7 +202,7 @@ def get_shots(video_path, downscale_factor=None, threshold=30):
     cut_tuples : A list of tuples where each tuple contains the in- and out-frame of each shot.
 
     """
-    print('\nDetecting cuts...')
+    print('Detecting cuts...')
     video = VideoManager([video_path])
     video.set_downscale_factor(downscale_factor)
     scene_manager = SceneManager()
