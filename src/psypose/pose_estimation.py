@@ -155,7 +155,7 @@ def estimate_pose(pose, save_pkl=False, image_folder=None, output_path=None, tra
         bboxes = dataset.bboxes
         frames = dataset.frames
 
-        if num_workers=None:
+        if num_workers==None:
             num_workers=16
 
         dataloader = DataLoader(dataset, batch_size=vibe_batch_size, num_workers=num_workers, shuffle = False)
