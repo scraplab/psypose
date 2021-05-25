@@ -18,10 +18,10 @@ import networkx as nx
 import glob
 import scipy.stats
 import random
-import psypose.utils 
 from keras.preprocessing.image import img_to_array, load_img
 import shutil
 from psypose import utils
+from tqdm import tqdm
 
 #matplotlib.get_backend()
 
@@ -204,8 +204,10 @@ def render_track(pose, track, outdir=None):
     
     img_array = np.empty((len(frame_ids), 720, 1280, 3), dtype='uint8')
     px = px = 1/plt.rcParams['figure.dpi']
+
+    print("\nProcessing video..")
     
-    for fr, cur_frame in enumerate(frame_ids):
+    for fr, cur_frame in tqdm(enumerate(frame_ids)):
         frame = utils.frame2array(cur_frame, vid)
         pkl_frame = joints[fr]
         fig = plt.figure(figsize=(1280*px, 720*px))
@@ -312,7 +314,8 @@ def tr_resample(arr, video, tr, method='mode'):
     return np.asarray(out)
 
 def cluster(pose, cluster_num):
-    if type(cluster_num) == str:
+    enc_columns = [i for i in pose.face_data.columns if 'enc' in i]
+    if isinstance(cluster_num, str):
         clusters = pose.named_clusters
     else:
         clusters = pose.clusters
@@ -322,10 +325,11 @@ def cluster(pose, cluster_num):
     images = []
     for r in range(len(cluster_face_data)):
         row = cluster_face_data.iloc[r]
-        frame = row['frame_ids']
-        top, right, bottom, left = [int(pos) for pos in row['locations']]
-        image = psypose.utils.frame2array(frame, pose.video_cv2)[top:bottom, left:right]
-        image = psypose.utils.resize_image(image, (100,100))
+        frame = row['frame']
+        cx, cy, w, h = utils.get_bbox(row)
+        top, right, bottom, left = [int(round(i)) for i in [cy, cx+w, cy+h, cx]]
+        image = utils.frame2array(frame, pose.video_cv2)[top:bottom, left:right]
+        image = utils.resize_image(image, (100,100))
         images.append(image)
     if len(images) > 16:
         selection = np.arange(0, len(images), len(images)//16)
