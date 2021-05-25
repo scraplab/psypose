@@ -11,6 +11,7 @@ import pandas as pd
 import scipy.stats
 from scipy.spatial.distance import pdist, squareform, cdist
 from sklearn.cluster import AgglomerativeClustering
+from psypose import utils
 import os
 
 def cluster_ID(pose, metric='cosine', linkage='average', overwrite=False, use_cooccurence=True):
