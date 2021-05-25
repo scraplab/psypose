@@ -21,7 +21,7 @@ import random
 from keras.preprocessing.image import img_to_array, load_img
 import shutil
 from psypose import utils
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 #matplotlib.get_backend()
 
@@ -344,7 +344,7 @@ def cluster(pose, cluster_num):
 def face(pose, face_loc):
     info = pose.face_data.iloc[face_loc]
     frame = info['frame']
-    bbox = get_bbox(info)
+    bbox = utils.get_bbox(info)
     image = utils.frame2array(frame, pose.video_cv2)
     image = utils.crop_face(image, bbox)
     plt.imshow(image)

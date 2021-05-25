@@ -25,7 +25,7 @@ import shutil
 import colorsys
 import numpy as np
 import atexit
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 from multi_person_tracker import MPT
 from torch.utils.data import DataLoader
 
