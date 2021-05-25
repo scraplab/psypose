@@ -341,7 +341,13 @@ def cluster(pose, cluster_num):
         sub.imshow(img, interpolation='nearest')
     fig.suptitle(str(cluster_num), fontsize=50)
     
-#def face(pose, face_loc):
+def face(pose, face_loc):
+    info = pose.face_data.iloc[face_loc]
+    frame = info['frame']
+    bbox = get_bbox(info)
+    image = utils.frame2array(frame, pose.video_cv2)
+    image = utils.crop_face(image, bbox)
+    plt.imshow(image)
 
     
 

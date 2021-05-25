@@ -39,7 +39,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      
      ########## Run pose estimation ##########
      
-     pose_data = estimate_pose(pose, num_workers=2) # This is best for colab notebooks
+     pose_data = estimate_pose(pose) 
      # Split tracks based on shot detection
      pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
           
