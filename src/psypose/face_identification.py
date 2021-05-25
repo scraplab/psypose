@@ -51,7 +51,7 @@ def add_face_id(pose, overwrite=False, encoder='deepface', use_TR=False, out=Non
     encoding_columns = ['enc'+str(i) for i in range(encoding_length)]
     face_df[encoding_columns] = encoding_array
     
-    face_df = face_df.reset_index()
+    face_df = face_df.reset_index(drop=True)
 
     pose.face_data = face_df
     pose.faces_encoded = True

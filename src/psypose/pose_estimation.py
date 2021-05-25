@@ -83,6 +83,8 @@ def estimate_pose(pose, save_pkl=False, image_folder=None, output_path=None, tra
     total_time = time.time()
 
     # ========= Run tracking ========= #
+
+    print("\n")
     
     # run multi object tracker
     mot = MPT(
@@ -127,13 +129,13 @@ def estimate_pose(pose, save_pkl=False, image_folder=None, output_path=None, tra
     ckpt = ckpt['gen_state_dict']
     model.load_state_dict(ckpt)
     model.eval()
-    print(f'Loaded pretrained weights from \"{pretrained_file}\"')
+    print(f'\nLoaded pretrained weights from \"{pretrained_file}\"')
     # ========= MEVA Model ========= #
 
     
     # ========= Run MEVA on each person ========= #
     bbox_scale = 1.2
-    print('Running MEVA on each tracklet...')
+    print('\nRunning MEVA on each tracklet...')
     vibe_time = time.time()
     meva_results = {}
     for person_id in tqdm(list(tracking_results.keys())):
