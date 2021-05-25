@@ -315,6 +315,7 @@ def estimate_pose(pose, save_pkl=False, image_folder=None, output_path=None, tra
             shutil.rmtree(image_folder)
 
     atexit.register(clean_image_folder)
+    shutil.rmtree(image_folder)
     #os.chdir(return_dir)
 
 
