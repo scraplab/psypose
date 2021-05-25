@@ -89,9 +89,10 @@ def frame_to_ts(frame, fps):
 
 def check_match(bod, fac):
     # need to update this because of newly added py-feat face detection
-    cx, cy, w, h = [float(i) for i in bod]
-    top_b, right_b, bottom_b, left_b = [(cy-h/2), (cx+w/2), (cy+h/2), (cx-w/2)]
-    top_f, right_f, bottom_f, left_f = [float(i) for i in fac]
+    bcx, bcy, bw, bh = [float(i) for i in bod] #body corner is bottom left
+    fcx, fcy, fw, fh = [float(i) for i in fac] #face corner is top left
+    top_b, right_b, bottom_b, left_b = [(bcy-bh/2), (bcx+bw/2), (bcy+bh/2), (bcx-bw/2)]
+    top_f, right_f, bottom_f, left_f = [fcy, fcx+fw, fcy+fh, fcx]
     face_x = (right_f-left_f)/2 + left_f
     face_y = (bottom_f-top_f)/2 + top_f
 
@@ -179,9 +180,10 @@ def write2vid(img_arr, fps, out_name, out_size):
     """
     Takes numpy array and writes each frame to a video file.
     """
+    print("\nRendering...")
     out = cv2.VideoWriter(out_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, out_size)
-    for i in range(len(img_arr)):
-        print(str(i+1)+'/'+str(len(img_arr)))
+    for i in tqdm(range(len(img_arr))):
+        
         img_color = cv2.cvtColor(img_arr[i], cv2.COLOR_BGR2RGB)
         out.write(img_color)
     cv2.destroyAllWindows()
@@ -268,6 +270,7 @@ def split_track(idx, track):
 
 def split_tracks(data, shots):
     tracks_split = []
+    num_splits = 0
     for track in data:
         split = False
         frames = data[track]['frame_ids']
@@ -281,18 +284,20 @@ def split_tracks(data, shots):
         if split:
             for sp in track_segmented:
                 tracks_split.append(sp)
+                num_splits += 1
         else:
             tracks_split.append(data[track])
 
     out = {}
     for i, track in enumerate(tracks_split):
         out[i] = track
-    return out
+    return out, num_splits
 
 def get_bbox(row):
     # gets bboxes from py-feat output
-    x, y, w, h = row[['FaceRectX', 'FaceRectY', 'FaceRectWidth', 'FaceRectHeight']]
-    return [x, y, w, h]
+    # bottom left corner
+    cx, cy, w, h = row[['FaceRectX', 'FaceRectY', 'FaceRectWidth', 'FaceRectHeight']]
+    return [cx, cy, w, h]
     
 def crop_face(array, data):
     cx, cy, w, h = [i for i in data]
