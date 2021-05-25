@@ -1,6 +1,6 @@
 py-feat @ git+https://github.com/LandryBulls/py-feat.git
 gdown
-zipfile36
+pytube
 face-recognition
 nibabel
 networkx

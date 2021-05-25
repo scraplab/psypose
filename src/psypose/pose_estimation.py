@@ -48,7 +48,7 @@ dir_name = osp.dirname(__file__)+'/MEVA/'
 def estimate_pose(pose, save_pkl=False, image_folder=None, output_path=None, tracking_method='bbox', 
     vibe_batch_size=225, tracker_batch_size=12, mesh_out=False, run_smplify=False, render=False, wireframe=False,
     sideview=False, display=False, save_obj=False, gpu_id=0, output_folder='MEVA_outputs',
-    detector='yolo', yolo_img_size=416, exp='train_meva_2', cfg='train_meva_2'):
+    detector='yolo', yolo_img_size=416, exp='train_meva_2', cfg='train_meva_2', num_workers=None):
 
     #return_dir = os.getcwd()
     #os.chdir('MEVA')
@@ -155,7 +155,10 @@ def estimate_pose(pose, save_pkl=False, image_folder=None, output_path=None, tra
         bboxes = dataset.bboxes
         frames = dataset.frames
 
-        dataloader = DataLoader(dataset, batch_size=vibe_batch_size, num_workers=16, shuffle = False)
+        if num_workers=None:
+            num_workers=16
+
+        dataloader = DataLoader(dataset, batch_size=vibe_batch_size, num_workers=num_workers, shuffle = False)
 
         with torch.no_grad():
 
