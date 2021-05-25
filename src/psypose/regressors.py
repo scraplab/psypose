@@ -6,8 +6,14 @@
 Functions for the construction of second-order pose data and regressors
 
 """
+import numpy as np
+import pandas as pd
+import scipy.stats
+from scipy.spatial.distance import pdist, squareform, cdist
+from sklearn.cluster import AgglomerativeClustering
+import os
 
-def cluster_ID(self, metric='cosine', linkage='average', overwrite=False, use_cooccurence=True):
+def cluster_ID(pose, metric='cosine', linkage='average', overwrite=False, use_cooccurence=True):
     
     """
     Clusters all tracks based on facial encodings attached to each track. 
@@ -17,13 +23,13 @@ def cluster_ID(self, metric='cosine', linkage='average', overwrite=False, use_co
     """
     
     if overwrite:
-        self.clusters=None
+        pose.clusters=None
     
-    if self.is_clustered and not overwrite:
+    if pose.is_clustered and not overwrite:
         raise Exception('Pose object has already been clustered. Set overwrite=True to overwite previous clustering.')
     
-    face_data = self.face_data
-    pose_data = self.pose_data
+    face_data = pose.face_data
+    pose_data = pose.pose_data
 
     fr_ids = []  
     # here, iterating through all rows of the face_rec data frame (all available frames)
@@ -32,7 +38,7 @@ def cluster_ID(self, metric='cosine', linkage='average', overwrite=False, use_co
     # the VIBE bounding box. If True, then that frame will get that track ID  
     for r in range(len(face_data)):
         row = face_data.iloc[r]
-        frame = row['frame_ids']
+        frame = int(row['frame'])
         track_id_list = []
         for t in np.unique(list(pose_data.keys())):
             track = pose_data.get(t)
@@ -43,29 +49,32 @@ def cluster_ID(self, metric='cosine', linkage='average', overwrite=False, use_co
             for track_id in track_id_list:
                 box_loc = np.where(pose_data.get(track_id).get('frame_ids')==frame)[0][0]
                 box = pose_data.get(track_id).get('bboxes')[box_loc]
-                if utils.check_match(box, row['locations']):
+                if utils.check_match(box, utils.get_bbox(row)):
                     track_designation = int(track_id)
                     break
                 else:
-                    # track designation is 0 if the face is not within body box,
+                    # track designation is 'no_match' if the face is not within body box,
                     # those rows will be removed.
-                    track_designation = 0
+                    track_designation = 'no_match'
             fr_ids.append(track_designation)
         else:
-            fr_ids.append(0)
+            fr_ids.append('no_match')
     face_data['track_id'] = fr_ids
+    pose.face_data = face_data
     #removing face encodings with no match
-    face_data = face_data[face_data['track_id']!=0]
+    face_data = face_data[face_data['track_id']!='no_match']
     
     # here, I'm going through each unique track and getting an average face encoding
+    enc_columns = [i for i in face_data.columns if 'enc' in i]
     avg_encodings = []
     enc_tracks = []
-    for track in [int(i) for i in np.unique(face_data['track_id'])]:
+    for loc, track in enumerate([int(i) for i in np.unique(face_data['track_id'])]):
         tr_df = face_data[face_data['track_id']==track]
-        avg_encodings.append(np.mean(tr_df['encodings']))
+        avg_encodings.append(np.mean(tr_df[enc_columns].to_numpy(), axis=0))
         enc_tracks.append(track)
         
     track_enc_avgs = np.array(avg_encodings)
+    print(track_enc_avgs.shape)
     track_encoding_avgs = dict(zip(enc_tracks, avg_encodings))
     # here, we cluster all of the averaged track encodings. 
     # tracks containing the same face will be concatenated later
@@ -98,7 +107,7 @@ def cluster_ID(self, metric='cosine', linkage='average', overwrite=False, use_co
     cooc = cooc[np.tril_indices_from(cooc, k=-1)]
     #get per-track average encodings with nested list comprehension (small python flex)
     track_encoding_avgs = [np.mean(enc, axis=0) for enc in
-                                  [face_data[face_data['track_id']==track]['encodings'].to_numpy()
+                                  [face_data[face_data['track_id']==track][enc_columns].to_numpy()
                                     for track in opt_tracks]]
     encoding_dist_mat = squareform(pdist(track_encoding_avgs, metric=metric))
     all_track_dist = encoding_dist_mat[np.tril_indices_from(encoding_dist_mat, k=-1)]
@@ -106,7 +115,7 @@ def cluster_ID(self, metric='cosine', linkage='average', overwrite=False, use_co
     # get the within-track distances
     # for each track, a distance matrix of all encodings is made
     # the average distances is taken
-    intra_track_encodings = [pd_to_arr(face_data[face_data['track_id']==tr]['encodings']) for tr in opt_tracks]
+    intra_track_encodings = [face_data[face_data['track_id']==tr][enc_columns] for tr in opt_tracks]
     intra_track_distances = np.array([np.mean(pdist(encs, metric=metric)) for encs in intra_track_encodings])
     intra_track_distances = intra_track_distances[~np.isnan(intra_track_distances)]
 
@@ -139,65 +148,66 @@ def cluster_ID(self, metric='cosine', linkage='average', overwrite=False, use_co
     t = [fc.get(clust) for clust in cluster_mains]
     sorted_dict = dict(zip([i for i in range(0, len(t))], t))
     
-    self.clusters = sorted_dict
-    self.is_clustered = True
+    # add cluster ids to face_data
+    pose.clusters = sorted_dict
+    pose.is_clustered = True
         
-def name_clusters(self, character_dict, overwrite_names=False):
-    # if (self.clusters_named & overwrite_names==False):
+def name_clusters(pose, character_dict, overwrite_names=False):
+    # if (pose.clusters_named & overwrite_names==False):
     #     raise Exception('Clusters have already been named. Set overwrite=True to overwrite previous labels.')
-    # if self.is_named & overwrite_names:
-    #     self.named_clusters=None
-    #     self.character_key=None
+    # if pose.is_named & overwrite_names:
+    #     pose.named_clusters=None
+    #     pose.character_key=None
     
-    #self.clusters_named = True
+    #pose.clusters_named = True
     # this function should have the capability of 
     # both extracting main character clusters as well as 
     # merging clusters with the same name 
     
-    self.character_key = character_dict
+    pose.character_key = character_dict
     chars = list(np.unique(character_dict.values())[0])
     names_clustered = {}
     for char in chars:
         common_clusters = [k for k, v in character_dict.items() if str(v) == char]
         tracks = []
         for cluster in common_clusters:
-            cluster_tracks = self.clusters.get(cluster)
+            cluster_tracks = pose.clusters.get(cluster)
             tracks.extend(list(cluster_tracks))
         names_clustered.update({char:tracks})
     names_sorted = sorted(names_clustered, key=lambda k: len(names_clustered[k]), reverse=True)
     tracks_sorted = [names_clustered.get(name) for name in names_sorted]
     names_clustered = dict(zip(names_sorted, tracks_sorted))
-    self.named_clusters = names_clustered
+    pose.named_clusters = names_clustered
     
-def imaging_pars(self, functional = 'a_func_file', TR=2.0):
+def imaging_pars(pose, functional = 'a_func_file', TR=2.0):
     #make a function that allows you to either manually input imaging parameters
     #or provide a sample functional run for parameters (HRF, TR, etc)
     #this info will be used to generate the different regressors
-    self.TR = TR
+    pose.TR = TR
     
-def presence_matrix(self, character_order, hertz=None):
+def presence_matrix(pose, character_order, hertz=None):
 
     # character order should be an iterable containing strings of character IDs
     # that correspond to the labels given in name_clusters()
     char_order = np.array(character_order)
 
     # first make an empty array for character appearances
-    char_auto = np.zeros((self.n_frames, len(char_order)))
+    char_auto = np.zeros((pose.n_frames, len(char_order)))
     # this is going to label a character presence array with ones and zeros
-    for i, tracklist in enumerate(list(self.named_clusters.values())):
-        character = list(self.named_clusters.keys())[i]
+    for i, tracklist in enumerate(list(pose.named_clusters.values())):
+        character = list(pose.named_clusters.keys())[i]
         if character not in char_order:
             continue
         arr_placement = int(np.where(char_order==character)[0]) 
         for track in tracklist:
-            track_frames = self.pose_data.get(track).get('frame_ids')
+            track_frames = pose.pose_data.get(track).get('frame_ids')
             char_auto[:,arr_placement][track_frames] = 1
     char_frame = pd.DataFrame(char_auto, columns=character_order)
-    char_frame['frame_ids'] = np.arange(self.n_frames)
-    self.full_ID_annotations = char_frame
+    char_frame['frame_ids'] = np.arange(pose.n_frames)
+    pose.full_ID_annotations = char_frame
     if hertz==None:
         return char_frame
     else:
-        needed_frames = np.arange(round((1/hertz)*self.fps), self.n_frames, round((1/hertz)*self.fps))
+        needed_frames = np.arange(round((1/hertz)*pose.fps), pose.n_frames, round((1/hertz)*pose.fps))
         auto_appearances_filt = char_frame.take(needed_frames[:-2], axis=0).reset_index(drop=True)
         return auto_appearances_filt
