@@ -41,7 +41,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      
      pose_data = estimate_pose(pose)
      # Split tracks based on shot detection
-     pose_data = utils.split_tracks(pose_data, shots)
+     pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
           
      # Add pose data to the pose object
      pose.pose_data = pose_data
