@@ -23,6 +23,7 @@ from pathlib import Path
 import gdown
 from requests.exceptions import MissingSchema
 import zipfile
+from sklearn.metrics import confusion_matrix
 
 def video_to_images(vid_file, img_folder=None, return_info=False):
     if img_folder is None:
@@ -142,7 +143,7 @@ def evaluate_pred_ID(charList, ground, pred):
     
     # might be better to take dataframes so columns
     # can be cross-referenced (less preprocessing of presence matrices)
-    from sklearn.metrics import confusion_matrix
+    
     chars = list(charList)
     chars.insert(0, 'metric')
     metrics = ['overall', 'true_positive', 'true_negative', 
@@ -180,7 +181,7 @@ def write2vid(img_arr, fps, out_name, out_size):
     """
     Takes numpy array and writes each frame to a video file.
     """
-    print("\nRendering...")
+    print("Rendering...\n")
     out = cv2.VideoWriter(out_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, out_size)
     for i in tqdm(range(len(img_arr))):
         
@@ -188,6 +189,8 @@ def write2vid(img_arr, fps, out_name, out_size):
         out.write(img_color)
     cv2.destroyAllWindows()
     out.release()
+
+
     
 def get_shots(video_path, downscale_factor=None, threshold=30):
     """
@@ -254,6 +257,31 @@ def video_to_array(cap):
     cv2.destroyAllWindows()
     return buf
 
+def slice_video(cap, frames):
+    
+    """
+    Takes video file and converts it into a numpy array with uint8 encoding.
+    
+    cap : either a numpy array or scenedetect.VideoManager object
+    """
+    if isinstance(cap, VideoManager):
+        cap.start()
+    
+    frameCount = len(frames)
+    w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    buf = np.empty((frameCount, h, w, 3), np.dtype('uint8'))
+
+    for f, frame in enumerate(frames):
+        out = frame2array(frame, cap)
+        buf[f] = out
+
+    cap.release()
+
+    #cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    return buf
+
 def find_nearest(array, value):
     # finds the nearest value in an array and returns the index
     # used for finding a frame from approximate timestamp
@@ -309,7 +337,6 @@ def crop_face(array, data):
 PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
-    #'meva_data.zip': '1l5pUrV5ReapGd9uaBXrGsJ9eMQcOEqmD'
     'meva_data.zip': '1v6OX9KEK3TsVUK2P9GXp0XVTldxqZ9a9',
 }
 
