@@ -21,7 +21,7 @@ import random
 from keras.preprocessing.image import img_to_array, load_img
 import shutil
 from psypose import utils
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 #matplotlib.get_backend()
 
@@ -205,7 +205,7 @@ def render_track(pose, track, outdir=None):
     img_array = np.empty((len(frame_ids), 720, 1280, 3), dtype='uint8')
     px = px = 1/plt.rcParams['figure.dpi']
 
-    print("\nProcessing video..")
+    print("Processing video..\n")
     
     for fr, cur_frame in tqdm(enumerate(frame_ids)):
         frame = utils.frame2array(cur_frame, vid)

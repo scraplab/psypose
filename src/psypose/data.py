@@ -12,7 +12,7 @@ import numpy as np
 import cv2
 #import matplotlib
 import nibabel as nib
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 import pandas as pd
 

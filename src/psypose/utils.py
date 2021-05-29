@@ -14,7 +14,7 @@ import pandas as pd
 #import face_recognition
 from scenedetect import VideoManager, SceneManager
 from scenedetect.detectors import ContentDetector
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 import os.path as osp
 import os
 import subprocess
@@ -258,23 +258,18 @@ def video_to_array(cap):
     return buf
 
 def slice_video(cap, frames):
-    
-    """
-    Takes video file and converts it into a numpy array with uint8 encoding.
-    
-    cap : either a numpy array or scenedetect.VideoManager object
-    """
-    if isinstance(cap, VideoManager):
-        cap.start()
-    
     frameCount = len(frames)
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     buf = np.empty((frameCount, h, w, 3), np.dtype('uint8'))
 
-    for f, frame in enumerate(frames):
-        out = frame2array(frame, cap)
-        buf[f] = out
+    for f, frame_no in enumerate(frames):
+        cap.set(cv2.CAP_PROP_POS_FRAMES,frame_no)
+        ret, frame = cap.read()
+        if not ret:
+          break
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        buf[f] = frame
 
     cap.release()
 
