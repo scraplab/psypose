@@ -40,7 +40,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
 
      ########## Run shot detection ##########
      
-    if shot_detection:
+     if shot_detection:
         print("\nDetecting shots...")
         shots = utils.get_shots(pose.vid_path)
      # Here, shots is a list of tuples (each tuple contains the in and out frames of each shot)
