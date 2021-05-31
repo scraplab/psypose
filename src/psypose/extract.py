@@ -45,12 +45,13 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
         shots = utils.get_shots(pose.vid_path)
      # Here, shots is a list of tuples (each tuple contains the in and out frames of each shot)
         pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
+        pose.shots = shots
 
           
      # Add pose data to the pose object
      pose.pose_data = pose_data
      pose.n_tracks = len(pose_data)
-     pose.shots = shots
+     
      
      ########## Run face detection + face feature extraction ##########
 
