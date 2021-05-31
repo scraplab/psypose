@@ -29,19 +29,23 @@ sys.path.append(os.getcwd())
 
 
 def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepface', 
-             every=1, output_path=None, save_results=True):
-        
-     ########## Run shot detection ##########
-     
-     print("\nDetecting shots...")
-     shots = utils.get_shots(pose.vid_path)
-     # Here, shots is a list of tuples (each tuple contains the in and out frames of each shot)
+             every=1, output_path=None, save_results=True, shot_detection=True, extract_aus=True, extract_face_id=True):
+
      
      ########## Run pose estimation ##########
      
      pose_data = estimate_pose(pose) 
      # Split tracks based on shot detection
-     pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
+
+
+     ########## Run shot detection ##########
+     
+    if shot_detection:
+        print("\nDetecting shots...")
+        shots = utils.get_shots(pose.vid_path)
+     # Here, shots is a list of tuples (each tuple contains the in and out frames of each shot)
+        pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
+
           
      # Add pose data to the pose object
      pose.pose_data = pose_data
@@ -49,14 +53,17 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      pose.shots = shots
      
      ########## Run face detection + face feature extraction ##########
-     
-     detector = Detector(face_model = face_box_model, au_model = au_model)
-     
-     pose.face_data = detector.detect_video(pose.vid_path, skip_frames = every)
+
+
+     if extract_aus:
+        detector = Detector(face_model = face_box_model, au_model = au_model)
+        print("\nExtracting facial expresseions...")
+        pose.face_data = detector.detect_video(pose.vid_path, skip_frames = every)
      
      ########## Extract face identify encodings ##########
-     
-     add_face_id(pose)
+
+     if extract_aus and extract_face_id:
+        add_face_id(pose)
      
      ########## Saving results ##########
      if output_path==None:
@@ -64,7 +71,8 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
          
      if save_results:
          os.makedirs(output_path+'/'+pose.vid_name, exist_ok=True)
-         pose.face_data.to_csv(output_path+'/'+pose.vid_name+'/psypose_faces.csv')
+         if extract_aus:
+            pose.face_data.to_csv(output_path+'/'+pose.vid_name+'/psypose_faces.csv')
          joblib.dump(pose.pose_data, os.path.join(output_path+'/'+pose.vid_name+'/psypose_bodies.pkl'))
      
      
