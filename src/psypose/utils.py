@@ -323,6 +323,7 @@ def get_bbox(row):
     return [cx, cy, w, h]
     
 def crop_face(array, data):
+    # I think this is where my problem is. 
     cx, cy, w, h = [i for i in data]
     top, right, bottom, left = [int(round(i)) for i in [cy, (cx+w), (cy+h), cx]]
     new_img = array[top:bottom, left:right, :]

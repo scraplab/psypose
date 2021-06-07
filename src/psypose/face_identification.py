@@ -17,6 +17,9 @@ def add_face_id(pose, overwrite=False, encoder='deepface', use_TR=False, out=Non
     face_df = pd.DataFrame(pose.face_data)
     # Remove possible nan rows
     face_df = face_df.dropna(axis=0)
+    #removing negative values
+    face_df = face_df[face_df['FaceRectY']>=0]
+    face_df = face_df[face_df['FaceRectX']>=0]
     faces_to_process = int(face_df.shape[0])
     unique_frames = [int(i) for i in np.unique(face_df['frame'])]
 
