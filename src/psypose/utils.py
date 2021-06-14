@@ -43,7 +43,7 @@ def img_to_b64(arr_img):
 #    return out_strings
 
 def bytes_to_arr(bString):
-    r = base64.decodebytes(bString)
+    r = base64.b64decode(bString)
     q = np.frombuffer(r, dtype=np.float64)
     return q
 
