@@ -295,7 +295,7 @@ def video_to_bytes(cap):
     fc = 0
     ret = True
     pbar = tqdm(total=frameCount)
-    print("Loading video into memory...\n")
+    print("Loading video into memory...\n", flush=True)
     out_bytes = []
     while (fc < frameCount  and ret):
         # cap.read() returns a bool (ret) if the frame was retrieved along with the frame as a numpy array
