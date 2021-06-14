@@ -2,6 +2,7 @@ py-feat @ git+https://github.com/LandryBulls/py-feat.git
 gdown
 pytube
 face-recognition
+plotly>=4.14.3
 nibabel
 networkx
 scikit-learn

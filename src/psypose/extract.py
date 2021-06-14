@@ -75,6 +75,8 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
          if extract_aus:
             pose.face_data.to_csv(output_path+'/'+pose.vid_name+'/psypose_faces.csv')
          joblib.dump(pose.pose_data, os.path.join(output_path+'/'+pose.vid_name+'/psypose_bodies.pkl'))
+
+    print('Finished annotation for file: ', t.vid_name)
      
      
 

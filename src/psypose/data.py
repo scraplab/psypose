@@ -63,6 +63,7 @@ class pose(object):
         self.framecount = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
         self.video_time = [(1/self.fps)*1000*frame for frame in range(self.framecount)]
         self.video_shape = (int(self.video_cv2.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.video_cv2.get(cv2.CAP_PROP_FRAME_WIDTH)))
+        self.video_array = utils.video_to_array(self.video_cv2)
         
     def load_pkl(self, pkl_path):
         self.pkl_path = pkl_path
@@ -71,6 +72,9 @@ class pose(object):
         self.pose_data = pkl_open
         self.n_tracks = len(pkl_open)
 
+    def reinit_video(self):
+        del self.video_cv2
+        self.video_cv2 = cv2.VideoCapture(self.vid_path)
         
     # def consolidate_clusters(self):
     #     tot_frames = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
