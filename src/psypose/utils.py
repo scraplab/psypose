@@ -251,8 +251,8 @@ def video_to_array(cap):
     
     cap : either a numpy array or scenedetect.VideoManager object
     """
-    if isinstance(cap, VideoManager):
-        cap.start()
+    #if isinstance(cap, VideoManager):
+    #    cap.start()
     
     frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -262,7 +262,8 @@ def video_to_array(cap):
     fc = 0
     ret = True
     pbar = tqdm(total=frameCount)
-    print("\nLoading video into memory...\n")
+    #print("\nLoading video into memory...\n")
+    tqdm.write("Loading video...")
     while (fc < frameCount  and ret):
         # cap.read() returns a bool (ret) if the frame was retrieved along with the frame as a numpy array
         ret, frame = cap.read()

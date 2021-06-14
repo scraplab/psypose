@@ -63,8 +63,8 @@ class pose(object):
         self.framecount = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
         self.video_time = [(1/self.fps)*1000*frame for frame in range(self.framecount)]
         self.video_shape = (int(self.video_cv2.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.video_cv2.get(cv2.CAP_PROP_FRAME_WIDTH)))
-        #video_array = utils.video_to_array(self.video_cv2)
-        self.video_bytes = utils.video_to_bytes(self.video_cv2)
+        self.video_array = utils.video_to_array(self.video_cv2)
+        #self.video_bytes = utils.video_to_bytes(self.video_cv2)
         #del video_array
         
     def load_pkl(self, pkl_path):
