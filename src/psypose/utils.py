@@ -43,7 +43,7 @@ def img_to_b64(arr_img):
 #    return out_strings
 
 def bytes_to_arr(bString):
-    r = base64.b64decode(bString)
+    r = base64.b64decode(bString, + "==")
     q = np.frombuffer(r, dtype=np.float64)
     return q
 
@@ -295,8 +295,9 @@ def video_to_bytes(cap):
     fc = 0
     ret = True
     pbar = tqdm(total=frameCount)
-    print("Loading video into memory...\n", flush=True)
+    #print("Encoding video...\n", flush=True)
     out_bytes = []
+    tqdm.write("Encoding video...")
     while (fc < frameCount  and ret):
         # cap.read() returns a bool (ret) if the frame was retrieved along with the frame as a numpy array
         ret, frame = cap.read()
