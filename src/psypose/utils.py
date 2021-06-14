@@ -24,6 +24,29 @@ import gdown
 from requests.exceptions import MissingSchema
 import zipfile
 from sklearn.metrics import confusion_matrix
+from PIL import Image
+import base64
+from io import BytesIO
+
+def img_to_b64(arr_img):
+    pil_img = Image.fromarray(arr_img)
+    prefix = "data:image/png;base64,"
+    with BytesIO() as stream:
+        pil_img.save(stream, format="png")
+        base64_string = prefix + base64.b64encode(stream.getvalue()).decode("utf-8")
+    return base64_string
+
+def video_to_bytes(vid_arr):
+    out_strings = []
+    for img in range(vid_arr.shape[0]):
+        out_strings.append(img_to_b64(vid_arr[img]))
+    return out_strings
+
+def bytes_to_arr(bString):
+    r = base64.decodebytes(bString)
+    q = np.frombuffer(r, dtype=np.float64)
+    return q
+
 
 def video_to_images(vid_file, img_folder=None, return_info=False):
     if img_folder is None:
