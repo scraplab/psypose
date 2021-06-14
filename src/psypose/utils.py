@@ -36,11 +36,11 @@ def img_to_b64(arr_img):
         base64_string = prefix + base64.b64encode(stream.getvalue()).decode("utf-8")
     return base64_string
 
-def video_to_bytes(vid_arr):
-    out_strings = []
-    for img in range(vid_arr.shape[0]):
-        out_strings.append(img_to_b64(vid_arr[img]))
-    return out_strings
+#def video_to_bytes(vid_arr):
+#    out_strings = []
+#    for img in range(vid_arr.shape[0]):
+#        out_strings.append(img_to_b64(vid_arr[img]))
+#    return out_strings
 
 def bytes_to_arr(bString):
     r = base64.decodebytes(bString)
@@ -279,6 +279,39 @@ def video_to_array(cap):
     #cv2.waitKey(0)
     cv2.destroyAllWindows()
     return buf
+
+def video_to_bytes(cap):
+    
+    """
+    Takes video file and converts it into a numpy array with uint8 encoding.
+    
+    cap : either a numpy array or scenedetect.VideoManager object
+    """
+    if isinstance(cap, VideoManager):
+        cap.start()
+    
+    # Initialize frame counter
+    fc = 0
+    ret = True
+    pbar = tqdm(total=frameCount)
+    print("\nLoading video into memory...\n")
+    out_bytes = []
+    while (fc < frameCount  and ret):
+        # cap.read() returns a bool (ret) if the frame was retrieved along with the frame as a numpy array
+        ret, frame = cap.read()
+        # cv2 reads images as blue-green-red, which needs to be converted into red-green-blue
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # fill empty array with video frame
+        out_bytes.append(img_to_b64(frame))
+        fc += 1
+        pbar.update(1)
+    pbar.close()
+
+    cap.release()
+
+    #cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    return out_bytes
 
 def slice_video(cap, frames):
     frameCount = len(frames)
