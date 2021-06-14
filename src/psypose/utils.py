@@ -290,11 +290,12 @@ def video_to_bytes(cap):
     if isinstance(cap, VideoManager):
         cap.start()
     
+    frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     # Initialize frame counter
     fc = 0
     ret = True
     pbar = tqdm(total=frameCount)
-    print("\nLoading video into memory...\n")
+    print("Loading video into memory...\n")
     out_bytes = []
     while (fc < frameCount  and ret):
         # cap.read() returns a bool (ret) if the frame was retrieved along with the frame as a numpy array
@@ -303,6 +304,7 @@ def video_to_bytes(cap):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # fill empty array with video frame
         out_bytes.append(img_to_b64(frame))
+        del frame
         fc += 1
         pbar.update(1)
     pbar.close()
