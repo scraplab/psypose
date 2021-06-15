@@ -440,9 +440,9 @@ def body3d(fig, pose_data):
     scatter_fig(fig, x, y, z)
     fig.update_layout(
     scene=dict(
-        xaxis=dict(showticklabels=False, range=[-0.5, 0.5], showbackground=False),
-        yaxis=dict(showticklabels=False, range=[-0.5, 0.5], showbackground=False),
-        zaxis=dict(showticklabels=False, range=[-0.75, 1.1], showbackground=True),
+        xaxis=dict(showticklabels=False, range=[-0.75, 0.75], showbackground=False),
+        yaxis=dict(showticklabels=False, range=[-0.75, 0.75], showbackground=False),
+        zaxis=dict(showticklabels=False, range=[-1.0, 1.25], showbackground=True),
         aspectmode='manual',
         aspectratio=dict(x=1, y=1, z=2)
         ), showlegend=False)
