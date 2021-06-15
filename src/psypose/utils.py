@@ -275,7 +275,7 @@ def video_to_array(cap):
         pbar.update(1)
     pbar.close()
 
-    cap.release()
+    #cap.release()
 
     #cv2.waitKey(0)
     cv2.destroyAllWindows()

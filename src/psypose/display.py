@@ -190,10 +190,10 @@ def track(pose, trackID):
 #plot = show_pose(video, pickle, 6)
 
 def frame(pose, frame_number):
-    out = utils.frame2array(frame_number, pose.video_cv2)
+    #out = utils.frame2array(frame_number, pose.video_cv2)
     plt.axis('off')
-    plt.imshow(out)
-    del out
+    plt.imshow(pose.video_array[frame_number])
+    #del out
     
 def render_track(pose, track, outdir=None):
     if not outdir:
