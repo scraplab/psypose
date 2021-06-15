@@ -356,7 +356,7 @@ def face(pose, face_loc):
     plt.imshow(image)
 
 
-####### Begin code for 3d viewer #########
+######## Begin code for 3d viewer #########
 
 def get_frame_info(in_data, idx):
     # in_data containes the complete track data,
@@ -452,10 +452,19 @@ def extract_body_image(array, data):
     abs_h, abs_w = array.shape[0], array.shape[1]
     cx, cy, w, h = [i for i in data]
     top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
+
+    # fixing the issue when bbox is partially out of frame. 
+    # Later I wish to change this so that images are padded with black rather than 
+    # making the edges=0 when it is partially out of frame. 
     if right > abs_w:
       right = abs_w
+    if left < 0:
+        left = 0
     if bottom > abs_h:
       bottom = abs_h
+    if top < 0:
+        top = 0
+
     new_img = array[top:bottom, left:right, :]
     out_img = utils.resize_image(new_img, (100,100))
     return out_img
@@ -586,7 +595,7 @@ def track3d(pose, track_id, export_to_path=None):
     fig.update(frames=frames)
     fig.layout['sliders']=[sliders_dict]
     fig.layout['updatemenus'] = play_pause(dur)
-    fig.update_layout(height=675, width=1000, title_text="Track "+str(track_id))
+    fig.update_layout(height=600, width=1000, title_text="Track "+str(track_id))
     fig.show()
     if export_to_path != None:
         fig.write_html(export_to_path)
