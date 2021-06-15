@@ -355,6 +355,242 @@ def face(pose, face_loc):
     image = utils.crop_face(image, bbox)
     plt.imshow(image)
 
+
+####### Begin code for 3d viewer #########
+
+def get_frame_info(in_data, idx):
+    # in_data containes the complete track data,
+    # pose data, video array, bboxes, frame ids
+    one_pose = in_data['pose_data'][idx]
+    one_bbox = in_data['bboxes'][idx]
+    one_frame_id = in_data['frame_ids'][idx]
+    one_frame_image = in_data['vid'][idx]
+    #one_frame_image = in_data['vid_bytes'][idx]
+    frame_data = {
+        'pose':one_pose,
+        'bbox':one_bbox,
+        'image':one_frame_image,
+        'frame_id':one_frame_id
+    }
+    return frame_data
+
+def scatter_fig(fig, x_dat, y_dat, z_dat):
+  # this generates a single frame of the 3d skeleton. 
+    x, y, z = [i.flatten() for i in [x_dat, y_dat, z_dat]]
+    netDict = {}
+    for i in range(49):
+        netDict.update({i:tuple([x[i], y[i], z[i]])})
+    sk = nx.Graph()
+    sk.add_nodes_from(netDict.keys())
+    for n, p in netDict.items():
+        sk.nodes[n]['pos']=p
+        sk.add_edges_from(spin_skel)
+    Edges = list(sk.edges())
+    Nodes = list(sk.nodes())
+    node_attrs = nx.get_node_attributes(sk, 'pos')
+    N = sk.number_of_nodes()
+    Xn=[node_attrs[i][0] for i in range(N)]
+    Yn=[node_attrs[i][1] for i in range(N)]# y-coordinates
+    Zn=[node_attrs[i][2] for i in range(N)]# z-coordinates
+    Xe=[]
+    Ye=[]
+    Ze=[]
+    for e in list(sk.edges()):
+        Xe+=[node_attrs[e[0]][0],node_attrs[e[1]][0], None]# x-coordinates of edge ends
+        Ye+=[node_attrs[e[0]][1],node_attrs[e[1]][1], None]
+        Ze+=[node_attrs[e[0]][2],node_attrs[e[1]][2], None]
+
+    axis=dict(
+          showline=False,
+          zeroline=False,
+          showgrid=False,
+          showticklabels=False,
+          title=''
+          )
+
+    layout = go.Layout(
+        scene=dict(
+            xaxis=dict(axis),
+            yaxis=dict(axis),
+            zaxis=dict(axis)))
+    trace1=go.Scatter3d(x=Xe,
+                  y=Ye,
+                  z=Ze,
+                  mode='lines',
+                  line=dict(color='black', width=4),
+                  hoverinfo='none',
+                  )
+
+    trace2=go.Scatter3d(x=Xn,
+                  y=Yn,
+                  z=Zn,
+                  mode='markers',
+                  marker=dict(symbol='circle',
+                                size=6,
+                                line=dict(color='blue', width=0.075)
+                                ),
+                    hoverinfo='none')
+
+    fig.add_trace(trace1, row=1, col=2)
+    fig.add_trace(trace2, row=1, col=2)
+
+def body3d(fig, pose_data):
+    # in x -> z -> y order because the format of the output is not intuitive
+    x, z, y = pose_data[:,0]*-1, pose_data[:,1]*-1, pose_data[:,2]*-1
+    scatter_fig(fig, x, y, z)
+    fig.update_layout(
+    scene=dict(
+        xaxis=dict(showticklabels=False, range=[-0.5, 0.5], showbackground=False),
+        yaxis=dict(showticklabels=False, range=[-0.5, 0.5], showbackground=False),
+        zaxis=dict(showticklabels=False, range=[-0.75, 1.1], showbackground=True),
+        aspectmode='manual',
+        aspectratio=dict(x=1, y=1, z=2)
+        ), showlegend=False)
+
+def extract_body_image(array, data):
+    # This takes an image in numpy format and a body bbox, crops the image, and scales it down to 100x100
+    abs_h, abs_w = array.shape[0], array.shape[1]
+    cx, cy, w, h = [i for i in data]
+    top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
+    if right > abs_w:
+      right = abs_w
+    if bottom > abs_h:
+      bottom = abs_h
+    new_img = array[top:bottom, left:right, :]
+    out_img = utils.resize_image(new_img, (100,100))
+    return out_img
+
+def draw_box(fig, bbox, color='Red'):
+    # draws the body bbox on to the left subplot (the video frame)
+    cx, cy, w, h = [float(i) for i in bbox]
+    top, right, bottom, left = [(cy-h/2), (cx+w/2), (cy+h/2), (cx-w/2)]
+    fig.add_shape(type="rect", xref="x", yref="y", x0=left, y0=top, x1=right, y1=bottom,
+        line=dict(
+            color=color,
+            width=2), row=1, col=1)
+
+def img_to_b64(arr_img):
+    pil_img = Image.fromarray(arr_img)
+    prefix = "data:image/png;base64,"
+    with BytesIO() as stream:
+        pil_img.save(stream, format="png")
+        base64_string = prefix + base64.b64encode(stream.getvalue()).decode("utf-8")
+    return base64_string
+
+def add_bbox_frame(fig, image_str, bbox):
+    fig.add_trace(go.Image(source=image_str), row=1, col=1)
+    fig.update_xaxes(range=[0,100], constrain='domain', scaleanchor='y', scaleratio=1, row=1, col=1)
+    fig.update_yaxes(range=[100,0], constrain='domain', scaleanchor='x', scaleratio=1, row=1, col=1)
+    #draw_box(fig, bbox=bbox)
+
+def pose_subplot(in_data, idx, plot_type):
+    frame_data = get_frame_info(in_data, idx)
+    vid_shape = in_data['shape'] # (height, width)
+    frame_id = frame_data['frame_id']
+    vid_image = frame_data['image']
+    bbox = frame_data['bbox']
+    extr_vid_image = extract_body_image(vid_image, bbox)
+    img_str = img_to_b64(extr_vid_image)
+    #img_str = frame_data['b64_img']
+    pose = frame_data['pose']
+    fig = make_subplots(rows=1, cols=2, specs=[[{"type": "xy"}, {"type": "scene"}]],
+                        subplot_titles=('Target Body', 'Pose Estimate'))
+    # Add video frame + bbox trace with the show_bbox_frame function
+    add_bbox_frame(fig, img_str, bbox)
+    # Add 3d pose figure
+    body3d(fig, pose)
+    fig.update_xaxes(showticklabels=False)
+    fig.update_yaxes(showticklabels=False)
+    if plot_type=='init':
+      return fig
+    elif plot_type=='frame':
+      out_dict = fig.to_dict()
+      out_dict['name'] = str('f'+str(frame_id))
+      return go.Frame(out_dict)
+
+
+def make_step(frame_id, dur):
+    out_step = {
+    'method': 'animate',
+    'label': str(frame_id),
+    'args': [['f'+str(frame_id)], {'frame': {'duration': dur, 'redraw': True}, 'mode': 'immediate'}]
+    }
+    return out_step
+    
+
+def slider_dict(steps):
+    sliders_dict = {
+        'active': 0,
+        'yanchor': 'top',
+        'xanchor': 'left',
+        'currentvalue': {
+            'font': {'size': 20},
+            'prefix': 'Frame:',
+            'visible': True,
+            'xanchor': 'right'
+        },
+        'transition': {'duration': 0},
+        'pad': {'b': 10, 't': 50},
+        'len': 0.9,
+        'x': 0.1,
+        'y': 0,
+        'steps': steps,
+
+    }
+    return sliders_dict
+
+def play_pause(dur):
+    buttons = {
+        'buttons': [
+            {
+                'args': [None, {'frame': {'duration': dur, 'redraw': True},
+                         'fromcurrent': True, 'transition': {'duration': 0}}],
+                'label': 'Play',
+                'method': 'animate'
+            },
+            {
+                'args': [[None], {'frame': {'duration': dur, 'redraw': True}, 'mode': 'immediate',
+                'transition': {'duration': 0}}],
+                'label': 'Pause',
+                'method': 'animate'
+            }
+        ],
+        'direction': 'left',
+        'pad': {'r': 10, 't': 87},
+        'showactive': False,
+        'type': 'buttons',
+        'x': 0.1,
+        'xanchor': 'right',
+        'y': 0,
+        'yanchor': 'top'
+    }
+    return [buttons]
+
+def track3d(pose, track_id, export_to_path=None):
+    dur = str(int(round((1/pose.fps)*1000)))
+    data = pose.pose_data[track_id]
+    #vid_array = video_to_array(pose.video_cv2)
+    vid_array = pose.video_array
+    #vid_bytes = pose.video_bytes
+    frame_ids = data['frame_ids']
+    pose_data = data['joints3d']
+    bboxes = data['bboxes']
+    n_frames = len(frame_ids)
+    vid_shape = pose.video_shape
+    in_data = {'vid':vid_array, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
+    fig = pose_subplot(in_data, 0, 'init')
+    frames = [pose_subplot(in_data, i, 'frame') for i in range(n_frames)] # temporary nframes
+    steps = [make_step(i, dur) for i in [frame_ids[j] for j in range(n_frames)]]
+    sliders_dict = slider_dict(steps)
+    fig.update(frames=frames)
+    fig.layout['sliders']=[sliders_dict]
+    fig.layout['updatemenus'] = play_pause(dur)
+    fig.update_layout(height=675, width=1000, title_text="Track "+str(track_id))
+    fig.show()
+    if export_to != None:
+        fig.write_html(export_to_path)
+
+
     
 
 
