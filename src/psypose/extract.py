@@ -16,6 +16,7 @@ import numpy as np
 import cv2
 import glob
 import pandas as pd
+from tqdm import tqdm
 
 from psypose import utils
 from psypose.pose_estimation import estimate_pose
@@ -41,7 +42,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      ########## Run shot detection ##########
      
      if shot_detection:
-        print("\nDetecting shots...")
+        tqdm.write("Detecting shots...")
         shots = utils.get_shots(pose.vid_path)
      # Here, shots is a list of tuples (each tuple contains the in and out frames of each shot)
         pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
@@ -58,7 +59,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
 
      if extract_aus:
         detector = Detector(face_model = face_box_model, au_model = au_model)
-        print("\nExtracting facial expresseions...")
+        tqdm.write("Extracting facial expresseions...")
         pose.face_data = detector.detect_video(pose.vid_path, skip_frames = every)
      
      ########## Extract face identify encodings ##########
