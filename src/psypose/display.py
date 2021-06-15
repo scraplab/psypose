@@ -567,6 +567,7 @@ def play_pause(dur):
     return [buttons]
 
 def track3d(pose, track_id, export_to_path=None):
+    print("Generating plot...")
     dur = str(int(round((1/pose.fps)*1000)))
     data = pose.pose_data[track_id]
     #vid_array = video_to_array(pose.video_cv2)
@@ -587,7 +588,7 @@ def track3d(pose, track_id, export_to_path=None):
     fig.layout['updatemenus'] = play_pause(dur)
     fig.update_layout(height=675, width=1000, title_text="Track "+str(track_id))
     fig.show()
-    if export_to != None:
+    if export_to_path != None:
         fig.write_html(export_to_path)
 
 
