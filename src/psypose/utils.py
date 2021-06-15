@@ -261,7 +261,7 @@ def video_to_array(cap):
     # Initialize frame counter
     fc = 0
     ret = True
-    tqdm.write("Loading video...")
+    #tqdm.write("Loading video...")
     pbar = tqdm(total=frameCount)
     #print("\nLoading video into memory...\n")
     while (fc < frameCount  and ret):

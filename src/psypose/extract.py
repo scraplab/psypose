@@ -30,12 +30,12 @@ sys.path.append(os.getcwd())
 
 
 def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepface', 
-             every=1, output_path=None, save_results=True, shot_detection=True, extract_aus=True, extract_face_id=True):
+             every=1, output_path=None, save_results=True, shot_detection=True, extract_aus=True, extract_face_id=True, num_workers=None):
 
      
      ########## Run pose estimation ##########
      
-     pose_data = estimate_pose(pose) 
+     pose_data = estimate_pose(pose, num_workers=num_workers) 
      # Split tracks based on shot detection
 
 
