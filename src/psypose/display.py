@@ -522,7 +522,7 @@ def make_step(frame_id, dur):
     out_step = {
     'method': 'animate',
     'label': str(frame_id),
-    'args': [['f'+str(frame_id)], {'frame': {'duration': dur, 'redraw': True}, 'mode': 'immediate'}]
+    'args': [['f'+str(frame_id)], {'frame': {'duration': dur, 'redraw': False}, 'mode': 'immediate'}]
     }
     return out_step
     

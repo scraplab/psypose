@@ -59,7 +59,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
 
      if extract_aus:
         detector = Detector(face_model = face_box_model, au_model = au_model)
-        tqdm.write("Extracting facial expresseions...")
+        tqdm.write("Extracting facial expressions...")
         pose.face_data = detector.detect_video(pose.vid_path, skip_frames = every)
      
      ########## Extract face identify encodings ##########
