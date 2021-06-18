@@ -273,6 +273,7 @@ def video_to_array(cap):
         buf[fc] = frame
         fc += 1
         pbar.update(1)
+        del frame
     pbar.close()
 
     #cap.release()
