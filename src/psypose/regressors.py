@@ -75,7 +75,7 @@ def cluster_ID(pose, metric='cosine', linkage='average', overwrite=False, use_co
         enc_tracks.append(track)
         
     track_enc_avgs = np.array(avg_encodings)
-    print(track_enc_avgs.shape)
+    #print(track_enc_avgs.shape)
     track_encoding_avgs = dict(zip(enc_tracks, avg_encodings))
     # here, we cluster all of the averaged track encodings. 
     # tracks containing the same face will be concatenated later
@@ -135,6 +135,8 @@ def cluster_ID(pose, metric='cosine', linkage='average', overwrite=False, use_co
     # Tracks in the same cluster will now be consolidated. 
     final_clust = AgglomerativeClustering(linkage=linkage, distance_threshold=cut, 
                                           n_clusters=None, affinity=metric).fit(track_enc_avgs)
+
+    pose.face_clustering = final_clust
     
     clusters = []
     cluster_tracks = []
@@ -144,8 +146,7 @@ def cluster_ID(pose, metric='cosine', linkage='average', overwrite=False, use_co
         tracks = enc_tracks[np.where(final_clust.labels_==clus)[0]]
         cluster_tracks.append(tracks)
     fc = dict(zip(clusters, cluster_tracks))
-    cluster_mains = [k for k in sorted(fc, key=lambda k: 
-                                        len(fc[k]), reverse=True)]
+    cluster_mains = [k for k in sorted(fc, key=lambda k: len(fc[k]), reverse=True)]
     t = [fc.get(clust) for clust in cluster_mains]
     sorted_dict = dict(zip([i for i in range(0, len(t))], t))
     

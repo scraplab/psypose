@@ -131,7 +131,7 @@ def frame2array(frame_no, video_opened):
     video_opened.set(cv2.CAP_PROP_POS_FRAMES,frame_no)
     ret, frame = video_opened.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
     return frame
 
 def resize_image(array, newsize):
@@ -207,10 +207,9 @@ def write2vid(img_arr, fps, out_name, out_size):
     print("Rendering...\n")
     out = cv2.VideoWriter(out_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, out_size)
     for i in tqdm(range(len(img_arr))):
-        
         img_color = cv2.cvtColor(img_arr[i], cv2.COLOR_BGR2RGB)
         out.write(img_color)
-    cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
     out.release()
 
 
@@ -279,13 +278,13 @@ def video_to_array(cap):
     #cap.release()
 
     #cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
     return buf
 
 def video_to_bytes(cap):
     
     """
-    Takes video file and converts it into a numpy array with uint8 encoding.
+    Takes video file and converts it into a list of b64 encodings
     
     cap : either a numpy array or scenedetect.VideoManager object
     """

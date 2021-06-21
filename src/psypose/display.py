@@ -93,6 +93,8 @@ def track(pose, trackID):
     track_frames = pkl['frame_ids']
     frameCount = len(track_frames)
 
+    #change this to utils.frame2array()?
+
     #here, the global flag makes the frameLoc variable available for the nested function to change
     global frameLoc
     frameLoc = int(track_frames[0])
@@ -192,7 +194,10 @@ def track(pose, trackID):
 def frame(pose, frame_number):
     #out = utils.frame2array(frame_number, pose.video_cv2)
     plt.axis('off')
-    plt.imshow(pose.video_array[frame_number])
+    frame = utils.frame2array(frame_number, pose.video_cv2)
+    #plt.imshow(pose.video_array[frame_number])
+    plt.imshow(frame)
+    del frame
     #del out
     
 def render_track(pose, track, outdir=None):
@@ -364,7 +369,7 @@ def get_frame_info(in_data, idx):
     one_pose = in_data['pose_data'][idx]
     one_bbox = in_data['bboxes'][idx]
     one_frame_id = in_data['frame_ids'][idx]
-    one_frame_image = in_data['vid'][one_frame_id]
+    one_frame_image = utils.frame2array(one_frame_id, in_data['vid'])
     #one_frame_image = in_data['vid_bytes'][idx]
     frame_data = {
         'pose':one_pose,
@@ -498,8 +503,8 @@ def pose_subplot(in_data, idx, plot_type):
     frame_id = frame_data['frame_id']
     vid_image = frame_data['image']
     bbox = frame_data['bbox']
-    extr_vid_image = extract_body_image(vid_image, bbox)
-    img_str = img_to_b64(extr_vid_image)
+    extr_body_image = extract_body_image(vid_image, bbox)
+    img_str = img_to_b64(extr_body_image)
     #img_str = frame_data['b64_img']
     pose = frame_data['pose']
     fig = make_subplots(rows=1, cols=2, specs=[[{"type": "xy"}, {"type": "scene"}]],
@@ -579,15 +584,15 @@ def track3d(pose, track_id, export_to_path=None):
     print("Generating plot...")
     dur = str(int(round((1/pose.fps)*1000)))
     data = pose.pose_data[track_id]
-    #vid_array = video_to_array(pose.video_cv2)
-    vid_array = pose.video_array
-    #vid_bytes = pose.video_bytes
+    #vid_array = pose.video_array
+    vid = pose.video_cv2
     frame_ids = data['frame_ids']
     pose_data = data['joints3d']
     bboxes = data['bboxes']
     n_frames = len(frame_ids)
     vid_shape = pose.video_shape
-    in_data = {'vid':vid_array, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
+    #in_data = {'vid':vid_array, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
+    in_data = {'vid':vid, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
     fig = pose_subplot(in_data, 0, 'init')
     frames = [pose_subplot(in_data, i, 'frame') for i in range(n_frames)] 
     steps = [make_step(i, dur) for i in [frame_ids[j] for j in range(n_frames)]]
