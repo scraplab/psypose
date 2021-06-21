@@ -580,8 +580,8 @@ def play_pause(dur):
     }
     return [buttons]
 
-def process(token):
-    return token['text']
+#def process(token):
+#    return token['text']
 
 def track3d(pose, track_id, export_to_path=None):
     print("Generating plot...")
@@ -599,7 +599,7 @@ def track3d(pose, track_id, export_to_path=None):
     fig = pose_subplot(in_data, 0, 'init')
     frames = [pose_subplot(in_data, i, 'frame') for i in range(n_frames)] 
     # testing a new pbar implementation
-    plot_progress = [process(token) for token in tqdm(frames)]
+    #plot_progress = [process(token) for token in tqdm(frames)]
     steps = [make_step(i, dur) for i in [frame_ids[j] for j in range(n_frames)]]
     sliders_dict = slider_dict(steps)
     fig.update(frames=frames)
