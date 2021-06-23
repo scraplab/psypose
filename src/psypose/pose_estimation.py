@@ -84,7 +84,7 @@ def estimate_pose(pose, save_pkl=False, image_folder=None, output_path=None, tra
 
     # ========= Run tracking ========= #
 
-    print("\n")
+    #print("\n")
     
     # run multi object tracker
     mot = MPT(
@@ -135,7 +135,7 @@ def estimate_pose(pose, save_pkl=False, image_folder=None, output_path=None, tra
     
     # ========= Run MEVA on each person ========= #
     bbox_scale = 1.2
-    print('\nRunning MEVA on each tracklet...')
+    print('\nRunning MEVA on each tracklet...\n', flush=True)
     vibe_time = time.time()
     meva_results = {}
     for person_id in tqdm(list(tracking_results.keys())):

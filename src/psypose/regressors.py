@@ -9,7 +9,7 @@ Functions for the construction of second-order pose data and regressors
 import numpy as np
 import pandas as pd
 import scipy.stats
-from scipy.spatial.distance import pdist, squareform, cdist
+from scipy.spatial.distance import pdist, squareform, cdist, euclidean
 from sklearn.cluster import AgglomerativeClustering
 from psypose import utils
 import os
@@ -213,3 +213,39 @@ def presence_matrix(pose, character_order, hertz=None):
         needed_frames = np.arange(round((1/hertz)*pose.fps), pose.n_frames, round((1/hertz)*pose.fps))
         auto_appearances_filt = char_frame.take(needed_frames[:-2], axis=0).reset_index(drop=True)
         return auto_appearances_filt
+
+def get_static(p1, p2):
+    # p1 and p2 should just be the vectors
+    p1, p2 = p1[3:], p2[3:]
+    return euclidean(p1, p2)
+
+def synchrony(pose, type='static'):
+    track_occurence = {}
+    data = pose.pose_data
+    for frame in range(pose.framecount):
+        present_tracks = []
+        for key, val in data.items():
+            if frame in val['frame_ids']:
+                present_tracks.append(key)
+        track_occurence[frame] = present_tracks
+    pose.track_occurence = track_occurence
+    if type=='static':
+        max_distance = 26.096028503877093
+        out_vec=[]
+        for frame in range(pose.framecount):
+            tracks = track_occurence[frame]
+            if len(tracks) < 2:
+                out_vec.append(np.nan)
+            else:
+                pose_vectors = []
+                for track in tracks:
+                    track_data = data[track]
+                    pose_vectors.append(track_data['pose'][np.where(track_data['frame_ids']==frame)[0][0]])
+                sync_arr = np.empty((len(pose_vectors), len(pose_vectors)))
+                for i in range(len(pose_vectors)):
+                    for j in range(len(pose_vectors)):
+                        sync_arr[i][j] = get_static(pose_vectors[i], pose_vectors[j])
+                val = np.mean(sync_arr[np.tril_indices_from(sync_arr, k=-1)])
+                val = -(2*(val/max_distance)) + 1
+                out_vec.append(val)
+    return np.array(out_vec)

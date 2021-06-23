@@ -28,6 +28,7 @@ from plotly.subplots import make_subplots
 from PIL import Image
 import base64
 from io import BytesIO
+from IPython.display import HTML
 
 #matplotlib.get_backend()
 
@@ -360,6 +361,16 @@ def face(pose, face_loc):
     image = utils.crop_face(image, bbox)
     plt.imshow(image)
 
+def play_video(pose):
+    # meant to play video in colab 
+    mp4 = open(pose.vid_path,'rb').read()
+    data_url = "data:video/mp4;base64," + b64encode(mp4).decode()
+    HTML("""
+    <video width=400 controls>
+        <source src="%s" type="video/mp4">
+    </video>
+    """ % data_url)
+
 
 ######## Begin code for 3d viewer #########
 
@@ -581,10 +592,10 @@ def play_pause(dur):
     return [buttons]
 
 #def process(token):
-#    return token['text']
+#    return token[1]
 
 def track3d(pose, track_id, export_to_path=None):
-    print("Generating plot...")
+    print("Generating plot...\n", flush=True)
     dur = str(int(round((1/pose.fps)*1000)))
     data = pose.pose_data[track_id]
     #vid_array = pose.video_array
@@ -597,7 +608,7 @@ def track3d(pose, track_id, export_to_path=None):
     #in_data = {'vid':vid_array, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
     in_data = {'vid':vid, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
     fig = pose_subplot(in_data, 0, 'init')
-    frames = [pose_subplot(in_data, i, 'frame') for i in range(n_frames)] 
+    frames = [pose_subplot(in_data, i, 'frame') for i in tqdm(range(n_frames), position=0, leave=True)] 
     # testing a new pbar implementation
     #plot_progress = [process(token) for token in tqdm(frames)]
     steps = [make_step(i, dur) for i in [frame_ids[j] for j in range(n_frames)]]
