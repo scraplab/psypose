@@ -622,6 +622,74 @@ def track3d(pose, track_id, export_to_path=None):
         fig.write_html(export_to_path)
 
 
+def extract_face_image(array, data):
+    # This takes an image in numpy format and a face bbox, crops the image, and scales it down to 50x50
+    #abs_h, abs_w = array.shape[0], array.shape[1]
+    cx, cy, w, h = [i for i in data]
+    top, right, bottom, left = [int(round(i)) for i in [cy, cx+w, cy+h, cx]]
+    new_img = array[top:bottom, left:right, :]
+    out_img = utils.resize_image(new_img, (50,50))
+    return out_img
+
+def retrieve_face(pose, trackID):
+    df = pose.face_data
+    df = df[df['track_id']==trackID]
+    loc = df.loc[df['FaceScore'].idxmax()]
+    bbox, frame = utils.get_bbox(loc), int(loc['frame'])
+    in_image = utils.frame2array(frame, pose.video_cv2)
+    face_arr = extract_face_image(in_image, bbox)
+    out = display.img_to_b64(face_arr)
+    return out
+
+
+def add_layout_image(figure, b_string, x, y, sizex, sizey):
+    figure.add_layout_image(dict(source=b_string,
+                            xref='x',
+                            yref='y',
+                            xanchor='left',
+                            yanchor='bottom',
+                            x=x,
+                            y=y,
+                            sizing="contain",
+                            sizex=sizex,
+                            sizey=sizey,
+                            layer="above"
+                            #opacity=1.0
+                          )
+                      )
+
+
+def clusters(pose, type='unnamed'):
+  df = pd.DataFrame(columns=['trackID', 'clusterID'])
+  df['trackID'], df['clusterID'] = pose.track_encoding_avgs.keys(), pose.face_clustering.labels_
+  f = px.scatter()
+  #f.update_layout(yaxis=dict(autorange='reversed'))
+  unq_tracks = np.unique(df['trackID'])
+  unq_clusters = np.unique(df['clusterID'])
+  markers_x, markers_y, trackIDs, clusterIDs = [], [], [], []
+  for y, j in enumerate(unq_clusters):
+      clus_df = df[df['clusterID']==j]
+      tracks = np.unique(clus_df['trackID'])
+      for x, l in enumerate(tracks):
+          img_str = retrieve_face(t, l)
+          add_layout_image(f, img_str, x, y, 1, 1)
+          markers_x.append(x+0.5)
+          markers_y.append(y+0.5)
+          trackIDs.append(l)
+          clusterIDs.append(j)
+  marker_frame = pd.DataFrame(dict(zip(['x', 'y', 'track', 'cluster'],
+                                       [markers_x, markers_y, trackIDs, clusterIDs])))
+  f.update_layout(height=1000, width=1000, xaxis=dict(range=[0, 15], showgrid=False, showticklabels=False, title='Tracks'), 
+                  yaxis=dict(range=[0, len(unq_clusters)], gridwidth=2, nticks=len(unq_clusters)+2, title='Cluster ID'))
+  
+  #for face_marker in range(len(markers_x)):
+  #    f.add_trace(go.Scatter(x=[markers_x[face_marker]], y=[markers_y[face_marker]], name='Track'+str(trackIDs[face_marker])))
+  f.add_trace(go.Scatter(x=markers_x, y=markers_y, hovertext=['Track '+str(i) for i in trackIDs], hoverinfo='text', showlegend=False, mode="markers"))
+  f.update_layout(hoverlabel=dict(bgcolor='white'))
+  f.show(config={"modeBarButtonsToRemove":['zoom2d', 'toggleSpikeLines', 'lasso2d', 'autoscale2d', 'select2d'], 
+                 "displayModeBar":True})
+
+
     
 
 
