@@ -550,7 +550,7 @@ def body3d_singleframe(fig, pose_data):
 def frame3d(pose, track, idx):
     fig = go.Scatter3d()
     pose_data = pose.pose_data[track]['joints3d'][idx]
-    body3d(fig, pose_data)
+    body3d_singleframe(fig, pose_data)
     fig.show()
 
 def extract_body_image(array, data):
