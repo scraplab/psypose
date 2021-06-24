@@ -56,7 +56,6 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      
      ########## Run face detection + face feature extraction ##########
 
-
      if extract_aus:
         detector = Detector(face_model = face_box_model, au_model = au_model)
         tqdm.write("Extracting facial expressions...")
@@ -69,7 +68,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      
      ########## Saving results ##########
      if output_path==None:
-         output_path = '../'
+         output_path = ''
          
      if save_results:
          os.makedirs(output_path+'/'+pose.vid_name, exist_ok=True)
