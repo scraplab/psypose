@@ -35,7 +35,7 @@ def add_face_id(pose, overwrite=False, encoder='deepface', use_TR=False, out=Non
     
     encoding_array = np.empty((faces_to_process, encoding_length))
         
-    tqdm.write("Encoding face identities...\n", flush=True)
+    print("Encoding face identities...\n", flush=True)
     pbar = tqdm(total=faces_to_process)
     counter = -1
     for frame in unique_frames:
