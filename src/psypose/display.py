@@ -450,6 +450,66 @@ def scatter_fig(fig, x_dat, y_dat, z_dat):
     fig.add_trace(trace1, row=1, col=2)
     fig.add_trace(trace2, row=1, col=2)
 
+def scatter_fig_singleframe(fig, x_dat, y_dat, z_dat):
+  # this generates a single frame of the 3d skeleton. 
+    x, y, z = [i.flatten() for i in [x_dat, y_dat, z_dat]]
+    netDict = {}
+    for i in range(49):
+        netDict.update({i:tuple([x[i], y[i], z[i]])})
+    sk = nx.Graph()
+    sk.add_nodes_from(netDict.keys())
+    for n, p in netDict.items():
+        sk.nodes[n]['pos']=p
+        sk.add_edges_from(spin_skel)
+    Edges = list(sk.edges())
+    Nodes = list(sk.nodes())
+    node_attrs = nx.get_node_attributes(sk, 'pos')
+    N = sk.number_of_nodes()
+    Xn=[node_attrs[i][0] for i in range(N)]
+    Yn=[node_attrs[i][1] for i in range(N)]# y-coordinates
+    Zn=[node_attrs[i][2] for i in range(N)]# z-coordinates
+    Xe=[]
+    Ye=[]
+    Ze=[]
+    for e in list(sk.edges()):
+        Xe+=[node_attrs[e[0]][0],node_attrs[e[1]][0], None]# x-coordinates of edge ends
+        Ye+=[node_attrs[e[0]][1],node_attrs[e[1]][1], None]
+        Ze+=[node_attrs[e[0]][2],node_attrs[e[1]][2], None]
+
+    axis=dict(
+          showline=False,
+          zeroline=False,
+          showgrid=False,
+          showticklabels=False,
+          title=''
+          )
+
+    layout = go.Layout(
+        scene=dict(
+            xaxis=dict(axis),
+            yaxis=dict(axis),
+            zaxis=dict(axis)))
+    trace1=go.Scatter3d(x=Xe,
+                  y=Ye,
+                  z=Ze,
+                  mode='lines',
+                  line=dict(color='black', width=4),
+                  hoverinfo='none',
+                  )
+
+    trace2=go.Scatter3d(x=Xn,
+                  y=Yn,
+                  z=Zn,
+                  mode='markers',
+                  marker=dict(symbol='circle',
+                                size=6,
+                                line=dict(color='blue', width=0.075)
+                                ),
+                    hoverinfo='none')
+
+    fig.add_trace(trace1)
+    fig.add_trace(trace2)
+
 def body3d(fig, pose_data):
     # in x -> z -> y order because the format of the output is not intuitive
     x, z, y = pose_data[:,0]*-1, pose_data[:,1]*-1, pose_data[:,2]*-1
@@ -462,6 +522,25 @@ def body3d(fig, pose_data):
         aspectmode='manual',
         aspectratio=dict(x=1, y=1, z=2)
         ), showlegend=False)
+
+def body3d_singleframe(fig, pose_data):
+    # in x -> z -> y order because the format of the output is not intuitive
+    x, z, y = pose_data[:,0]*-1, pose_data[:,1]*-1, pose_data[:,2]*-1
+    scatter_fig_singleframe(fig, x, y, z)
+    fig.update_layout(
+    scene=dict(
+        xaxis=dict(showticklabels=False, range=[-0.75, 0.75], showbackground=False),
+        yaxis=dict(showticklabels=False, range=[-0.75, 0.75], showbackground=False),
+        zaxis=dict(showticklabels=False, range=[-1.0, 1.25], showbackground=True),
+        aspectmode='manual',
+        aspectratio=dict(x=1, y=1, z=2)
+        ), showlegend=False)
+
+def frame3d(pose, track, idx):
+    fig = go.Scatter3d()
+    pose_data = pose.pose_data[track]['joints3d'][idx]
+    body3d(fig, pose_data)
+    fig.show()
 
 def extract_body_image(array, data):
     # This takes an image in numpy format and a body bbox, crops the image, and scales it down to 100x100
@@ -654,7 +733,6 @@ def add_layout_image(figure, b_string, x, y, sizex, sizey):
                             sizex=sizex,
                             sizey=sizey,
                             layer="above"
-                            #opacity=1.0
                           )
                       )
 
