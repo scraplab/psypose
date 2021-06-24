@@ -39,7 +39,7 @@ def add_face_id(pose, overwrite=False, encoder='deepface', use_TR=False, out=Non
     pbar = tqdm(total=faces_to_process)
     counter = -1
     for frame in unique_frames:
-        img = pose.video_array[frame]
+        img = utils.frame2array(frame, pose.video_cv2)
         sub = face_df[face_df['frame']==frame]
         for loc in range(sub.shape[0]):
             row = sub.iloc[loc]
