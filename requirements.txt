@@ -1,5 +1,6 @@
 py-feat @ git+https://github.com/LandryBulls/py-feat.git
 gdown
+moviepy
 umap-learn
 pytube
 jpy-video

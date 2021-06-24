@@ -682,8 +682,6 @@ def clusters(pose, type='unnamed'):
   f.update_layout(height=1000, width=1000, xaxis=dict(range=[0, 15], showgrid=False, showticklabels=False, title='Tracks'), 
                   yaxis=dict(range=[0, len(unq_clusters)], gridwidth=2, nticks=len(unq_clusters)+2, title='Cluster ID'))
   
-  #for face_marker in range(len(markers_x)):
-  #    f.add_trace(go.Scatter(x=[markers_x[face_marker]], y=[markers_y[face_marker]], name='Track'+str(trackIDs[face_marker])))
   f.add_trace(go.Scatter(x=markers_x, y=markers_y, hovertext=['Track '+str(i) for i in trackIDs], hoverinfo='text', showlegend=False, mode="markers"))
   f.update_layout(hoverlabel=dict(bgcolor='white'))
   f.show(config={"modeBarButtonsToRemove":['zoom2d', 'toggleSpikeLines', 'lasso2d', 'autoscale2d', 'select2d'], 
