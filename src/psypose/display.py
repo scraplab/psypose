@@ -201,9 +201,11 @@ def frame(pose, frame_number):
     del frame
     #del out
     
-def render_track(pose, track, outdir=None):
-    if not outdir:
+def render_track(pose, track, format='mp4', outdir=None, loop=None):
+    if not outdir and format=='mp4':
         outdir=str(track)+'.mp4'
+    elif not outdir and format=='gif':
+        outdir=str(track)+'.gif'
     vid = pose.video_cv2
     #frameCount = pose.n_frames
     fps = pose.fps
@@ -262,7 +264,16 @@ def render_track(pose, track, outdir=None):
         out_frame = out_frame.reshape(fig.canvas.get_width_height()[::-1] + (3,))
         img_array[fr,:,:,:] = out_frame
         plt.close()
-    utils.write2vid(img_array, fps, outdir, (1280, 720))
+    if format=='mp4':
+        utils.write2vid(img_array, fps, outdir, (1280, 720))
+    elif format=='gif':
+        print("Writing to gif...", flush=True)
+        imgs = [Image.fromarray(img) for img in img_array]
+        # duration is the number of milliseconds between frames; this is 40 frames per second
+        dur = int(round((1/pose.fps)*1000))
+        if loop == None:
+            loop = 0
+        imgs[0].save(outdir, save_all=True, append_images=imgs[1:], duration=dur, loop=loop)
 #display_pkl(video, pickle, '00:00:00', '/Users/f004swn/Documents/')
 
 #pickle = '/Users/f004swn/Documents/Code/pose_data/500_cut_unsquish.pkl'
