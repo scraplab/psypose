@@ -732,7 +732,7 @@ def retrieve_face(pose, trackID):
     bbox, frame = utils.get_bbox(loc), int(loc['frame'])
     in_image = utils.frame2array(frame, pose.video_cv2)
     face_arr = extract_face_image(in_image, bbox)
-    out = display.img_to_b64(face_arr)
+    out = img_to_b64(face_arr)
     return out
 
 
