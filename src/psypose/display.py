@@ -379,7 +379,7 @@ def face(pose, face_loc):
 def play_video(pose):
     # meant to play video in colab 
     mp4 = open(pose.vid_path,'rb').read()
-    data_url = "data:video/mp4;base64," + b64encode(mp4).decode()
+    data_url = "data:video/mp4;base64," + base64.b64encode(mp4).decode()
     HTML("""
     <video width=400 controls>
         <source src="%s" type="video/mp4">
