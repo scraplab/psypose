@@ -310,7 +310,7 @@ def show_tracks(pose):
 
     ax1.imshow(pkl_arr, aspect='auto', interpolation='none', cmap='copper')
     for track in range(pkl_arr.shape[0]):    
-        ax1.hlines(track-0.5, xmin=0, xmax=pickle_array.shape[1], color='white')
+        ax1.hlines(track-0.5, xmin=0, xmax=pkl_arr.shape[1], color='white')
     ax1.set(ylabel='Track ID')
     ax1.set(title='Person presence per track')
         
