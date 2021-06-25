@@ -279,12 +279,12 @@ def render_track(pose, track, format='mp4', outdir=None, loop=None):
 
 #pickle = '/Users/f004swn/Documents/Code/pose_data/500_cut_unsquish.pkl'
 #video = '/Users/f004swn/Documents/Code/pose_data/500_cut_unsquish.mp4'
-def pkl_to_array(pickle_path, video_path):
-    data = dict(joblib.load(pickle_path))
+def pkl_to_array(pose):
+    data = pose.pose_data
     tracks = len(data)
-    video = cv2.VideoCapture(video_path)
-    frameCount = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    arr = np.zeros((tracks, frameCount))
+    #video = cv2.VideoCapture(video_path)
+    #frameCount = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    arr = np.zeros((tracks, pose.framecount))
     track_ids = list(data.keys())
     for t, track in enumerate(track_ids):
         frameIDs = data.get(track).get('frame_ids')
@@ -302,7 +302,10 @@ def collapse(pickle_array):
 #pkl_regr = collapse(pkl_arr)
 
 
-def show_tracks(pickle_array):
+def show_tracks(pose):
+    pkl_arr = pkl_to_array(pose)
+    pkl_arr = collapse(pkl_arr)
+
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, dpi=200, figsize=(10, 5), sharex=True)
 
     ax1.imshow(pickle_array, aspect='auto', interpolation='none', cmap='copper')
