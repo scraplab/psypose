@@ -548,7 +548,7 @@ def body3d_singleframe(fig, pose_data):
         ), showlegend=False)
 
 def frame3d(pose, track, idx):
-    fig = go.Scatter3d()
+    fig = go.Figure()
     pose_data = pose.pose_data[track]['joints3d'][idx]
     body3d_singleframe(fig, pose_data)
     fig.show()

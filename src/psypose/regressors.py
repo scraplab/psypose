@@ -106,8 +106,8 @@ def cluster_ID(pose, metric='cosine', linkage='average', overwrite=False, use_co
     encoding_averages = dict(zip(opt_tracks, track_encoding_avgs))
     pose.track_encoding_avgs = encoding_averages
     avg_enc_array = np.empty((len(encoding_averages), pose.encoding_length))
-    for i, track in enumerate(list(avgenc.keys())):
-      avg_enc_array[i] = avgenc[track]
+    for i, track in enumerate(list(encoding_averages.keys())):
+      avg_enc_array[i] = encoding_averages[track]
 
     pose.average_encoding_array = avg_enc_array
 
