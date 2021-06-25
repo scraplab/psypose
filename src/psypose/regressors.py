@@ -32,11 +32,13 @@ def cluster_ID(pose, metric='cosine', linkage='average', overwrite=False, use_co
     face_data = pose.face_data
     pose_data = pose.pose_data
 
+    pose.encoding_length = len([i for i in list(face_data.columns) if 'enc' in i])
+
     fr_ids = []  
     # here, iterating through all rows of the face_rec data frame (all available frames)
     # checking if each frame is listed within any of the VIBE tracks
     # if overlap frames are detected, the algo will check if the face box is within 
-    # the VIBE bounding box. If True, then that frame will get that track ID  
+    # the MEVA bounding box. If True, then that frame will get that track ID  
     for r in range(len(face_data)):
         row = face_data.iloc[r]
         frame = int(row['frame'])
@@ -80,16 +82,6 @@ def cluster_ID(pose, metric='cosine', linkage='average', overwrite=False, use_co
     # here, we cluster all of the averaged track encodings. 
     # tracks containing the same face will be concatenated later
     
-    def pd_to_arr(pand_series):
-        # converts multi-dimensional pandas series to np array
-        x = len(pand_series)
-        y = len(pand_series.iloc[0])
-        arr = np.zeros((x,y))
-        for i in range(x):
-            arr[i] = pand_series.iloc[i]
-        return arr
-    
-    
     # Here, I'm going to compute the between-track distances using only co-occuring tracks
     # I'll first create a co-occurence matrix
     n_tracks = len(np.unique(face_data['track_id']))
@@ -110,6 +102,17 @@ def cluster_ID(pose, metric='cosine', linkage='average', overwrite=False, use_co
     track_encoding_avgs = [np.mean(enc, axis=0) for enc in
                                   [face_data[face_data['track_id']==track][enc_columns].to_numpy()
                                     for track in opt_tracks]]
+
+    encoding_averages = dict(zip(opt_tracks, track_encoding_avgs))
+    pose.track_encoding_avgs = encoding_averages
+    avg_enc_array = np.empty((len(encoding_averages), pose.encoding_length))
+    for i, track in enumerate(list(avgenc.keys())):
+      avg_enc_array[i] = avgenc[track]
+
+    pose.average_encoding_array = avg_enc_array
+
+
+
     encoding_dist_mat = squareform(pdist(track_encoding_avgs, metric=metric))
     all_track_dist = encoding_dist_mat[np.tril_indices_from(encoding_dist_mat, k=-1)]
     inter_track_distances = np.extract(cooc, all_track_dist)
