@@ -764,7 +764,7 @@ def clusters(pose, type='unnamed'):
       clus_df = df[df['clusterID']==j]
       tracks = np.unique(clus_df['trackID'])
       for x, l in enumerate(tracks):
-          img_str = retrieve_face(t, l)
+          img_str = retrieve_face(pose, l)
           add_layout_image(f, img_str, x, y, 1, 1)
           markers_x.append(x+0.5)
           markers_y.append(y+0.5)
