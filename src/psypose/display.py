@@ -9,6 +9,7 @@ Created on Wed Sep 23 14:44:01 2020
 import os
 import joblib
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
 from mpl_toolkits.mplot3d import Axes3D
