@@ -217,10 +217,12 @@ def presence_matrix(pose, character_order, hertz=None):
         auto_appearances_filt = char_frame.take(needed_frames[:-2], axis=0).reset_index(drop=True)
         return auto_appearances_filt
 
-def get_static(p1, p2):
+def get_pose_distance(p1, p2):
     # p1 and p2 should just be the vectors
+    # may be the normal static vectors or those derived with numpy.gradient()
     p1, p2 = p1[3:], p2[3:]
     return euclidean(p1, p2)
+
 
 def synchrony(pose, type='static'):
     track_occurence = {}
@@ -232,23 +234,36 @@ def synchrony(pose, type='static'):
                 present_tracks.append(key)
         track_occurence[frame] = present_tracks
     pose.track_occurence = track_occurence
-    if type=='static':
-        max_distance = 26.096028503877093
-        out_vec=[]
-        for frame in range(pose.framecount):
-            tracks = track_occurence[frame]
-            if len(tracks) < 2:
-                out_vec.append(np.nan)
-            else:
-                pose_vectors = []
-                for track in tracks:
-                    track_data = data[track]
+    max_distance = 26.096028503877093
+    out_vec=[]
+    for frame in range(pose.framecount):
+        tracks = track_occurence[frame]
+        if len(tracks) < 2:
+            out_vec.append(np.nan)
+        else:
+            pose_vectors = []
+            for track in tracks:
+                track_data = data[track]
+                if type=='dynamic':
+                    track_data['pose_gradient'] = np.gradient(track_data['pose'], axis=0)
+                    pose_vectors.append(track_data['pose_gradient'][np.where(track_data['frame_ids']==frame)[0][0]])
+                elif type=='static':
                     pose_vectors.append(track_data['pose'][np.where(track_data['frame_ids']==frame)[0][0]])
-                sync_arr = np.empty((len(pose_vectors), len(pose_vectors)))
-                for i in range(len(pose_vectors)):
-                    for j in range(len(pose_vectors)):
-                        sync_arr[i][j] = get_static(pose_vectors[i], pose_vectors[j])
-                val = np.mean(sync_arr[np.tril_indices_from(sync_arr, k=-1)])
-                val = -(2*(val/max_distance)) + 1
-                out_vec.append(val)
+            sync_arr = np.empty((len(pose_vectors), len(pose_vectors)))
+            for i in range(len(pose_vectors)):
+                for j in range(len(pose_vectors)):
+                    sync_arr[i][j] = get_pose_distance(pose_vectors[i], pose_vectors[j])
+            val = np.mean(sync_arr[np.tril_indices_from(sync_arr, k=-1)])
+            val = -(2*(val/max_distance)) + 1
+            out_vec.append(val)
     return np.array(out_vec)
+
+
+
+
+
+
+
+
+
+
