@@ -193,12 +193,15 @@ def track(pose, trackID):
 
 #plot = show_pose(video, pickle, 6)
 
-def frame(pose, frame_number):
+def frame(pose, frame_number, figsize='auto'):
     #out = utils.frame2array(frame_number, pose.video_cv2)
     plt.axis('off')
     frame = utils.frame2array(frame_number, pose.video_cv2)
     #plt.imshow(pose.video_array[frame_number])
-    plt.imshow(frame)
+    if size=='auto':
+        plt.imshow(frame)
+    elif size!='auto':
+        plt.imshow(frame, figsize=figsize)
     del frame
     #del out
     
