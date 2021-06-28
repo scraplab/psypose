@@ -193,17 +193,12 @@ def track(pose, trackID):
 
 #plot = show_pose(video, pickle, 6)
 
-def frame(pose, frame_number, figsize='auto'):
-    #out = utils.frame2array(frame_number, pose.video_cv2)
+def frame(pose, frame_number, figsize=(30,30)):
     plt.axis('off')
     frame = utils.frame2array(frame_number, pose.video_cv2)
-    #plt.imshow(pose.video_array[frame_number])
-    if size=='auto':
-        plt.imshow(frame)
-    elif size!='auto':
-        plt.imshow(frame, figsize=figsize)
+    plt.figure(figsize=figsize)
+    plt.imshow(frame)
     del frame
-    #del out
     
 def render_track(pose, track, format='mp4', outdir=None, loop=None):
     if not outdir and format=='mp4':
