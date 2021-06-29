@@ -68,7 +68,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      
      ########## Saving results ##########
      if output_path==None:
-         output_path = ''
+         output_path = os.getcwd()
          
      if save_results:
          os.makedirs(output_path+'/'+pose.vid_name, exist_ok=True)
