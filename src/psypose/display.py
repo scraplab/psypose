@@ -299,7 +299,7 @@ def collapse(pickle_array):
 #pkl_regr = collapse(pkl_arr)
 
 
-def show_tracks(pose, dpi=200, figsize=(4,2)):
+def show_tracks(pose, dpi=200, figsize=(10,5)):
     pkl_arr = pkl_to_array(pose)
     #pkl_arr = collapse(pkl_arr)
 
