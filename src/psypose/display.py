@@ -299,11 +299,11 @@ def collapse(pickle_array):
 #pkl_regr = collapse(pkl_arr)
 
 
-def show_tracks(pose):
+def show_tracks(pose, dpi=200, figsize=(4,2)):
     pkl_arr = pkl_to_array(pose)
     #pkl_arr = collapse(pkl_arr)
 
-    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, dpi=200, figsize=(10, 5), sharex=True)
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, dpi=dpi, figsize=figsize, sharex=True)
 
     ax1.imshow(pkl_arr, aspect='auto', interpolation='none', cmap='copper')
     for track in range(pkl_arr.shape[0]):    
