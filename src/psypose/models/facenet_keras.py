@@ -5,7 +5,7 @@ Created on Tue Feb  2 17:40:20 2021
 
 @author: f004swn
 """
-from contextlib import redirect_stderr # or try redirect_stdout
+from contextlib import redirect_stdout # or try redirect_stdout
 from keras.models import load_model
 import numpy as np
 from PIL import Image
@@ -21,7 +21,7 @@ model = load_model(model_path, compile=False)
 #facenet expects that the pixel values be standardized 
 
 def encode(face_array):
-    with open(os.devnull) as devnull, redirect_stdout(devnull):
+    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
         # this takes the RGB form image array that is output my the PLIERS loop
         face = Image.fromarray(face_array)
         face = face.resize((160,160))
