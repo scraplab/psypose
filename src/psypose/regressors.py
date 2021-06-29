@@ -237,7 +237,7 @@ def synchrony(pose, type='static'):
     if type=='static':
         max_distance = 26.096028503877093
     elif type=='dynamic':
-        max_distance = 53.31459525790039
+        max_distance = 52.19205700775419
     out_vec=[]
     for frame in range(pose.framecount):
         tracks = track_occurence[frame]

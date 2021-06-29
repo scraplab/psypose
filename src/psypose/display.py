@@ -193,11 +193,10 @@ def track(pose, trackID):
 
 #plot = show_pose(video, pickle, 6)
 
-def frame(pose, frame_number, figsize=(30,30)):
-    plt.axis('off')
+def frame(pose, frame_number):
     frame = utils.frame2array(frame_number, pose.video_cv2)
-    plt.figure(figsize=figsize)
-    plt.imshow(frame)
+    f = px.imshow(frame)
+    f.show()
     del frame
     
 def render_track(pose, track, format='mp4', outdir=None, loop=None):
@@ -555,23 +554,52 @@ def frame3d(pose, track, idx):
     body3d_singleframe(fig, pose_data)
     fig.show()
 
+#def extract_body_image(array, data):
+    # This takes an image in numpy format and a body bbox, crops the image, and scales it down to 100x100
+#    abs_h, abs_w = array.shape[0], array.shape[1]
+#    cx, cy, w, h = [i for i in data]
+#    top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]#
+
+    # fixing the issue when bbox is partially out of frame. 
+    # Later I wish to change this so that images are padded with black rather than 
+    # making the edges=0 when it is partially out of frame. 
+#    if right > abs_w:
+#      right = abs_w
+#    if left < 0:
+#        left = 0
+#    if bottom > abs_h:
+#      bottom = abs_h
+#    if top < 0:
+#        top = 0
+
+#    new_img = array[top:bottom, left:right, :]
+#    out_img = utils.resize_image(new_img, (100,100))
+#    return out_img
+
 def extract_body_image(array, data):
     # This takes an image in numpy format and a body bbox, crops the image, and scales it down to 100x100
     abs_h, abs_w = array.shape[0], array.shape[1]
     cx, cy, w, h = [i for i in data]
     top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
 
-    # fixing the issue when bbox is partially out of frame. 
-    # Later I wish to change this so that images are padded with black rather than 
-    # making the edges=0 when it is partially out of frame. 
+    # Padding images with black if the bbox is out-of-frame
+
     if right > abs_w:
-      right = abs_w
+      r_overhang = right-round(abs_w) + 10
+      array = np.pad(array, ((0,r_overhang),(0,0),(0,0)))
     if left < 0:
-        left = 0
+      l_overhang = -1*left
+      right-=left
+      left = 0
+      array = np.pad(array, ((l_overhang,0),(0,0),(0,0)))    
     if bottom > abs_h:
-      bottom = abs_h
+      b_overhang = bottom-round(abs_h) + 10
+      array = np.pad(array, ((0,0),(0,b_overhang),(0,0)))
     if top < 0:
-        top = 0
+      t_overhang = -1*top
+      bottom-=top
+      top=0
+      array = np.pad(array, ((0,0),(t_overhang,0),(0,0)))
 
     new_img = array[top:bottom, left:right, :]
     out_img = utils.resize_image(new_img, (100,100))
@@ -683,9 +711,6 @@ def play_pause(dur):
     }
     return [buttons]
 
-#def process(token):
-#    return token[1]
-
 def track3d(pose, track_id, export_to_path=None):
     print("Generating plot...\n", flush=True)
     dur = str(int(round((1/pose.fps)*1000)))
@@ -704,14 +729,16 @@ def track3d(pose, track_id, export_to_path=None):
     # testing a new pbar implementation
     #plot_progress = [process(token) for token in tqdm(frames)]
     steps = [make_step(i, dur) for i in [frame_ids[j] for j in range(n_frames)]]
-    sliders_dict = slider_dict(steps)
+    #sliders_dict = slider_dict(steps)
     fig.update(frames=frames)
-    fig.layout['sliders']=[sliders_dict]
+    #fig.layout['sliders']=[sliders_dict]
     fig.layout['updatemenus'] = play_pause(dur)
     fig.update_layout(height=600, width=1000, title_text="Track "+str(track_id))
     fig.show()
     if export_to_path != None:
         fig.write_html(export_to_path)
+
+############# Begin code for grid view of faces #################
 
 
 def extract_face_image(array, data):
