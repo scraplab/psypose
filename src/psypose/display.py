@@ -798,7 +798,7 @@ def clusters(pose, type='unnamed'):
   marker_frame = pd.DataFrame(dict(zip(['x', 'y', 'track', 'cluster'],
                                        [markers_x, markers_y, trackIDs, clusterIDs])))
   f.update_layout(height=1000, width=1000, xaxis=dict(range=[0, 15], showgrid=False, showticklabels=False, title='Tracks'), 
-                  yaxis=dict(range=[0, 15], gridwidth=2, nticks=len(unq_clusters)+2, title='Cluster ID'))
+                  yaxis=dict(range=[0, 15], gridwidth=2, nticks=16, title='Cluster ID'))
   
   f.add_trace(go.Scatter(x=markers_x, y=markers_y, hovertext=['Track '+str(i) for i in trackIDs], hoverinfo='text', showlegend=False, mode="markers"))
   f.update_layout(hoverlabel=dict(bgcolor='white'))
