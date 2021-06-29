@@ -12,7 +12,7 @@ from tqdm import tqdm
 from psypose import utils
 from psypose.models import facenet_keras, deepface
 
-def add_face_id(pose, overwrite=False, encoder='deepface', use_TR=False, out=None):
+def add_face_id(pose, overwrite=False, encoder='facenet', use_TR=False, out=None):
     
     face_df = pd.DataFrame(pose.face_data)
     # Remove possible nan rows
