@@ -5,7 +5,7 @@ Created on Tue Feb  2 17:40:20 2021
 
 @author: f004swn
 """
-from contextlib import redirect_stdout # or try redirect_stderr
+from contextlib import redirect_stderr # or try redirect_stdout
 from keras.models import load_model
 import numpy as np
 from PIL import Image
