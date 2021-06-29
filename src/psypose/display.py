@@ -309,7 +309,7 @@ def show_tracks(pose, dpi=200, figsize=(4,2)):
     for track in range(pkl_arr.shape[0]):    
         ax1.hlines(track-0.5, xmin=0, xmax=pkl_arr.shape[1], color='white')
     ax1.set(ylabel='Track ID')
-    ax1.set(title='Person presence per track')
+    ax1.set(title='Track Occurrence')
         
     ax2.plot(collapse(pkl_arr))
     ax2.set(ylabel='# People', xlabel='Frame ID', title='Number of people on screen')
