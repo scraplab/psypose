@@ -158,29 +158,18 @@ def cluster_ID(pose, metric='cosine', linkage='average', overwrite=False, use_co
     pose.is_clustered = True
         
 def name_clusters(pose, character_dict, overwrite_names=False):
-    # if (pose.clusters_named & overwrite_names==False):
-    #     raise Exception('Clusters have already been named. Set overwrite=True to overwrite previous labels.')
-    # if pose.is_named & overwrite_names:
-    #     pose.named_clusters=None
-    #     pose.character_key=None
-    
-    #pose.clusters_named = True
-    # this function should have the capability of 
-    # both extracting main character clusters as well as 
-    # merging clusters with the same name 
-    
     pose.character_key = character_dict
-    chars = list(np.unique(character_dict.values())[0])
+    chars = list(np.unique(character_dict.keys())[0])
     names_clustered = {}
     for char in chars:
-        common_clusters = [k for k, v in character_dict.items() if str(v) == char]
+        #common_clusters = [k for k, v in character_dict.items() if str(v) == char]
         tracks = []
-        for cluster in common_clusters:
-            cluster_tracks = pose.clusters.get(cluster)
-            tracks.extend(list(cluster_tracks))
+        for cluster in character_dict[char]:
+            cluster_tracks = pose.clusters[cluster]
+            tracks.extend(cluster_tracks)
         names_clustered.update({char:tracks})
     names_sorted = sorted(names_clustered, key=lambda k: len(names_clustered[k]), reverse=True)
-    tracks_sorted = [names_clustered.get(name) for name in names_sorted]
+    tracks_sorted = [names_clustered[name] for name in names_sorted]
     names_clustered = dict(zip(names_sorted, tracks_sorted))
     pose.named_clusters = names_clustered
     
