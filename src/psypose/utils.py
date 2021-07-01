@@ -394,18 +394,22 @@ PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
     'meva_data.zip': '1v6OX9KEK3TsVUK2P9GXp0XVTldxqZ9a9',
+    'romp_data.zip': '1EZYEeLft5C2TkugaqsTP_wIsHVlWCyO8'
 }
 
 
 PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
 MEVA_CFG_DIR = osp.join(osp.dirname(__file__), "MEVA", "meva", "cfg")
 MEVA_DATA_DIR = osp.join(PSYPOSE_DATA_DIR, 'meva_data')
+ROMP_DATA_DIR = osp.join(osp.dirname(__file__), "ROMP")
 
 def check_data_files(prompt_confirmation=False):
     missing_files = PSYPOSE_DATA_FILES.copy()
     if PSYPOSE_DATA_DIR.is_dir():
         for fname in PSYPOSE_DATA_FILES.keys():
             expected_loc = PSYPOSE_DATA_DIR.joinpath(fname)
+            if 'ROMP' in fname:
+                expected_loc = ROMP_DATA_DIR.joinpath(fname)
             if expected_loc.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
                 expected_loc = expected_loc.with_suffix('')
             if expected_loc.exists():
@@ -435,6 +439,8 @@ def check_data_files(prompt_confirmation=False):
             errors = {}
             for fname, gdrive_id in missing_files.items():
                 dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
+                if 'ROMP' in fname:
+                    dest_path = ROMP_DATA_DIR
                 print(f"downloading {fname} ...")
                 try:
                     download_from_gdrive(gdrive_id, dest_path)
