@@ -10,7 +10,6 @@ nibabel
 networkx
 scikit-learn
 scenedetect
-pyyaml
 future
 tqdm
 scipy
