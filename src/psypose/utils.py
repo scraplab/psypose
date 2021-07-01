@@ -468,7 +468,7 @@ def download_from_gdrive(gdrive_id, dest_path):
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
         z = zipfile.ZipFile(str(dest_path))
-        if 'ROMP' in dest_path:
+        if 'ROMP' in str(dest_path):
             extract_dir = ROMP_DATA_DIR
         else:
             extract_dir = PSYPOSE_DATA_DIR
