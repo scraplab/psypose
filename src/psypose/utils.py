@@ -439,8 +439,8 @@ def check_data_files(prompt_confirmation=False):
             errors = {}
             for fname, gdrive_id in missing_files.items():
                 dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
-                if 'ROMP' in fname:
-                    dest_path = ROMP_DATA_DIR
+                if 'romp' in fname:
+                    dest_path = ROMP_DATA_DIR.joinpath(fname)
                 print(f"downloading {fname} ...")
                 try:
                     download_from_gdrive(gdrive_id, dest_path)
@@ -464,8 +464,6 @@ def check_data_files(prompt_confirmation=False):
             
 def download_from_gdrive(gdrive_id, dest_path):
     url = f"https://drive.google.com/uc?id={gdrive_id}"
-    if 'ROMP' in str(dest_path):
-        dest_path = ROMP_DATA_DIR
     gdown.download(url, str(dest_path), quiet=False)
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
