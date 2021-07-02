@@ -409,9 +409,9 @@ def check_data_files(prompt_confirmation=False):
         for fname in PSYPOSE_DATA_FILES.keys():
             expected_loc = PSYPOSE_DATA_DIR.joinpath(fname)
             if 'ROMP' in fname:
-                expected_loc = ROMP_DATA_DIR.joinpath(fname)
+                expected_loc = ROMP_DATA_DIR.joinpath('demo') # the demo dir is created if downloaded properly
             if expected_loc.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
-                expected_loc = expected_loc.with_suffix('')
+                expected_loc = expected_loc.with_suffix('') 
             if expected_loc.exists():
                 missing_files.pop(fname)
     if any(missing_files):
@@ -464,6 +464,8 @@ def check_data_files(prompt_confirmation=False):
             
 def download_from_gdrive(gdrive_id, dest_path):
     url = f"https://drive.google.com/uc?id={gdrive_id}"
+    if 'ROMP' in str(dest_path):
+        dest_path = ROMP_DATA_DIR
     gdown.download(url, str(dest_path), quiet=False)
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
