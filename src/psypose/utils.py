@@ -462,6 +462,14 @@ def check_data_files(prompt_confirmation=False):
                              "functionality may be unavailable"
             )
             
+def move_romp_files(extracted_dir):
+    extracted_dir = Path(extracted_dir)
+    for src in extracted_dir.iterdir():
+        fname = src.name
+        dest = extracted_dir.parent.joinpath(fname)
+        src.rename(dest)
+    extracted_dir.rmdir()
+
 def download_from_gdrive(gdrive_id, dest_path):
     url = f"https://drive.google.com/uc?id={gdrive_id}"
     gdown.download(url, str(dest_path), quiet=False)
@@ -470,9 +478,12 @@ def download_from_gdrive(gdrive_id, dest_path):
         z = zipfile.ZipFile(str(dest_path))
         if 'ROMP' in str(dest_path):
             extract_dir = ROMP_DATA_DIR
+            z.extractall(extract_dir)
+            dir_extracted = Path(os.path.join(ROMP_DATA_DIR, 'ROMP'))
+            move_romp_files(dir_extracted)
         else:
             extract_dir = PSYPOSE_DATA_DIR
-        z.extractall(extract_dir)
+            z.extractall(extract_dir)
         #zipfile.extractall(str(dest_path))
         print(f"removing {dest_path} ...")
         dest_path.unlink()
