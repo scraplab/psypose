@@ -439,8 +439,8 @@ def check_data_files(prompt_confirmation=False):
             errors = {}
             for fname, gdrive_id in missing_files.items():
                 dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
-#                if 'romp' in fname:
-#E                    dest_path = ROMP_DATA_DIR.joinpath(fname)
+                if 'romp' in fname:
+                    dest_path = ROMP_DATA_DIR.joinpath(fname)
                 print(f"downloading {fname} ...")
                 try:
                     download_from_gdrive(gdrive_id, dest_path)
@@ -474,6 +474,7 @@ def move_romp_files(extracted_dir):
     trained_models = Path(os.path.join(extracted_dir, 'trained_models'))
     dest = ROMP_DATA_DIR.joinpath(trained_models.name)
     trained_models.rename(dest)
+    extracted_dir.unlink()
 
 
 def download_from_gdrive(gdrive_id, dest_path):
@@ -482,10 +483,11 @@ def download_from_gdrive(gdrive_id, dest_path):
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
         z = zipfile.ZipFile(str(dest_path))
-        z.extractall(PSYPOSE_DATA_DIR)
         if 'ROMP' in str(dest_path):
-            romp_dir = os.path.join(PSYPOSE_DATA_DIR, 'ROMP_data')
-            move_romp_files(romp_dir)
+            z.extractall(ROMP_DATA_DIR)
+            move_romp_files(os.path.join(ROMP_DATA_DIR, 'ROMP_data'))
+        else:
+            z.extractall(PSYPOSE_DATA_DIR)
 
         print(f"removing {dest_path} ...")
         dest_path.unlink()
