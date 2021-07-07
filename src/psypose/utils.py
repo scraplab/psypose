@@ -476,6 +476,7 @@ def move_romp_files(extracted_dir):
     dest = ROMP_DATA_DIR.joinpath(trained_models.name)
     trained_models.rename(dest)
     shutil.rmtree(extracted_dir)
+    os.rmdir(extracted_dir)
 
 
 def download_from_gdrive(gdrive_id, dest_path):
