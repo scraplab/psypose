@@ -6,6 +6,12 @@ from setuptools import setup, find_packages
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
+dep_links = ['https://github.com/LandryBulls/py-feat.git',
+             'https://github.com/ZhengyiLuo/smplx.git',
+             'https://github.com/mkocabas/yolov3-pytorch.git',
+             'https://github.com/pytorch/vision.git',
+             'https://github.com/mkocabas/multi-person-tracker.git']
+
 setup(name='psypose',
       version='0.0.1',
       description='Tools for processing pose information in psychological research.',
