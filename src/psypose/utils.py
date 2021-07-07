@@ -27,6 +27,7 @@ from sklearn.metrics import confusion_matrix
 from PIL import Image
 import base64
 from io import BytesIO
+import shutil
 
 def img_to_b64(arr_img):
     pil_img = Image.fromarray(arr_img)
@@ -394,7 +395,7 @@ PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
     #'meva_data.zip': '1v6OX9KEK3TsVUK2P9GXp0XVTldxqZ9a9',
-    'ROMP_psypose.zip': '15NN8erm-iBd2r9AxwFms-YxGOIvLCzL5'
+    'ROMP_psypose.zip': '1lCWXfvf2DwU9ck9SfiwJrknp7PSkkoPI'
 }
 
 
@@ -474,7 +475,7 @@ def move_romp_files(extracted_dir):
     trained_models = Path(os.path.join(extracted_dir, 'trained_models'))
     dest = ROMP_DATA_DIR.joinpath(trained_models.name)
     trained_models.rename(dest)
-    extracted_dir.unlink()
+    shutil.rmtree(extracted_dir)
 
 
 def download_from_gdrive(gdrive_id, dest_path):
