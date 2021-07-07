@@ -1,13 +1,9 @@
-import sys, os, cv2
-import numpy as np
-import time, datetime
 import logging
-import copy, random, itertools, pickle
 from prettytable import PrettyTable
 
 import torch
 import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader, ConcatDataset
+from torch.utils.data import DataLoader
 
 import _init_paths
 import config
@@ -15,10 +11,6 @@ import constants
 from config import args
 from models import build_model
 from utils import load_model, get_remove_keys, reorganize_items
-from utils.demo_utils import img_preprocess, convert_cam_to_3d_trans, save_meshes, get_video_bn
-from utils.projection import vertices_kp3d_projection
-from evaluation import compute_error_verts, compute_similarity_transform, compute_similarity_transform_torch, \
-                    batch_compute_similarity_transform_torch, compute_mpjpe
 from dataset.mixed_dataset import SingleDataset
 from visualization.visualization import Visualizer
 if args.model_precision=='fp16':

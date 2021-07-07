@@ -19,7 +19,8 @@ import pandas as pd
 from tqdm import tqdm
 
 from psypose import utils
-from psypose.pose_estimation import estimate_pose
+#from psypose.pose_estimation import estimate_pose
+from psypose.ROMP.video_romper import estimate_pose
 from psypose.face_identification import add_face_id
 
 import sys
