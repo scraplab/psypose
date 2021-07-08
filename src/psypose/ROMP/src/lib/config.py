@@ -14,7 +14,7 @@ trained_model_dir = os.path.join(project_dir,'trained_models')
 
 parser = argparse.ArgumentParser(description = 'ROMP: Monocular, One-stage, Regression of Multiple 3D People')
 parser.add_argument('--tab',type = str,default = 'ROMP_v1',help = 'additional tabs')
-parser.add_argument('--configs_yml',type = str,default = 'configs/single_image.yml',help = 'setting for training') #'configs/basic_training_v6_ld.yml' 
+parser.add_argument('--configs_yml',type = str, default = os.path.join(project_dir, 'src/configs/single_image.yml') ,help = 'setting for training') #'configs/basic_training_v6_ld.yml' 
 parser.add_argument('--demo_image_folder',type = str,default = 'None',help = 'absolute path to the image folder containing the input images for evaluation')
 
 mode_group = parser.add_argument_group(title='mode options')
