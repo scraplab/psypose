@@ -214,8 +214,9 @@ class Time_counter():
 
 def estimate_pose(pose):
     input_video_path = pose.vid_path
-    demo = Demo()
-    demo.process_video(input_video_path)
+    estimator = Demo()
+    estimator.output_dir = pose.output_path
+    estimator.process_video(input_video_path)
 
 
 

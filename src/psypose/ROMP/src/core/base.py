@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-import _init_paths
+from psypose.ROMP.src.core import _init_paths
 import config
 import constants
 from config import args

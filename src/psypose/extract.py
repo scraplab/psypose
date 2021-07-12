@@ -33,7 +33,15 @@ sys.path.append(os.getcwd())
 def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepface', 
              every=1, output_path=None, save_results=True, shot_detection=True, extract_aus=True, extract_face_id=True, num_workers=None):
 
-     
+    # if output path is not defined, a directory named after the input video will be created in whatever directory the script is ran.
+     if output_path==None:
+         this_dir = os.getcwd()
+         output_path = os.path.join(this_dir, pose.vid_name)
+         os.makedirs(output_path, exist_ok=True)
+         pose.output_path = output_path
+     else:
+         pose.output_path = output_path
+
      ########## Run pose estimation ##########
      
      pose_data = estimate_pose(pose, num_workers=num_workers) 
@@ -68,9 +76,6 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
         add_face_id(pose)
      
      ########## Saving results ##########
-     if output_path==None:
-         output_path = os.getcwd()
-         
      if save_results:
          os.makedirs(output_path+'/'+pose.vid_name, exist_ok=True)
          if extract_aus:
