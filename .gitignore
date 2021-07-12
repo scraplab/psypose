@@ -22,10 +22,7 @@ src/psypose/meva/someOtherfoler/
 
 
 
-# Packages #
-############
-# it's better to unpack these files and commit the raw source
-# git has its own built in compression methods
+# Ignore all files of these types
 *.7z
 *.dmg
 *.gz
@@ -35,7 +32,6 @@ src/psypose/meva/someOtherfoler/
 *.tar
 *.zip
 *.npy
-*.pkl
 *.p
 *.npz
 *.gif
