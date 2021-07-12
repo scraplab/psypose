@@ -1,4 +1,4 @@
-from base import *
+from psypose.ROMP.src.core.base import *
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
