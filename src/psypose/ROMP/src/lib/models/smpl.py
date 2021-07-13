@@ -35,7 +35,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 sys.path.append(os.path.abspath(__file__).replace('models/smpl.py',''))
-from config import args
+from config import ROMP_pars
 
 ModelOutput = namedtuple('ModelOutput',
                          ['vertices', 'joints','joints_h36m17', 'joints_smpl24','full_pose', 'betas',

@@ -18,7 +18,7 @@ if root_dir not in sys.path:
 from models.basic_modules import BasicBlock,Bottleneck,HighResolutionModule
 from utils import BHWC_to_BCHW, copy_state_dict
 import config
-from config import args
+from config import ROMP_pars
 BN_MOMENTUM = 0.1
 
 class HigherResolutionNet(nn.Module):

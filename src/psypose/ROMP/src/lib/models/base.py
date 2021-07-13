@@ -14,7 +14,7 @@ root_dir = os.path.join(os.path.dirname(__file__),'..')
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 import config
-from config import args
+from config import ROMP_pars
 if args.model_precision=='fp16':
     from torch.cuda.amp import autocast
 

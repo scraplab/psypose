@@ -16,7 +16,7 @@ if root_dir not in sys.path:
 from dataset.image_base import *
 from utils.demo_utils import img_preprocess
 import config
-from config import args
+from config import ROMP_pars
 import constants
 
 class Internet(Dataset):

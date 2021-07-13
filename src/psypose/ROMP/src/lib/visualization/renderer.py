@@ -25,7 +25,7 @@ if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 import config
 import constants
-from config import args
+from config import ROMP_pars
 
 colors = {
     'pink': [.7, .7, .9],

@@ -16,7 +16,7 @@ if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 import config
 import constants
-from config import args
+from config import ROMP_pars
 from vedo import *
 from multiprocessing import Process
 from utils import save_obj
