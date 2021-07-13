@@ -5,7 +5,7 @@ root_dir = os.path.join(os.path.dirname(__file__),'..')
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 import constants
-from config import ROMP_pars
+from config import args
 
 def denormalize_center(center, size=512):
     center = ((center+1)/2*size).long()

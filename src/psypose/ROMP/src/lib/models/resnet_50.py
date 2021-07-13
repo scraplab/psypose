@@ -11,7 +11,7 @@ if root_dir not in sys.path:
 from utils import BHWC_to_BCHW, copy_state_dict
 from models.CoordConv import get_coord_maps
 import config
-from config import ROMP_pars
+from config import args
 from models.basic_modules import BasicBlock,Bottleneck,HighResolutionModule
 BN_MOMENTUM = 0.1
 

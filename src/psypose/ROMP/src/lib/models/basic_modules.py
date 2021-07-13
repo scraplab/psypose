@@ -16,7 +16,7 @@ import sys, os
 root_dir = os.path.join(os.path.dirname(__file__),'..')
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
-from config import ROMP_pars
+from config import args
 
 BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)

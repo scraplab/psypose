@@ -9,7 +9,7 @@ if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 from dataset.image_base import *
 import config
-from config import ROMP_pars
+from config import args
 
 dataset_dict = {'pw3d':PW3D, 'internet':Internet}
 

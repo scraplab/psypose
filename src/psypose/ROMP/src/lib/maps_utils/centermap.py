@@ -2,7 +2,7 @@ import torch
 import sys,os
 import numpy as np
 sys.path.append(os.path.abspath(__file__).replace('maps_utils/centermap.py',''))
-from config import ROMP_pars
+from config import args
 
 class CenterMap(object):
     def __init__(self,style='heatmap_adaptive_scale'):

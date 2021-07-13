@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 
 from psypose.ROMP.src.core import _init_paths
 import config
-from config import ROMP_pars
+from config import args
 import constants
 from config import psypose_cfg_path
 from models import build_model
@@ -17,13 +17,13 @@ from dataset.mixed_dataset import SingleDataset
 from visualization.visualization import Visualizer
 
 
-if ROMP_pars['model_precision']=='fp16':
+if args.model_precision=='fp16':
     from torch.cuda.amp import autocast, GradScaler
 
 class Base(object, output_path = None):
     def __init__(self):
         self.project_dir = config.project_dir
-        hparams_dict = self.load_config_dict(ROMP_pars)
+        hparams_dict = self.load_config_dict(vars(args))
         self._init_params()
 
     def _build_model_(self):

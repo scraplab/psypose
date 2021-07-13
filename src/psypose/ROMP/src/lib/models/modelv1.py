@@ -14,7 +14,7 @@ from models.CoordConv import get_coord_maps
 from models.basic_modules import BasicBlock,Bottleneck
 
 import config
-from config import ROMP_pars
+from config import args
 from maps_utils.result_parser import ResultParser
 
 BN_MOMENTUM = 0.1

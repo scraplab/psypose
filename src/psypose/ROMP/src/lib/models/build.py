@@ -4,7 +4,7 @@ if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 import torch
 import torch.nn as nn
-from config import ROMP_pars
+from config import args
 from models.hrnet_32 import HigherResolutionNet
 from models.resnet_50 import ResNet_50
 from models.modelv1 import ROMP as ROMPv1

@@ -3,7 +3,7 @@ root_dir = os.path.join(os.path.dirname(__file__),'..')
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 from dataset.image_base import *
-from config import ROMP_pars
+from config import args
 
 set_names = {'all':['train','val','test'],'test':['test'],'val':['train','val','test']}
 

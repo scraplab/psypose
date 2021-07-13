@@ -5,7 +5,8 @@ import numpy as np
 import torch
 import yaml
 import logging
- 
+from collections import namedtuple
+
 code_dir = os.path.abspath(__file__).replace('config.py','')
 project_dir = os.path.abspath(__file__).replace('/src/lib/config.py','')
 root_dir = project_dir.replace(project_dir.split('/')[-1],'')#os.path.abspath(__file__).replace('/CenterMesh/src/config.py','')
@@ -69,3 +70,10 @@ ROMP_pars = {'tab': 'hrnet_cm64_single_image_test',
                'save_centermap': False, # What is the centermap?
                'save_dict_results': False,
                'multiprocess': False}
+
+class load_args:
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+
+args = load_args(**ROMP_pars)
+

@@ -22,7 +22,7 @@ root_dir = os.path.join(os.path.dirname(__file__),'..')
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 from utils import *
-from config import ROMP_pars
+from config import args
 import config
 import constants
 
@@ -31,7 +31,7 @@ class Image_base(Dataset):
         super(Image_base,self).__init__()
         self.heatmap_mapper = constants.joint_mapping(constants.SMPL_ALL_54, constants.COCO_17)
 
-        self.input_shape = [args.input_size, args.input_size]
+        self.input_shape = [args.input_size, args_pars.input_size]
         self.high_resolution=args.high_resolution
         self.vis_size = 512 if self.high_resolution else 256
         self.labels, self.images, self.file_paths = [],[],[]
