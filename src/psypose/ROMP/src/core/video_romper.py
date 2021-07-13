@@ -3,6 +3,7 @@ import os
 import cv2
 import torch
 from psypose import utils as psyutils
+import numpy as np
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 class Demo(Base):
