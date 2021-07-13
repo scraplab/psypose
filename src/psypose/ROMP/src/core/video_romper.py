@@ -124,15 +124,15 @@ class Demo(Base):
             if self.save_mesh:
                 psyutils.save_meshes(outputs['reorganize_idx'].cpu().numpy(), outputs, self.output_dir, self.smpl_faces)
         
-        if self.save_dict_results:
-            save_dict_path = os.path.join(self.output_dir, video_basename+'_results.npz')
-            print('Saving parameter results to {}'.format(save_dict_path))
-            np.savez(save_dict_path, results=results)
+        #if self.save_dict_results:
+        #    save_dict_path = os.path.join(self.output_dir, video_basename+'_results.npz')
+        #    print('Saving parameter results to {}'.format(save_dict_path))
+        #    np.savez(save_dict_path, results=results)
 
-        if self.save_video_results:
-            video_save_name = os.path.join(self.output_dir, video_basename+'_results.mp4')
-            print('Writing results to {}'.format(video_save_name))
-            frames2video(result_frames, video_save_name, fps=args.fps_save)
+        #if self.save_video_results:
+        #    video_save_name = os.path.join(self.output_dir, video_basename+'_results.mp4')
+        #    print('Writing results to {}'.format(video_save_name))
+        #    frames2video(result_frames, video_save_name, fps=args.fps_save)
 
         return results
             
