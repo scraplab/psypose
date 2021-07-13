@@ -20,7 +20,7 @@ from visualization.visualization import Visualizer
 if args.model_precision=='fp16':
     from torch.cuda.amp import autocast, GradScaler
 
-class Base(object, output_path = None):
+class Base(object):
     def __init__(self):
         self.project_dir = config.project_dir
         hparams_dict = self.load_config_dict(vars(args))
