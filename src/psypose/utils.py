@@ -28,6 +28,61 @@ from PIL import Image
 import base64
 from io import BytesIO
 import shutil
+import torchvision
+import torch
+
+def img_preprocess(image, imgpath, input_size=512, ds='internet', single_img_input=False):
+    image = image[:, :, ::-1]
+    image_size = image.shape[:2][::-1]
+    image_org = Image.fromarray(image)
+
+    resized_image_size = (float(input_size) / max(image_size) * np.array(image_size) // 2 * 2).astype(np.int)
+    padding = tuple((input_size - resized_image_size) // 2)
+    transform = torchvision.transforms.Compose([
+        torchvision.transforms.Resize([resized_image_size[1], resized_image_size[0]], interpolation=3),
+        torchvision.transforms.Pad(padding, fill=0, padding_mode='constant'),
+        # torchvision.transforms.ToTensor(),
+    ])
+    image = torch.from_numpy(np.array(transform(image_org))).float()
+
+    padding_org = tuple((max(image_size) - np.array(image_size)) // 2)
+    transform_org = torchvision.transforms.Compose([
+        torchvision.transforms.Pad(padding_org, fill=0, padding_mode='constant'),
+        torchvision.transforms.Resize((input_size * 2, input_size * 2), interpolation=3),
+        # max(image_size)//2,max(image_size)//2
+        # torchvision.transforms.ToTensor(),
+    ])
+    image_org = torch.from_numpy(np.array(transform_org(image_org)))
+    padding_org = (np.array(list(padding_org)) * float(input_size * 2 / max(image_size))).astype(np.int)
+    if padding_org[0] > 0:
+        image_org[:, :padding_org[0]] = 255
+        image_org[:, -padding_org[0]:] = 255
+    if padding_org[1] > 0:
+        image_org[:padding_org[1]] = 255
+        image_org[-padding_org[1]:] = 255
+
+    offsets = np.array([image_size[1], image_size[0], resized_image_size[0], \
+                        resized_image_size[0] + padding[1], resized_image_size[1], resized_image_size[1] + padding[0],
+                        padding[1], \
+                        resized_image_size[0], padding[0], resized_image_size[1]], dtype=np.int)
+    offsets = torch.from_numpy(offsets).float()
+
+    name = os.path.basename(imgpath)
+
+    if single_img_input:
+        image = image.unsqueeze(0).contiguous()
+        image_org = image_org.unsqueeze(0).contiguous()
+        offsets = offsets.unsqueeze(0).contiguous()
+        imgpath, name, ds = [imgpath], [name], [ds]
+    input_data = {
+        'image': image,
+        'image_org': image_org,
+        'imgpath': imgpath,
+        'offsets': offsets,
+        'name': name,
+        'data_set': ds}
+    return input_data
+
 
 def save_meshes(reorganize_idx, outputs, output_dir, smpl_faces):
     vids_org = np.unique(reorganize_idx)
