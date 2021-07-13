@@ -126,6 +126,8 @@ class Demo(Base):
             video_save_name = os.path.join(self.output_dir, video_basename+'_results.mp4')
             print('Writing results to {}'.format(video_save_name))
             frames2video(result_frames, video_save_name, fps=args.fps_save)
+
+        return results
             
     def webcam_run_local(self, video_file_path=None):
         '''
@@ -216,7 +218,8 @@ def estimate_pose(pose):
     input_video_path = pose.vid_path
     estimator = Demo()
     estimator.output_dir = pose.output_path
-    estimator.process_video(input_video_path)
+    results = estimator.process_video(input_video_path)
+    return results
 
 
 

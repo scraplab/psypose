@@ -17,10 +17,7 @@ src/psypose/models/__pycache__
 **/__pycache__
 
 #Don't track content of these folders
-src/psypose/meva/trained_models/
-src/psypose/meva/someOtherfoler/
-
-
+# insert paths here
 
 # Ignore all files of these types
 *.7z
@@ -39,6 +36,7 @@ src/psypose/meva/someOtherfoler/
 *.h5
 *.xml
 *.idea
+*.pkl
 
 
 **images_intermediate
