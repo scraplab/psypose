@@ -1,6 +1,8 @@
 from psypose.ROMP.src.core.base import *
 import os
 import cv2
+import torch
+from psypose import utils as psyutils
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 class Demo(Base):
@@ -96,7 +98,7 @@ class Demo(Base):
         from utils.demo_utils import OpenCVCapture, frames2video
         capture = OpenCVCapture(video_file_path)
         video_length = int(capture.cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        video_basename = get_video_bn(video_file_path)
+        video_basename = psyutils.get_video_bn(video_file_path)
         print('Processing {}, saving to {}'.format(video_file_path, self.output_dir))
         os.makedirs(self.output_dir, exist_ok=True)
         if not os.path.isdir(self.output_dir):
@@ -116,7 +118,7 @@ class Demo(Base):
             result_frames.append(vis_eval_results[0])
             outputs['meta_data']['imgpath'] = img_paths
             if self.save_mesh:
-                save_meshes(outputs['reorganize_idx'].cpu().numpy(), outputs, self.output_dir, self.smpl_faces)
+                psyutils.save_meshes(outputs['reorganize_idx'].cpu().numpy(), outputs, self.output_dir, self.smpl_faces)
         
         if self.save_dict_results:
             save_dict_path = os.path.join(self.output_dir, video_basename+'_results.npz')

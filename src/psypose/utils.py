@@ -29,6 +29,20 @@ import base64
 from io import BytesIO
 import shutil
 
+def save_meshes(reorganize_idx, outputs, output_dir, smpl_faces):
+    vids_org = np.unique(reorganize_idx)
+    for idx, vid in enumerate(vids_org):
+        verts_vids = np.where(reorganize_idx==vid)[0]
+        img_path = outputs['meta_data']['imgpath'][verts_vids[0]]
+        obj_name = os.path.join(output_dir, '{}'.format(os.path.basename(img_path))).replace('.mp4','').replace('.jpg','').replace('.png','')+'.obj'
+        for subject_idx, batch_idx in enumerate(verts_vids):
+            save_obj(outputs['verts'][batch_idx].detach().cpu().numpy().astype(np.float16), \
+                smpl_faces,obj_name.replace('.obj', '_{}.obj'.format(subject_idx)))
+
+def get_video_bn(video_file_path):
+    return os.path.basename(video_file_path)\
+    .replace('.mp4', '').replace('.avi', '').replace('.webm', '').replace('.gif', '')
+
 def img_to_b64(arr_img):
     pil_img = Image.fromarray(arr_img)
     prefix = "data:image/png;base64,"
@@ -492,6 +506,8 @@ def download_from_gdrive(gdrive_id, dest_path):
 
         print(f"removing {dest_path} ...")
         dest_path.unlink()
+
+
 
 
     
