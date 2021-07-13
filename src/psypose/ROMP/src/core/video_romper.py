@@ -4,6 +4,7 @@ import cv2
 import torch
 from psypose import utils as psyutils
 import numpy as np
+from tqdm import tqdm
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 class Demo(Base):
@@ -105,9 +106,11 @@ class Demo(Base):
         if not os.path.isdir(self.output_dir):
             self.output_dir = video_file_path.replace(os.path.basename(video_file_path),'')
 
+        print("Running ROMP pose estimation...")
         results, result_frames = {}, []
-        for frame_id in range(video_length):
-            print('Processing video {}/{}'.format(frame_id, video_length))
+        for frame_id in tqdm(range(video_length)):
+
+            #print('Processing video {}/{}'.format(frame_id, video_length))
             frame = capture.read()
             with torch.no_grad():
                 outputs = self.single_image_forward(frame)
