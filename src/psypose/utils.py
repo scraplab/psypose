@@ -31,6 +31,13 @@ import shutil
 import torchvision
 import torch
 
+def convert_cam_to_3d_trans(cams, weight=2.):
+    trans3d = []
+    (s, tx, ty) = cams
+    depth, dx, dy = 1./s, tx/s, ty/s
+    trans3d = np.array([dx, dy, depth])*weight
+    return trans3d
+
 def img_preprocess(image, imgpath, input_size=512, ds='internet', single_img_input=False):
     image = image[:, :, ::-1]
     image_size = image.shape[:2][::-1]

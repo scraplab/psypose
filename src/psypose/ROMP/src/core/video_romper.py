@@ -78,7 +78,7 @@ class Demo(Base):
                 results[img_path][subject_idx]['j3d_op25'] = kp3d_op25_results[batch_idx]
                 results[img_path][subject_idx]['verts'] = verts_results[batch_idx]
                 results[img_path][subject_idx]['pj2d'] = pj2d_results[batch_idx]
-                results[img_path][subject_idx]['trans'] = convert_cam_to_3d_trans(cam_results[batch_idx])
+                results[img_path][subject_idx]['trans'] = psyutils.convert_cam_to_3d_trans(cam_results[batch_idx])
 
         if test_save_dir is not None:
             for img_path, result_dict in results.items():
