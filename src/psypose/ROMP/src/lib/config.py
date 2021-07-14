@@ -15,6 +15,12 @@ trained_model_dir = os.path.join(project_dir,'trained_models')
 
 psypose_cfg_path = os.path.join(project_dir, '/src/configs/ROMP_config.pkl')
 
+if torch.cuda.is_available():
+    gpu_val = 0
+else:
+    print('No GPU detected by PyTorch. Pose estimation will be performed using CPU.')
+    gpu_val = -1
+
 ROMP_pars = {'tab': 'hrnet_cm64_single_image_test',
                'configs_yml': os.path.join(project_dir, 'src/configs/single_image.yml'),
                #'demo_image_folder': '/path/to/image_folder',
@@ -60,7 +66,7 @@ ROMP_pars = {'tab': 'hrnet_cm64_single_image_test',
                'smpl_J_reg_h37m_path': os.path.join(model_dir, 'smpl', 'J_regressor_h36m.npy'),
                'smpl_J_reg_extra_path': os.path.join(model_dir, 'smpl', 'J_regressor_extra.npy'),
                'kernel_sizes': [5],
-               'GPUS': 0,
+               'GPUS': gpu_val,
                'use_coordmaps': True,
                'webcam': False,
                'video_or_frame': False,
