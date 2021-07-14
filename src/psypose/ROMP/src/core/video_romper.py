@@ -1,4 +1,5 @@
 from psypose.ROMP.src.core.base import *
+from psypose.ROMP.src.lib.utils.projection import batch_orth_proj
 import os
 import cv2
 import torch
@@ -64,6 +65,7 @@ class Demo(Base):
         kp3d_op25_results = joints_54[:,constants.joint_mapping(constants.SMPL_ALL_54, constants.OpenPose_25)]
         verts_results = outputs['verts'].detach().cpu().numpy().astype(np.float16)
         pj2d_results = outputs['pj2d'].detach().cpu().numpy().astype(np.float16)
+        pj2d_smpl24 = batch_orth_proj(kp3d_smpl24_results, cam_results, mode='2d')[:,:,2]
 
         vids_org = np.unique(reorganize_idx)
         for idx, vid in enumerate(vids_org):
@@ -80,6 +82,7 @@ class Demo(Base):
                 results[img_path][subject_idx]['verts'] = verts_results[batch_idx]
                 results[img_path][subject_idx]['pj2d'] = pj2d_results[batch_idx]
                 results[img_path][subject_idx]['trans'] = psyutils.convert_cam_to_3d_trans(cam_results[batch_idx])
+                results[img_path][subject_idx]['pj2d_smpl24'] = pj2d_smpl24[batch_idx]
 
         if test_save_dir is not None:
             for img_path, result_dict in results.items():
