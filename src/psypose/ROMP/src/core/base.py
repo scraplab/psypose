@@ -9,10 +9,12 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, ConcatDataset
 
-import _init_paths
+from psypose.ROMP.src.core import _init_paths
+
 import config
+#from config import psypose_cfg_path
 import constants
-from config import args, parse_args, ConfigContext
+from config import args
 from models import build_model
 from utils import load_model, get_remove_keys, reorganize_items
 from utils.demo_utils import img_preprocess, convert_cam_to_3d_trans, save_meshes, get_video_bn
@@ -28,7 +30,7 @@ from visualization.visualization import Visualizer
 class Base(object):
     def __init__(self):
         self.project_dir = config.project_dir
-        hparams_dict = self.load_config_dict(vars(args()))
+        hparams_dict = self.load_config_dict(vars(args))
         self._init_params()
 
     def _build_model_(self):

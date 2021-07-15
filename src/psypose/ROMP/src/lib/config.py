@@ -13,7 +13,7 @@ root_dir = project_dir.replace(project_dir.split('/')[-1],'')#os.path.abspath(__
 model_dir = os.path.join(project_dir,'models')
 trained_model_dir = os.path.join(project_dir,'trained_models')
 
-psypose_cfg_path = os.path.join(project_dir, '/src/configs/ROMP_config.pkl')
+#psypose_cfg_path = os.path.join(project_dir, '/src/configs/ROMP_config.pkl')
 
 if torch.cuda.is_available():
     gpu_val = 0
