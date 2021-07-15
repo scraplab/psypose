@@ -1,29 +1,34 @@
+import sys, os, cv2
+import numpy as np
+import time, datetime
 import logging
+import copy, random, itertools, pickle
 from prettytable import PrettyTable
 
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
+from torch.utils.data import Dataset, DataLoader, ConcatDataset
 
-from psypose.ROMP.src.core import _init_paths
+import _init_paths
 import config
-from config import args
 import constants
-from config import psypose_cfg_path
+from config import args, parse_args, ConfigContext
 from models import build_model
-import joblib
 from utils import load_model, get_remove_keys, reorganize_items
+from utils.demo_utils import img_preprocess, convert_cam_to_3d_trans, save_meshes, get_video_bn
+from utils.projection import vertices_kp3d_projection
+from evaluation import compute_error_verts, compute_similarity_transform, compute_similarity_transform_torch, \
+                    batch_compute_similarity_transform_torch, compute_mpjpe
 from dataset.mixed_dataset import SingleDataset
 from visualization.visualization import Visualizer
-
-
-if args.model_precision=='fp16':
-    from torch.cuda.amp import autocast, GradScaler
+# GradScaler never used
+# if args().model_precision=='fp16':
+#     from torch.cuda.amp import autocast, GradScaler
 
 class Base(object):
     def __init__(self):
         self.project_dir = config.project_dir
-        hparams_dict = self.load_config_dict(vars(args))
+        hparams_dict = self.load_config_dict(vars(args()))
         self._init_params()
 
     def _build_model_(self):
@@ -70,6 +75,7 @@ class Base(object):
         ds_org, imgpath_org = get_remove_keys(meta_data,keys=['data_set','imgpath'])
         meta_data['batch_ids'] = torch.arange(len(meta_data['image']))
         if self.model_precision=='fp16':
+            from torch.cuda.amp import autocast
             with autocast():
                 outputs = self.model(meta_data, **cfg)
         else:
