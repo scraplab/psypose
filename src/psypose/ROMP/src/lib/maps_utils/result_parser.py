@@ -127,4 +127,4 @@ class ResultParser(nn.Module):
 
 def flatten_inds(coords):
     coords = torch.clamp(coords, 0, args().centermap_size - 1)
-    return coords[:, 0].long() * args().centermap_size + coords[:, 1].long())
+    return coords[:, 0].long() * args().centermap_size + coords[:, 1].long()
