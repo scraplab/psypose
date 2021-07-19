@@ -47,3 +47,4 @@ transforms3d
 bvhtoolbox
 smplx
 vedo
+PyOpenGL==3.1.5
