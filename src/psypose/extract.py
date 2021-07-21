@@ -18,6 +18,8 @@ import glob
 import pandas as pd
 from tqdm import tqdm
 
+from ROMP_psypose.core.test import estimate_pose
+
 from psypose import utils
 #from psypose.pose_estimation import estimate_pose
 from psypose.ROMP.src.core.video_romper import estimate_pose

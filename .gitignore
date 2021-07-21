@@ -37,6 +37,7 @@ src/psypose/models/__pycache__
 *.xml
 *.idea
 *.pkl
+*.idea
 
+venv
 
-**images_intermediate

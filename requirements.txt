@@ -1,4 +1,5 @@
 py-feat @ git+https://github.com/LandryBulls/py-feat.git
+ROMP_psypose @ git+https://github.com/scraplab/ROMP.git
 gdown
 moviepy
 umap-learn
@@ -26,11 +27,6 @@ scikit-image
 opencv-python>=3.4.11.43
 torch
 torchvision
-tensorboard>=2.0
-smplx @ git+https://github.com/ZhengyiLuo/smplx.git
-yolov3 @ git+https://github.com/mkocabas/yolov3-pytorch.git
-torchvision @ git+https://github.com/pytorch/vision.git
-multi_person_tracker @ git+https://github.com/mkocabas/multi-person-tracker.git
 opencv-contrib-python
 prettytable
 torchfile
@@ -39,12 +35,3 @@ munkres
 shyaml
 PyYAML>=5.1.2
 numpy==1.20.0
-numpy-quaternion
-open3d==0.9.0
-pygame
-keyboard
-transforms3d
-bvhtoolbox
-smplx
-vedo
-PyOpenGL==3.1.5
