@@ -470,34 +470,27 @@ def crop_face(array, data):
 PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
-    #'meva_data.zip': '1v6OX9KEK3TsVUK2P9GXp0XVTldxqZ9a9',
-    'ROMP_psypose.zip': '1lCWXfvf2DwU9ck9SfiwJrknp7PSkkoPI'
 }
 
-
 PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
-#MEVA_CFG_DIR = osp.join(osp.dirname(__file__), "MEVA", "meva", "cfg")
-#MEVA_DATA_DIR = osp.join(PSYPOSE_DATA_DIR, 'meva_data')
-ROMP_DATA_DIR = Path(osp.join(osp.dirname(__file__), "ROMP"))
+
 
 def check_data_files(prompt_confirmation=False):
     missing_files = PSYPOSE_DATA_FILES.copy()
     if PSYPOSE_DATA_DIR.is_dir():
         for fname in PSYPOSE_DATA_FILES.keys():
             expected_loc = PSYPOSE_DATA_DIR.joinpath(fname)
-            if 'ROMP' in fname:
-                expected_loc = ROMP_DATA_DIR.joinpath('trained_models') # the demo dir is created if downloaded properly
             if expected_loc.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
-                expected_loc = expected_loc.with_suffix('') 
+                expected_loc = expected_loc.with_suffix('')
             if expected_loc.exists():
                 missing_files.pop(fname)
     if any(missing_files):
         if prompt_confirmation:
             msg = (
-                      f"Psypose needs to download {len(missing_files)} "
-                      f"file{'s' if len(missing_files) > 1 else ''} in order "
-                      f"to run:\n\t{', '.join(missing_files.keys())}"
-                      "\n\tDo you want to download them now?\n[Y/n] \n"
+                f"Psypose needs to download {len(missing_files)} "
+                f"file{'s' if len(missing_files) > 1 else ''} in order "
+                f"to run:\n\t{', '.join(missing_files.keys())}"
+                "\n\tDo you want to download them now?\n[Y/n] \n"
             )
             while True:
                 response = input(msg).lower().strip()
@@ -516,42 +509,26 @@ def check_data_files(prompt_confirmation=False):
             errors = {}
             for fname, gdrive_id in missing_files.items():
                 dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
-                if 'romp' in fname:
-                    dest_path = ROMP_DATA_DIR.joinpath(fname)
                 print(f"downloading {fname} ...")
                 try:
                     download_from_gdrive(gdrive_id, dest_path)
                 except (MissingSchema, OSError) as e:
-                    errors[item[0]] = e
+                    errors[fname[0]] = e
             if any(errors):
                 print(
-                         f"Failed to download {len(errors)} files. See stack "
-                         f"trace{'s' if len(errors) > 1 else ''} below for "
-                         "more info:\n"
+                    f"Failed to download {len(errors)} files. See stack "
+                    f"trace{'s' if len(errors) > 1 else ''} below for "
+                    "more info:\n"
                 )
                 for fname, e in errors.items():
                     print(f"{fname.upper()}:")
                     traceback.print_exception(type(e), e, e.__traceback__)
-                    print('='*40, end='\n\n')
+                    print('=' * 40, end='\n\n')
         else:
             warnings.warn(
-                             "missing required files. Some Psypose "
-                             "functionality may be unavailable"
+                "missing required files. Some Psypose "
+                "functionality may be unavailable"
             )
-            
-def move_romp_files(extracted_dir):
-    extracted_dir = Path(extracted_dir)
-    smpl_files = Path(os.path.join(extracted_dir, 'smpl')).iterdir()
-    # transfer all files in smpl dir to the correct ROMP dir within psypose
-    for src in smpl_files:
-        fname = src.name
-        dest = ROMP_DATA_DIR.joinpath('models', 'smpl', fname)
-        src.rename(dest)
-    # move the trained_models dir to the correct ROMP dir within psypose
-    trained_models = Path(os.path.join(extracted_dir, 'trained_models'))
-    dest = ROMP_DATA_DIR.joinpath(trained_models.name)
-    trained_models.rename(dest)
-    shutil.rmtree(extracted_dir)
 
 
 def download_from_gdrive(gdrive_id, dest_path):
@@ -560,16 +537,7 @@ def download_from_gdrive(gdrive_id, dest_path):
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
         z = zipfile.ZipFile(str(dest_path))
-        if 'ROMP' in str(dest_path):
-            z.extractall(ROMP_DATA_DIR)
-            move_romp_files(os.path.join(ROMP_DATA_DIR, 'ROMP_data'))
-        else:
-            z.extractall(PSYPOSE_DATA_DIR)
-
+        z.extractall(PSYPOSE_DATA_DIR)
+        # zipfile.extractall(str(dest_path))
         print(f"removing {dest_path} ...")
         dest_path.unlink()
-
-
-
-
-    

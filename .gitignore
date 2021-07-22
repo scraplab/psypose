@@ -40,4 +40,4 @@ src/psypose/models/__pycache__
 *.idea
 
 venv
-
+src/psypose.egg-info
