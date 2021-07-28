@@ -4,6 +4,7 @@ Tools for formatting the ROMP pose estimation outputs.
 
 from psypose import utils
 import numpy as np
+from scipy.spatial.distance import euclidean
 
 def get_position(body):
     z, x, y = body['cam'][0], body['pj2d'][0][0], body['pj2d'][0][1]

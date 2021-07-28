@@ -47,6 +47,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      ########## Run pose estimation ##########
      
      pose_data = estimate_pose(pose)
+     print("Stitching tracks...")
      pose_data = gather_tracks(pose_data)
      # Split tracks based on shot detection
 
