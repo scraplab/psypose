@@ -1,5 +1,5 @@
-py-feat @ git+https://github.com/LandryBulls/py-feat.git
 ROMP_psypose @ git+https://github.com/scraplab/ROMP.git
+py-feat>=0.3.7
 gdown
 moviepy
 umap-learn
