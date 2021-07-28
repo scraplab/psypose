@@ -22,8 +22,7 @@ from ROMP_psypose.core.test import estimate_pose
 
 from psypose import utils
 from psypose.augment import gather_tracks
-#from psypose.ROMP.src.core.video_romper import estimate_pose
-#from psypose.face_identification import add_face_id
+from psypose.face_identification import add_face_id
 
 import sys
 
