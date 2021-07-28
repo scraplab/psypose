@@ -19,7 +19,7 @@ import networkx as nx
 import glob
 import scipy.stats
 import random
-from keras.preprocessing.image import img_to_array, load_img
+#from keras.preprocessing.image import img_to_array, load_img
 import shutil
 from psypose import utils
 from tqdm import tqdm
@@ -71,6 +71,10 @@ spin_skel = [tuple(i) for i in [
             [22,23],
             [0 ,38],
         ]]
+
+# following skeleton taken from https://github.com/Arthur151/ROMP/blob/173288a795cb15267ba0aa1f6d3a9aeef83c1462/src/constants.py#L166
+smpl24_skeleton = np.array([0,1, 0,2, 0,3, 1,4,4,7,7,10, 2,5,5,8,8,11, 3,6,6,9,9,12,12,15, 12,13,13,16,16,18,18,20,20,22, 12,14,14,17,17,19,19,21,21,23 ]).reshape(-1, 2)
+
 #oPickle = dict(joblib.load(pickle))
 def plot_box(ax_obj, data, fb, color):
     if fb == 'body':
@@ -90,7 +94,7 @@ def track(pose, trackID):
     plt.ion()
     
     pkl = pkl[trackID]
-    joints = pkl['joints3d']
+    joints = pkl['j3d_smpl24']
     boxes = pkl['bboxes']
     track_frames = pkl['frame_ids']
     frameCount = len(track_frames)
@@ -160,7 +164,7 @@ def track(pose, trackID):
         pkl_frame=None
         pkl_frame = joints[fr]
         netDict = {}
-        for i in range(49):
+        for i in range(45):
             netDict.update({i:tuple(pkl_frame[i])})
         graph_dicts.append(netDict)
         sk=''
@@ -168,7 +172,7 @@ def track(pose, trackID):
         sk.add_nodes_from(netDict.keys())
         for n, p in netDict.items():
             sk.nodes[n]['pos']=p
-            sk.add_edges_from(spin_skel)
+            sk.add_edges_from(smpl24_skeleton)
         all_graphs.append(sk)
     
     ts_graph = all_graphs[pose_loc]
@@ -208,7 +212,7 @@ def render_track(pose, track, format='mp4', outdir=None, loop=None):
     #frameCount = pose.n_frames
     fps = pose.fps
     
-    joints = pose.pose_data[track]['joints3d']
+    joints = pose.pose_data[track]['j3d_smpl24']
     frame_ids =  pose.pose_data[track]['frame_ids']
     bboxes = pose.pose_data[track]['bboxes']
     
@@ -230,14 +234,14 @@ def render_track(pose, track, format='mp4', outdir=None, loop=None):
         #plot_box(ax1, bboxes[fr], 'body', 'red')
         
         netDict = {}
-        for i in range(49):
+        for i in range(45):
             netDict.update({i:tuple(pkl_frame[i])})
         sk=None
         sk = nx.Graph()
         sk.add_nodes_from(netDict.keys())
         for n, p in netDict.items():
             sk.nodes[n]['pos']=p
-        sk.add_edges_from(spin_skel)
+        sk.add_edges_from(smpl24_skeleton)
         
         ax2 = fig.add_subplot(122, projection='3d')
         ax2._axis3don = False
@@ -406,13 +410,13 @@ def scatter_fig(fig, x_dat, y_dat, z_dat):
   # this generates a single frame of the 3d skeleton. 
     x, y, z = [i.flatten() for i in [x_dat, y_dat, z_dat]]
     netDict = {}
-    for i in range(49):
+    for i in range(45):
         netDict.update({i:tuple([x[i], y[i], z[i]])})
     sk = nx.Graph()
     sk.add_nodes_from(netDict.keys())
     for n, p in netDict.items():
         sk.nodes[n]['pos']=p
-        sk.add_edges_from(spin_skel)
+        sk.add_edges_from(smpl24_skeleton)
     Edges = list(sk.edges())
     Nodes = list(sk.nodes())
     node_attrs = nx.get_node_attributes(sk, 'pos')
@@ -466,13 +470,13 @@ def scatter_fig_singleframe(fig, x_dat, y_dat, z_dat):
   # this generates a single frame of the 3d skeleton. 
     x, y, z = [i.flatten() for i in [x_dat, y_dat, z_dat]]
     netDict = {}
-    for i in range(49):
+    for i in range(45):
         netDict.update({i:tuple([x[i], y[i], z[i]])})
     sk = nx.Graph()
     sk.add_nodes_from(netDict.keys())
     for n, p in netDict.items():
         sk.nodes[n]['pos']=p
-        sk.add_edges_from(spin_skel)
+        sk.add_edges_from(smpl24_skeleton)
     Edges = list(sk.edges())
     Nodes = list(sk.nodes())
     node_attrs = nx.get_node_attributes(sk, 'pos')
@@ -550,7 +554,7 @@ def body3d_singleframe(fig, pose_data):
 
 def frame3d(pose, track, idx):
     fig = go.Figure()
-    pose_data = pose.pose_data[track]['joints3d'][idx]
+    pose_data = pose.pose_data[track]['j3d_smpl24'][idx]
     body3d_singleframe(fig, pose_data)
     fig.show()
 
@@ -578,28 +582,38 @@ def frame3d(pose, track, idx):
 
 def extract_body_image(array, data):
     # This takes an image in numpy format and a body bbox, crops the image, and scales it down to 100x100
-    abs_h, abs_w = array.shape[0], array.shape[1]
+    abs_w, abs_h = array.shape[0], array.shape[1]
     cx, cy, w, h = [i for i in data]
-    top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
-
+    # make images square for visualization
+    if h > w:
+        stretch = int(h-w)
+        w = h
+        cx-=int(round(stretch/2))
+    elif w > h:
+        stretch = int(w-h)
+        h = w
+        cy+=int(round(stretch/2))
+    top, right, bottom, left = [int(round(i)) for i in [cy-h, cx+w, cy, cx]]
     # Padding images with black if the bbox is out-of-frame
-
     if right > abs_w:
-      r_overhang = right-round(abs_w) + 10
-      array = np.pad(array, ((0,r_overhang),(0,0),(0,0)))
+        r_overhang = right-round(abs_w) + 1
+        array = np.pad(array, ((0,r_overhang),(0,0),(0,0)))
+
     if left < 0:
-      l_overhang = -1*left
-      right-=left
-      left = 0
-      array = np.pad(array, ((l_overhang,0),(0,0),(0,0)))    
+        l_overhang = -1*left
+        right-=left
+        left = 0
+        array = np.pad(array, ((l_overhang,0),(0,0),(0,0)))
+
     if bottom > abs_h:
-      b_overhang = bottom-round(abs_h) + 10
-      array = np.pad(array, ((0,0),(0,b_overhang),(0,0)))
+        b_overhang = bottom-round(abs_h) + 1
+        array = np.pad(array, ((0,0),(0,b_overhang),(0,0)))
+
     if top < 0:
-      t_overhang = -1*top
-      bottom-=top
-      top=0
-      array = np.pad(array, ((0,0),(t_overhang,0),(0,0)))
+        t_overhang = -1*top
+        bottom-=top
+        top=0
+        array = np.pad(array, ((0,0),(t_overhang,0),(0,0)))
 
     new_img = array[top:bottom, left:right, :]
     out_img = utils.resize_image(new_img, (100,100))
@@ -718,14 +732,14 @@ def track3d(pose, track_id, export_to_path=None):
     #vid_array = pose.video_array
     vid = pose.video_cv2
     frame_ids = data['frame_ids']
-    pose_data = data['joints3d']
+    pose_data = data['j3d_smpl24']
     bboxes = data['bboxes']
     n_frames = len(frame_ids)
     vid_shape = pose.video_shape
     #in_data = {'vid':vid_array, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
     in_data = {'vid':vid, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
     fig = pose_subplot(in_data, 0, 'init')
-    frames = [pose_subplot(in_data, i, 'frame') for i in tqdm(range(n_frames), position=0, leave=True)] 
+    frames = [pose_subplot(in_data, i, 'frame') for i in tqdm(range(n_frames), position=0, leave=True)]
     # testing a new pbar implementation
     #plot_progress = [process(token) for token in tqdm(frames)]
     steps = [make_step(i, dur) for i in [frame_ids[j] for j in range(n_frames)]]
