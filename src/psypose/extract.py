@@ -21,6 +21,7 @@ from tqdm import tqdm
 from ROMP_psypose.core.test import estimate_pose
 
 from psypose import utils
+from psypose.augment import gather_tracks
 #from psypose.ROMP.src.core.video_romper import estimate_pose
 #from psypose.face_identification import add_face_id
 
@@ -46,6 +47,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      ########## Run pose estimation ##########
      
      pose_data = estimate_pose(pose)
+     pose_data = gather_tracks(pose_data)
      # Split tracks based on shot detection
 
 
