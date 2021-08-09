@@ -189,10 +189,9 @@ def frame_to_ts(frame, fps):
     return ts
 
 def check_match(bod, fac):
-    # need to update this because of newly added py-feat face detection
     bcx, bcy, bw, bh = [float(i) for i in bod] #body corner is bottom left
     fcx, fcy, fw, fh = [float(i) for i in fac] #face corner is top left
-    top_b, right_b, bottom_b, left_b = [(bcy-bh/2), (bcx+bw/2), (bcy+bh/2), (bcx-bw/2)]
+    top_b, right_b, bottom_b, left_b = [bcy-bh, bcx+bw, bcy, bcx]
     top_f, right_f, bottom_f, left_f = [fcy, fcx+fw, fcy+fh, fcx]
     face_x = (right_f-left_f)/2 + left_f
     face_y = (bottom_f-top_f)/2 + top_f
@@ -233,7 +232,7 @@ def crop_image_wh(array, data):
 def crop_image_body(array, data):
     # you can now just use on crop image function because the body and face bboxes are in the same format
     cx, cy, w, h = [i for i in data]
-    top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
+    top, right, bottom, left = [int(round(i)) for i in [(cy-h), int(cx+w), int(cy), (cx)]]
     new_img = array[top:bottom, left:right, :]
     return new_img
 

@@ -276,10 +276,7 @@ def render_track(pose, track, format='mp4', outdir=None, loop=None):
         if loop == None:
             loop = 0
         imgs[0].save(outdir, save_all=True, append_images=imgs[1:], duration=dur, loop=loop)
-#display_pkl(video, pickle, '00:00:00', '/Users/f004swn/Documents/')
 
-#pickle = '/Users/f004swn/Documents/Code/pose_data/500_cut_unsquish.pkl'
-#video = '/Users/f004swn/Documents/Code/pose_data/500_cut_unsquish.mp4'
 def pkl_to_array(pose):
     data = pose.pose_data
     tracks = len(data)
@@ -621,8 +618,9 @@ def extract_body_image(array, data):
 
 def draw_box(fig, bbox, color='Red'):
     # draws the body bbox on to the left subplot (the video frame)
+    # cx, cy, w, h where the corner is bottom left.
     cx, cy, w, h = [float(i) for i in bbox]
-    top, right, bottom, left = [(cy-h/2), (cx+w/2), (cy+h/2), (cx-w/2)]
+    top, right, bottom, left = int(round(i for i in [(cy-h), (cx+w), (cy), (cx)]))
     fig.add_shape(type="rect", xref="x", yref="y", x0=left, y0=top, x1=right, y1=bottom,
         line=dict(
             color=color,
