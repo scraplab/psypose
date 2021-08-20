@@ -114,7 +114,7 @@ def add_quat(pose_dat):
         for i, pose_vec in enumerate(data['pose']):
             pose_vec = pose_vec.reshape((24,3))
             quats[i] = R.from_rotvec(pose_vec).as_quat()
-        pose_dat[track].update({'quats':quats})
+        pose_dat[track].update({'quaternion':quats})
 
 def gather_tracks(input_data):
     trackifier = Trackifier(input_data)
