@@ -1,10 +1,11 @@
 """
-Tools for formatting the ROMP pose estimation outputs.
+Tools for formatting the ROMP pose estimation outputs, including track-stitching and quaternion calculation.
 """
 
 from psypose import utils
 import numpy as np
 from scipy.spatial.distance import euclidean
+from scipy.spatial.transform import Rotation as R
 
 def get_position(body):
     z, x, y = body['cam'][0], body['pj2d'][0][0], body['pj2d'][0][1]
@@ -106,11 +107,22 @@ class Sequencer(object):
             else:
                 self.kill()
 
+def add_quat(pose_dat):
+    for track, data in pose_dat.items():
+        n_frames = len(data['pose'])
+        quats = np.empty((n_frames,24,4))
+        for i, pose_vec in enumerate(data['pose']):
+            pose_vec = pose_vec.reshape((24,3))
+            quats[i] = R.from_rotvec(pose_vec).as_quat()
+        pose_dat[track].update({'quats':quats})
+
 def gather_tracks(input_data):
     trackifier = Trackifier(input_data)
     trackifier.run_sequencers()
     output_data = trackifier.tracks
+    add_quat(output_data)
     return output_data
+
 
 
 
