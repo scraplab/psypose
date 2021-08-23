@@ -123,6 +123,37 @@ def gather_tracks(input_data):
     add_quat(output_data)
     return output_data
 
+#function to apply to a 1d vector
+def smooth_vector(array):
+    out = []
+    filt = OneEuroFilter()
+    for x in array:
+        out.append(filt.process(x))
+    return np.array(out)
+
+# function to apply to one key (array) of pose object
+def apply_one_euro(array):
+    shape = array.shape
+    smoothed = np.empty(shape)
+    if len(shape)==2:
+        for element in range(shape[1]):
+            smoothed[:,element]=smooth_vector(array[:,element])
+    elif len(shape)==3:
+        for element in range(shape[1]):
+            for vec in range(shape[2]):
+                smoothed[:,element,vec] = smooth_vector(array[:,element,vec])
+    return smoothed
+
+# function to apply to pose object as a whole
+def smooth_pose_data(pose):
+    pose_data = pose.pose_data
+    for track, data in pose_data.items():
+        keys = list(data.keys())
+        keys.remove('frame_ids')
+        for key in keys:
+            pose_data[track][key] = apply_one_euro(pose_data[track][key])
+    return pose
+
 
 
 

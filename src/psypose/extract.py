@@ -21,7 +21,7 @@ from tqdm import tqdm
 from ROMP_psypose.core.test import estimate_pose
 
 from psypose import utils
-from psypose.augment import gather_tracks
+from psypose.augment import gather_tracks, smooth_pose_data
 from psypose.face_identification import add_face_id
 
 import sys
@@ -48,6 +48,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      pose_data = estimate_pose(pose)
      print("Stitching tracks...")
      pose_data = gather_tracks(pose_data)
+     pose_data = smooth_pose_data(pose_data) #applying one euro filter
      # Split tracks based on shot detection
 
 
