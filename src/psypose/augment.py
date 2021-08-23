@@ -183,13 +183,17 @@ def apply_one_euro(array):
 
 # function to apply to pose object as a whole
 def smooth_pose_data(pose):
-    pose_data = pose.pose_data
-    for track, data in pose_data.items():
-        keys = list(data.keys())
-        keys.remove('frame_ids')
-        for key in keys:
-            pose_data[track][key] = apply_one_euro(pose_data[track][key])
-    return pose
+    if pose.smoothed:
+        print('OneEuroFilter has already been applied to pose data.'
+    else:
+        pose_data = pose.pose_data
+        for track, data in pose_data.items():
+            keys = list(data.keys())
+            keys.remove('frame_ids')
+            for key in keys:
+                pose_data[track][key] = apply_one_euro(pose_data[track][key])
+        pose.smoothed = True
+        return pose
 
 
 
