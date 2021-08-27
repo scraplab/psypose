@@ -9,6 +9,7 @@ Functions for the construction of second-order pose data and regressors
 import numpy as np
 import pandas as pd
 import scipy.stats
+from pyquaternion import Quaternion
 from scipy.spatial.distance import pdist, squareform, cdist, euclidean
 from sklearn.cluster import AgglomerativeClustering
 from psypose import utils
@@ -206,12 +207,15 @@ def presence_matrix(pose, character_order, hertz=None):
         auto_appearances_filt = char_frame.take(needed_frames[:-2], axis=0).reset_index(drop=True)
         return auto_appearances_filt
 
+
+static_max = np.sqrt(2)*23
+
 def get_pose_distance(p1, p2):
     # p1 and p2 should just be the vectors
     # may be the normal static vectors or those derived with numpy.gradient()
-    p1, p2 = p1[3:], p2[3:]
-    return euclidean(p1, p2)
-
+    p1, p2 = [Quaternion(i) for i in p1[1:]], [Quaternion(i) for i in p2[1:]]
+    distance = np.sum([(p1[k]-p1[k]).norm for k in range(23)])
+    return distance
 
 def synchrony(pose, type='static'):
     track_occurence = {}
@@ -224,7 +228,7 @@ def synchrony(pose, type='static'):
         track_occurence[frame] = present_tracks
     pose.track_occurence = track_occurence
     if type=='static':
-        max_distance = 26.096028503877093
+        max_distance = np.sqrt(2)*23
     elif type=='dynamic':
         max_distance = 52.19205700775419
     out_vec=[]
@@ -246,7 +250,7 @@ def synchrony(pose, type='static'):
                 for j in range(len(pose_vectors)):
                     sync_arr[i][j] = get_pose_distance(pose_vectors[i], pose_vectors[j])
             val = np.mean(sync_arr[np.tril_indices_from(sync_arr, k=-1)])
-            val = -(2*(val/max_distance)) + 1
+            val = -(2*(val/static_max)) + 1
             out_vec.append(val)
     return np.array(out_vec)
 
