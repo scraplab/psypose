@@ -4,6 +4,7 @@ Tools for formatting the ROMP pose estimation outputs, including track-stitching
 
 from psypose import utils
 import numpy as np
+from quaternion import as_quat_array
 from scipy.spatial.distance import euclidean
 from scipy.spatial.transform import Rotation as R
 
@@ -114,7 +115,7 @@ def add_quaternion(pose_dat):
         for i, pose_vec in enumerate(data['pose']):
             pose_vec = pose_vec.reshape((24,3))
             quats[i] = R.from_rotvec(pose_vec).as_quat()
-        pose_dat[track].update({'quaternion':quats})
+        pose_dat[track].update({'quaternion':as_quat_array(quats)})
     return pose_dat
 
 def gather_tracks(input_data):

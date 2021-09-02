@@ -13,6 +13,7 @@ import cv2
 #import matplotlib
 import nibabel as nib
 from tqdm import tqdm
+from quaternion import as_quat_array
 
 import pandas as pd
 
@@ -71,6 +72,8 @@ class pose(object):
         self.pkl_path = pkl_path
         global pkl_open
         pkl_open = dict(joblib.load(pkl_path))
+        for track_id, data in pkl_open.items():
+            data['quaternion'] = as_quat_array(data['quaternion'])
         self.pose_data = pkl_open
         self.n_tracks = len(pkl_open)
 
