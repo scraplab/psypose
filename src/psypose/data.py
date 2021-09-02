@@ -27,7 +27,6 @@ class pose(object):
         self.is_clustered = False
         self.clusters_named = False
         self.shots = None
-        self.is_smoothed = False
         pass
             
     def load_fmri(self, fmri_path, TR):
