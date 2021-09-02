@@ -32,5 +32,6 @@ torchfile
 plyfile
 munkres
 shyaml
+pyquaternion
 PyYAML>=5.1.2
 numpy==1.20.0
