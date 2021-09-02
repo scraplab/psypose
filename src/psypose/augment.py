@@ -115,6 +115,7 @@ def add_quaternion(pose_dat):
             pose_vec = pose_vec.reshape((24,3))
             quats[i] = R.from_rotvec(pose_vec).as_quat()
         pose_dat[track].update({'quaternion':quats})
+    return pose_dat
 
 def gather_tracks(input_data):
     trackifier = Trackifier(input_data)
