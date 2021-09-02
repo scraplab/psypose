@@ -107,7 +107,7 @@ class Sequencer(object):
             else:
                 self.kill()
 
-def add_quat(pose_dat):
+def add_quaternion(pose_dat):
     for track, data in pose_dat.items():
         n_frames = len(data['pose'])
         quats = np.empty((n_frames,24,4))
@@ -120,7 +120,6 @@ def gather_tracks(input_data):
     trackifier = Trackifier(input_data)
     trackifier.run_sequencers()
     output_data = trackifier.tracks
-    add_quat(output_data)
     return output_data
 
 ################## One Euro Filter ####################
@@ -184,7 +183,7 @@ def apply_one_euro(array):
 # function to apply to pose object as a whole
 def smooth_pose_data(pose):
     if pose.smoothed:
-        print('OneEuroFilter has already been applied to pose data.'
+        print('OneEuroFilter has already been applied to pose data.')
     else:
         pose_data = pose.pose_data
         for track, data in pose_data.items():
@@ -194,7 +193,6 @@ def smooth_pose_data(pose):
                 pose_data[track][key] = apply_one_euro(pose_data[track][key])
         pose.smoothed = True
         return pose
-
 
 
 

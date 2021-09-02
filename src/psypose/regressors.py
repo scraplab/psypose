@@ -227,10 +227,10 @@ def synchrony(pose, type='static'):
                 present_tracks.append(key)
         track_occurence[frame] = present_tracks
     pose.track_occurence = track_occurence
-    if type=='static':
-        max_distance = np.sqrt(2)*23
-    elif type=='dynamic':
-        max_distance = 52.19205700775419
+
+    if type=='dynamic':
+        max_distance = 2*static_max
+
     out_vec=[]
     for frame in range(pose.framecount):
         tracks = track_occurence[frame]
@@ -239,7 +239,7 @@ def synchrony(pose, type='static'):
         else:
             pose_vectors = []
             for track in tracks:
-                track_data = data[track]
+                track_data = data[track] # need to update dynamic
                 if type=='dynamic':
                     track_data['pose_gradient'] = np.gradient(track_data['pose'], axis=0)
                     pose_vectors.append(track_data['pose_gradient'][np.where(track_data['frame_ids']==frame)[0][0]])
