@@ -43,6 +43,9 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      else:
          pose.output_path = output_path
 
+    if save_results:
+        os.makedirs(output_path, exist_ok=True)
+
      ########## Run pose estimation ##########
      
      pose_data = estimate_pose(pose)
@@ -66,8 +69,10 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      # Add pose data to the pose object
      pose.pose_data = pose_data
      pose.n_tracks = len(pose_data)
-     
-     
+
+     if save_results:
+        joblib.dump(pose.pose_data, os.path.join(output_path, 'psypose_bodies.pkl'))
+
      ########## Run face detection + face feature extraction ##########
 
      if extract_aus:
@@ -82,10 +87,8 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      
      ########## Saving results ##########
      if save_results:
-         os.makedirs(output_path+'/'+pose.vid_name, exist_ok=True)
          if extract_aus:
-            pose.face_data.to_csv(output_path+'/'+pose.vid_name+'/psypose_faces.csv')
-         joblib.dump(pose.pose_data, os.path.join(output_path+'/'+pose.vid_name+'/psypose_bodies.pkl'))
+            pose.face_data.to_csv(os.path.join(output_path, 'psypose_faces.csv'))
 
      print('Finished annotation for file: ', os.path.basename(pose.vid_path))
      
