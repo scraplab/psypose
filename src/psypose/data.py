@@ -10,7 +10,6 @@ import os
 import joblib
 import numpy as np
 import cv2
-#import matplotlib
 import nibabel as nib
 from tqdm import tqdm
 from quaternion import as_quat_array
@@ -28,6 +27,7 @@ class pose(object):
         self.is_clustered = False
         self.clusters_named = False
         self.shots = None
+        self.is_raw = False
         pass
             
     def load_fmri(self, fmri_path, TR):
@@ -71,11 +71,14 @@ class pose(object):
     def load_pkl(self, pkl_path):
         self.pkl_path = pkl_path
         global pkl_open
-        pkl_open = dict(joblib.load(pkl_path))
-        for track_id, data in pkl_open.items():
-            data['quaternion'] = as_quat_array(data['quaternion'])
+        pkl_open = joblib.load(pkl_path)
+        if isinstance(pkl_open, list):
+            self.is_raw=True
+        else:
+            for track_id, data in pkl_open.items():
+                data['quaternion'] = as_quat_array(data['quaternion'])
+            self.n_tracks = len(pkl_open)
         self.pose_data = pkl_open
-        self.n_tracks = len(pkl_open)
 
     def reinit_video(self):
         del self.video_cv2

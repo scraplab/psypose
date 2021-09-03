@@ -290,7 +290,7 @@ def write2vid(img_arr, fps, out_name, out_size):
 
 
     
-def get_shots(video_path, downscale_factor=None, threshold=30):
+def get_shots(video_path, downscale_factor=None, threshold=12.0):
     """
     
 
