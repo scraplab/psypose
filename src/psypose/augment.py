@@ -58,9 +58,11 @@ class Trackifier(object):
     def run_sequencers(self):
         len_init = len(self.reference_data[self.cur_frame])
         self.active_sequencers = [Sequencer(self.cur_frame, i, self) for i in range(len_init)]
+        pbar = tqdm(total=self.max_frame)
         while self.cur_frame + 1 < self.max_frame:
             self.cur_frame += 1
             self.advance_set()
+            pbar.update(1)
         for sequencer in self.active_sequencers:
             sequencer.kill()
 
