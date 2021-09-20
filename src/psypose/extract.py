@@ -24,6 +24,9 @@ from psypose import utils
 from psypose.augment import gather_tracks, smooth_pose_data, add_quaternion
 from psypose.face_identification import add_face_id
 
+from multi_person_tracker import MPT
+from multi_person_tracker.data import video to images
+
 import sys
 
 from feat.detector import Detector
@@ -32,7 +35,8 @@ sys.path.append(os.getcwd())
 
 
 def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepface', 
-             every=1, output_path=None, save_results=True, shot_detection=True, extract_aus=True, extract_face_id=True, num_workers=None):
+             every=1, output_path=None, save_results=True, shot_detection=True,
+             person_tracking=True, extract_aus=True, extract_face_id=True, num_workers=None):
 
     # if output path is not defined, a directory named after the input video will be created in whatever directory the script is ran.
      if output_path==None:
@@ -45,6 +49,17 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
 
     if save_results:
         os.makedirs(output_path, exist_ok=True)
+
+     ########## Run person tracking ##########
+     image_folder = video_to_images(pose.vid_path)
+     mpt = MPT(
+         display=True,
+         detector_type='yolo',
+         batch_size=10,
+         yolo_img_size=416
+     )
+
+     tracking_results = mpt(image_folder)
 
      ########## Run pose estimation ##########
      

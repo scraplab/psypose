@@ -1,5 +1,7 @@
 ROMP_psypose @ git+https://github.com/scraplab/ROMP.git
 py-feat @ git+https://github.com/cosanlab/py-feat.git
+multi_person_tracker @ git+https://github.com/mkocabas/multi-person-tracker.git
+yolov3 @ git+https://github.com/mkocabas/yolov3-pytorch.git
 gdown
 moviepy
 umap-learn
