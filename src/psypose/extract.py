@@ -17,15 +17,17 @@ import cv2
 import glob
 import pandas as pd
 from tqdm import tqdm
+import atexit
+import shutil
 
 from ROMP_psypose.core.test import estimate_pose
 
 from psypose import utils
+from psypose.tracking import extract_tracks
 from psypose.augment import gather_tracks, smooth_pose_data, add_quaternion
 from psypose.face_identification import add_face_id
 
 from multi_person_tracker import MPT
-from multi_person_tracker.data import video to images
 
 import sys
 
@@ -33,10 +35,10 @@ from feat.detector import Detector
 
 sys.path.append(os.getcwd())
 
-
 def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepface', 
              every=1, output_path=None, save_results=True, shot_detection=True,
-             person_tracking=True, extract_aus=True, extract_face_id=True, num_workers=None):
+             person_tracking=True, extract_aus=True, extract_face_id=True, num_workers=None,
+             image_folder=None):
 
     # if output path is not defined, a directory named after the input video will be created in whatever directory the script is ran.
      if output_path==None:
@@ -50,8 +52,12 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
     if save_results:
         os.makedirs(output_path, exist_ok=True)
 
+    if not image_folder:
+        image_folder = osp.join(PSYPOSE_DATA_DIR, pose.vid_name)
+
      ########## Run person tracking ##########
-     image_folder = video_to_images(pose.vid_path)
+     image_folder, num_frames, img_shape = utils.video_to_images(pose.vid_path, img_folder=image_folder, return_info=True)
+
      mpt = MPT(
          display=True,
          detector_type='yolo',
@@ -59,7 +65,14 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
          yolo_img_size=416
      )
 
-     tracking_results = mpt(image_folder)
+    def clean_image_folder():
+        if osp.exists(image_folder) and osp.isdir(image_folder):
+            shutil.rmtree(image_folder)
+
+    atexit.register(clean_image_folder)
+    shutil.rmtree(image_folder)
+
+    tracking_results = mpt(image_folder)
 
      ########## Run pose estimation ##########
      
