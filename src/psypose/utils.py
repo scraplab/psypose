@@ -465,6 +465,17 @@ def crop_face(array, data):
     new_img = array[top:bottom, left:right, :]
     return new_img
 
+def get_framecount(vid_path):
+    cap = cv2.VideoCapture(vid_path)
+    fc = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    del cap
+    return fc
+
+def get_image_shape(vid_path):
+    cap = cv2.VideoCapture(vid_path)
+    shape = (int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)))
+    del cap
+    return shape
 
 PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
