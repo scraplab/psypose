@@ -200,6 +200,78 @@ def smooth_pose_data(pose_data):
             pose_data[track][key] = apply_one_euro(pose_data[track][key])
     return pose_data
 
+track_keys = ['cam', 'pose', 'j3d_smpl24', 'j3d_spin24', 'j3d_op25', 'pj2d', 'pj2d_org', 'trans']
+
+
+def track_template(frame_ids):
+    fc = len(frame_ids)
+    track_template = {
+        'frame_ids': frame_ids,
+        'cam': np.empty((fc, 3)),
+        'pose': np.empty((fc, 72)),
+        'j3d_smpl24': np.empty((fc, 45, 3)),
+        'j3d_spin24': np.empty((fc, 24, 3)),
+        'j3d_op25': np.empty((fc, 25, 3)),
+        'pj2d': np.empty((fc, 54, 2)),
+        'pj2d_org': np.empty((fc, 54, 2)),
+        'trans': np.empty((fc, 3)),
+        'fill': np.array([np.nan for i in range(fc)])
+    }
+    for k in track_keys:
+        track_template[k][:] = np.nan
+
+    return track_template
+
+def add_romp_frame(frame_id, body, final_dict):
+    track = body['track_id']
+    frameLoc = np.where(final_dict[track]['frame_ids']==frame_id)[0][0]
+    final_dict[track]['fill'][frameLoc] = 1
+    for k in track_keys:
+        final_dict[track][k][frameLoc] = body[k]
+
+def check_id(mpt_frame):
+    return np.array([int(i[-1]) for i in mpt_frame])
+
+def fuse_bboxes(pose):
+    romp = pose.pose_data
+    mpt = pose.mpt
+    track_detections = []
+    for i in mpt:
+        for j in i:
+            track_detections.append(int(j[-1]))
+    all_tracks = np.unique(track_detections)
+    track_frame_ids = {}
+    for track in all_tracks:
+        track_frame_ids.update({track:np.array([i for i in range(pose.framecount) if track in check_id(mpt[i])])})
+    # all tracks is a list of the unqiue track ID's
+    del track_detections
+    # usable tracks are those that have a detected body in them.
+    usable_tracks = []
+    for f in range(pose.framecount):
+        # get data from both romp and mpt for each frame
+        bodies = romp[f]
+        bboxes = mpt[f]
+        for body in bodies:
+            track_id = 'no_match'
+            j2d = body['pj2d_org']
+            for box in bboxes:
+                bbox = box[:-1]
+                if check_body_match(j2d, bbox):
+                    track_id = box[-1]
+                    break
+            body['track_id'] = track_id
+            if track_id != 'no_match':
+                usable_tracks.append(track_id)
+    output_dict = {}
+    for track, ids in track_frame_ids.items():
+        output_dict.update({track:track_template(ids)})
+    for f, frame in romp.items():
+        for body in frame:
+            if body['track_id'] != 'no_match':
+                add_romp_frame(f, body, output_dict)
+    return output_dict
+
+
 
 
 

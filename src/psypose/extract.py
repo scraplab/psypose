@@ -24,7 +24,7 @@ from ROMP_psypose.core.test import estimate_pose
 
 from psypose import utils
 from psypose.tracking import extract_tracks
-from psypose.augment import gather_tracks, smooth_pose_data, add_quaternion
+from psypose.augment import gather_tracks, smooth_pose_data, add_quaternion, fuse_bboxes
 from psypose.face_identification import add_face_id
 
 import sys
@@ -53,32 +53,14 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
     if not image_folder:
         image_folder = osp.join(PSYPOSE_DATA_DIR, pose.vid_name)
 
-     ########## Run person tracking ##########
-     image_folder, num_frames, img_shape = utils.video_to_images(pose.vid_path, img_folder=image_folder, return_info=True)
-
-     mpt = MPT(
-         display=True,
-         detector_type='yolo',
-         batch_size=10,
-         yolo_img_size=416
-     )
-
-    def clean_image_folder():
-        if osp.exists(image_folder) and osp.isdir(image_folder):
-            shutil.rmtree(image_folder)
-
-    atexit.register(clean_image_folder)
-    shutil.rmtree(image_folder)
-
-    tracking_results = mpt(image_folder)
+    pose.mpt = extract_tracks(pose.vid_path, image_folder=image_folder)
 
      ########## Run pose estimation ##########
      
      pose_data = estimate_pose(pose)
-     print("Stitching tracks...")
-     pose_data = gather_tracks(pose_data)
+     print("Processing output data...")
+     fuse_bboxes(pose)
      pose_data = add_quaternion(pose_data)
-     pose_data = smooth_pose_data(pose_data) #applying one euro filter
      # Split tracks based on shot detection
 
 
@@ -91,8 +73,9 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
         pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
         pose.shots = shots
 
-          
-     # Add pose data to the pose object
+    pose_data = smooth_pose_data(pose_data)  # applying one euro filter
+
+    # Add pose data to the pose object
      pose.pose_data = pose_data
      pose.n_tracks = len(pose_data)
 
