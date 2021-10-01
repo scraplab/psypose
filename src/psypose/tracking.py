@@ -1,19 +1,39 @@
 from psypose import utils
-from psypose.utils import PSYPOSE_DATA_DIR
 
 import os.path as osp
 import shutil
 import atexit
+import glob
+import warnings
 
 from multi_person_tracker import MPT
 
 def extract_tracks(path, image_folder=None):
 
+    needs_parsing=True
+    framecount = utils.get_framecount(path)
     if not image_folder:
-        image_folder = osp.join(PSYPOSE_DATA_DIR, pose.vid_name)
+        warnings.warn(
+            "No image folder location chosen. Images will temporarily be saved to this system's root directory",
+            UserWarning)
+        image_folder = osp.join(utils.PSYPOSE_DATA_DIR, pose.vid_name)
+
+        try:
+            os.makedirs(image_folder, exist_ok=False)
+        except FileExistsError:
+            n_images = len(glob.glob(osp.join(image_folder, '*.png')))
+            if n_images != framecount:
+                warnings.warn('Video partially parsed to images. Deleting existing images and re-running ffmpeg...', UserWarning)
+                shutil.rmtree(path) # delete the folder
+                os.makedirs(image_folder, exist_ok=True)
+            elif n_images == framecount:
+                needs_parsing=False
+                warnings.warn('Video previously parsed. Not re-running ffmpeg.', UserWarning)
+
 
     ########## Run person tracking ##########
-    image_folder, num_frames, img_shape = utils.video_to_images(vid_path, img_folder=image_folder, return_info=True)
+    if needs_parsing:
+        image_folder = utils.video_to_images(vid_path, img_folder=image_folder, return_info=False)
 
     mpt = MPT(
         display=False,

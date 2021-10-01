@@ -27,8 +27,6 @@ from psypose.tracking import extract_tracks
 from psypose.augment import gather_tracks, smooth_pose_data, add_quaternion
 from psypose.face_identification import add_face_id
 
-from multi_person_tracker import MPT
-
 import sys
 
 from feat.detector import Detector
