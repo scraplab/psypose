@@ -9,7 +9,7 @@ import warnings
 
 from multi_person_tracker import MPT
 
-def extract_tracks(path):
+def extract_tracks(path, image_folder=None):
 
     needs_parsing=True
     framecount = utils.get_framecount(path)
