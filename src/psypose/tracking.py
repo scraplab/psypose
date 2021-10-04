@@ -9,9 +9,9 @@ import warnings
 
 from multi_person_tracker import MPT
 
-def extract_tracks(path, image_folder=None):
 
-    needs_parsing=True
+def extract_tracks(path, image_folder=None):
+    needs_parsing = True
     framecount = utils.get_framecount(path)
     if not image_folder:
         warnings.warn(
@@ -24,40 +24,19 @@ def extract_tracks(path, image_folder=None):
         except FileExistsError:
             n_images = len(glob.glob(osp.join(image_folder, '*.png')))
             if n_images != framecount:
-                warnings.warn('Video partially parsed to images. Deleting existing images and re-running ffmpeg...', UserWarning)
-                shutil.rmtree(path) # delete the folder
+                warnings.warn('Video partially parsed to images. Deleting existing images and re-running ffmpeg...',
+                              UserWarning)
+                shutil.rmtree(path)  # delete the folder
                 os.makedirs(image_folder, exist_ok=True)
             elif n_images == framecount:
-                needs_parsing=False
+                needs_parsing = False
                 warnings.warn('Video previously parsed. Not re-running ffmpeg.', UserWarning)
-
 
     ########## Run person tracking ##########
     if needs_parsing:
         image_folder = utils.video_to_images(vid_path, img_folder=image_folder, return_info=False)
-    video_needs_parsing = True
-    if not image_folder:
-        image_folder = osp.join(PSYPOSE_DATA_DIR, osp.basename(path)[:-4])
-        try:
-            os.makedirs(image_folder, exist_ok=False)
-        except FileExistsError:
-            expected_frames = utils.get_framecount(path)
-            present_frames = len(glob.glob(osp.join(image_folder, '*.png')))
-            if (expected_frames != present_frames) and present_frames:
-                warnings.warn('Video only partially parsed to images. Deleting existing images and re-running ffmpeg...', UserWarning)
-                shutil.rmtree(image_folder)
-                os.makedirs(image_folder)
-            elif (expected_frames != present_frames) and not present_frames:
-                os.makedirs(image_folder, exist_ok=True)
-            elif expected_frames == present_frames:
-                video_needs_parsing=False
-
-    ########## Run person tracking ##########
-    if video_needs_parsing:
-        image_folder, num_frames, img_shape = utils.video_to_images(path, img_folder=image_folder, return_info=True)
     else:
         num_frames, img_shape = utils.get_n_frames(path), utils.get_image_shape(path)
->>>>>>> 1b91eee76468f7e585b4f6132e8a9b21a9071121
 
     mpt = MPT(
         display=False,
@@ -73,9 +52,7 @@ def extract_tracks(path, image_folder=None):
     tracking_results = mpt(image_folder)
 
     # delete image folder
-    atexit.register(clean_image_folder) # this will try to delete the folder/images if the script fails for some reason
-    shutil.rmtree(image_folder) # and this deletes the folder if the script is successful
+    atexit.register(clean_image_folder)  # this will try to delete the folder/images if the script fails for some reason
+    shutil.rmtree(image_folder)  # and this deletes the folder if the script is successful
 
     return tracking_results
-
-
