@@ -30,5 +30,4 @@ torchvision
 tensorboard>=2.0
 smplx @ git+https://github.com/ZhengyiLuo/smplx.git
 yolov3 @ git+https://github.com/mkocabas/yolov3-pytorch.git
-torchvision @ git+https://github.com/pytorch/vision.git
 multi_person_tracker @ git+https://github.com/mkocabas/multi-person-tracker.git
