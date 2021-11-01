@@ -393,25 +393,21 @@ def crop_face(array, data):
 PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
-    #'meva_data.zip': '1v6OX9KEK3TsVUK2P9GXp0XVTldxqZ9a9',
-    'ROMP_psypose.zip': '15NN8erm-iBd2r9AxwFms-YxGOIvLCzL5'
+    'meva_data.zip': '1v6OX9KEK3TsVUK2P9GXp0XVTldxqZ9a9',
 }
 
 
 PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
-#MEVA_CFG_DIR = osp.join(osp.dirname(__file__), "MEVA", "meva", "cfg")
-#MEVA_DATA_DIR = osp.join(PSYPOSE_DATA_DIR, 'meva_data')
-ROMP_DATA_DIR = Path(osp.join(osp.dirname(__file__), "ROMP"))
+MEVA_CFG_DIR = osp.join(osp.dirname(__file__), "MEVA", "meva", "cfg")
+MEVA_DATA_DIR = osp.join(PSYPOSE_DATA_DIR, 'meva_data')
 
 def check_data_files(prompt_confirmation=False):
     missing_files = PSYPOSE_DATA_FILES.copy()
     if PSYPOSE_DATA_DIR.is_dir():
         for fname in PSYPOSE_DATA_FILES.keys():
             expected_loc = PSYPOSE_DATA_DIR.joinpath(fname)
-            if 'ROMP' in fname:
-                expected_loc = ROMP_DATA_DIR.joinpath('trained_models') # the demo dir is created if downloaded properly
             if expected_loc.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
-                expected_loc = expected_loc.with_suffix('') 
+                expected_loc = expected_loc.with_suffix('')
             if expected_loc.exists():
                 missing_files.pop(fname)
     if any(missing_files):
@@ -439,8 +435,6 @@ def check_data_files(prompt_confirmation=False):
             errors = {}
             for fname, gdrive_id in missing_files.items():
                 dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
-#                if 'romp' in fname:
-#E                    dest_path = ROMP_DATA_DIR.joinpath(fname)
                 print(f"downloading {fname} ...")
                 try:
                     download_from_gdrive(gdrive_id, dest_path)
@@ -462,20 +456,6 @@ def check_data_files(prompt_confirmation=False):
                              "functionality may be unavailable"
             )
             
-def move_romp_files(extracted_dir):
-    extracted_dir = Path(extracted_dir)
-    smpl_files = Path(os.path.join(extracted_dir, 'smpl')).iterdir()
-    # transfer all files in smpl dir to the correct ROMP dir within psypose
-    for src in smpl_files:
-        fname = src.name
-        dest = ROMP_DATA_DIR.joinpath('models', 'smpl', fname)
-        src.rename(dest)
-    # move the trained_models dir to the correct ROMP dir within psypose
-    trained_models = Path(os.path.join(extracted_dir, 'trained_models'))
-    dest = ROMP_DATA_DIR.joinpath(trained_models.name)
-    trained_models.rename(dest)
-
-
 def download_from_gdrive(gdrive_id, dest_path):
     url = f"https://drive.google.com/uc?id={gdrive_id}"
     gdown.download(url, str(dest_path), quiet=False)
@@ -483,10 +463,7 @@ def download_from_gdrive(gdrive_id, dest_path):
         print(f"extracting {dest_path} ...")
         z = zipfile.ZipFile(str(dest_path))
         z.extractall(PSYPOSE_DATA_DIR)
-        if 'ROMP' in str(dest_path):
-            romp_dir = os.path.join(PSYPOSE_DATA_DIR, 'ROMP_data')
-            move_romp_files(romp_dir)
-
+        #zipfile.extractall(str(dest_path))
         print(f"removing {dest_path} ...")
         dest_path.unlink()
 

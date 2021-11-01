@@ -10,6 +10,7 @@ nibabel
 networkx
 scikit-learn
 scenedetect
+pyyaml
 future
 tqdm
 scipy
@@ -31,18 +32,3 @@ smplx @ git+https://github.com/ZhengyiLuo/smplx.git
 yolov3 @ git+https://github.com/mkocabas/yolov3-pytorch.git
 torchvision @ git+https://github.com/pytorch/vision.git
 multi_person_tracker @ git+https://github.com/mkocabas/multi-person-tracker.git
-opencv-contrib-python
-prettytable
-torchfile
-plyfile
-munkres
-shyaml
-PyYAML>=5.1.2
-numpy-quaternion
-open3d
-pygame
-keyboard
-transforms3d
-bvhtoolbox
-smplx
-vedo
