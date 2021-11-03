@@ -69,7 +69,7 @@ def estimate_pose(pose, save_pkl=False, image_folder=None, output_path=None, tra
 
 
     if not os.path.isfile(video_file):
-        exit(f'Input video \"{video_file}\" does not exist!')
+        sys.exit(f'Input video \"{video_file}\" does not exist!')
 
     filename = os.path.splitext(os.path.basename(video_file))[0]
     #output_path = os.path.join(output_folder, filename)

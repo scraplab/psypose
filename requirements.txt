@@ -4,10 +4,11 @@ moviepy
 umap-learn
 pytube
 jpy-video
-face-recognition
 plotly>=4.14.3
 nibabel
 networkx
+keras==2.6.0
+tensorflow==2.6.0
 scikit-learn
 scenedetect
 pyyaml

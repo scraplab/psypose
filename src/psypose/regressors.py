@@ -212,7 +212,6 @@ def get_pose_distance(p1, p2):
     p1, p2 = p1[3:], p2[3:]
     return euclidean(p1, p2)
 
-
 def synchrony(pose, type='static'):
     track_occurence = {}
     data = pose.pose_data

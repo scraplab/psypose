@@ -1,0 +1,22 @@
+Metadata-Version: 2.1
+Name: psypose
+Version: 0.0.1
+Summary: Tools for processing pose information in psychological research.
+Home-page: http://github.com/scraplab/psypose
+Author: SCRAP Lab
+Author-email: Landry.S.Bulls@dartmouth.edu
+License: MIT
+Project-URL: Bug Tracker, https://github.com/pypa/sampleproject/issues
+Project-URL: Lab Homepage, http://scraplab.org/
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# psypose
+Tools for processing pose estimation for psychological research.
+
+
