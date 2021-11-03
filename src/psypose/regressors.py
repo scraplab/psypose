@@ -10,8 +10,11 @@ import numpy as np
 import pandas as pd
 import scipy.stats
 from scipy.spatial.distance import pdist, squareform, cdist, euclidean
+from scipy.signal import cwt,  morlet2
 from sklearn.cluster import AgglomerativeClustering
+from scipy.spatial.transform import Rotation as R
 from psypose import utils
+import warnings
 import os
 
 def cluster_ID(pose, metric='cosine', linkage='average', overwrite=False, use_cooccurence=True):
@@ -248,6 +251,71 @@ def synchrony(pose, type='static'):
             val = -(2*(val/max_distance)) + 1
             out_vec.append(val)
     return np.array(out_vec)
+
+def add_quat(pose_dat):
+    for track, data in pose_dat.items():
+        n_frames = len(data['pose'])
+        quats = np.empty((n_frames,24,4))
+        for i, pose_vec in enumerate(data['pose']):
+            pose_vec = pose_vec.reshape((24,3))
+            quats[i] = R.from_rotvec(pose_vec).as_quat()
+        pose_dat[track].update({'quats':quats})
+
+def pose_to_wavelet_matrix(quaternion_matrix, num_windows=10, min_window_width=10, max_window_width=90):
+    n_frames = int(quaternion_matrix.shape[0])
+    pose_power_spectrum = np.empty((num_windows*20*4, n_frames))
+    idx = 0
+    for joint in range(20):
+        for quat in range(4):
+            timeseries = quaternion_matrix[:,joint,quat]
+            if quat==3:
+                theta_mean = np.mean(timeseries)
+                timeseries = timeseries - theta_mean
+            joint_power_spectrum = series_to_wavelets(timeseries,
+                                                      num_windows=num_windows,
+                                                      min_window_width=min_window_width,
+                                                      max_window_width=max_window_width)
+            pose_power_spectrum[idx:idx+num_windows] = joint_power_spectrum
+            idx+=num_windows
+    return pose_power_spectrum
+
+def calculate_meta_synchrony(A, B, frame_range='all', **kwargs):
+    trackA = dict(A)
+    trackB = dict(B)
+    framesA, framesB = trackA['frame_ids'], trackB['frame_ids']
+    if frame_range != 'all':
+        assert isinstance(frame_range, tuple), 'If not "all", please input frame_range as tuple. Eg: (in_frame, out_frame).'
+        framelist = np.arange(frame_range[0], frame_range[1])
+        frameLocsA, frameLocsB = np.where(np.isin(framesA, framelist))[0], np.where(np.isin(framesB, framelist))[0]
+        for key, value in trackA.items():
+            trackA[key] = value[frameLocsA]
+        for key, value in trackB.items():
+            trackB[key] = value[frameLocsB]
+        framecount = len(framelist)
+    else:
+        framecount = len(framesA)
+    if framecount < 150:
+        warnings.warn("If framecount is too small, meta-synchrony will likely be innacurate and reflect a parabolic shape.")
+    assert len(trackA['frame_ids']) == len(trackB['frame_ids']), "Tracks are of different framecounts. Please set frame range as a tuple."
+    trackA, trackB = trackA['quaternion'], trackB['quaternion']
+    wavematA, wavematB = pose_to_wavelet_matrix(trackA, **kwargs), pose_to_wavelet_matrix(trackB, **kwargs)
+    meta = np.corrcoef(wavematA.T, wavematB.T)[:framecount, :framecount][0]
+    return meta
+
+
+class Synchrony(object, pose):
+    def __init__(self):
+        self.roi = 'body'
+        self.pose = pose
+
+        pass
+
+    def set_roi(self, roi):
+        self.roi = roi
+
+    def set
+
+
 
 
 
