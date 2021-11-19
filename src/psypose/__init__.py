@@ -13,9 +13,10 @@ __all__ = ['extract', 'data', 'utils', 'display', 'regressors', 'MEVA', 'ROMP']
 #import gdown
 #import os
 #import shutil
-from psypose.utils import check_data_files
+from psypose.utils import check_data_files, check_romp_installation
 
 check_data_files()
+check_romp_installation()
 
 #from psypose.data import pose
 #from psypose.extract import annotate
