@@ -512,9 +512,10 @@ def check_romp_installation():
         None
     else:
         print('Psypose needs to download the ROMP software package. Downloading now...')
-        dl_git_file('https://github.com/Arthur151/ROMP/releases/download/v1.1/source_code.zip', POSE_EST_DIR.joinpath('source_code.zip'), POSE_EST_DIR)
+        os.mkdir(str(ROMP_REPO_DIR))
+        dl_git_file('https://github.com/Arthur151/ROMP/releases/download/v1.1/source_code.zip', POSE_EST_DIR.joinpath('source_code.zip'), ROMP_REPO_DIR)
         if not os.path.isdir(ROMP_REPO_DIR.joinpath('model_data')):
-            dl_git_file('https://github.com/Arthur151/ROMP/releases/download/v1.1/model_data.zip', POSE_EST_DIR.joinpath('model_data.zip'), POSE_EST_DIR)
+            dl_git_file('https://github.com/Arthur151/ROMP/releases/download/v1.1/model_data.zip', POSE_EST_DIR.joinpath('model_data.zip'), ROMP_REPO_DIR)
 
 def check_data_files(prompt_confirmation=False):
     missing_files = PSYPOSE_DATA_FILES.copy()
