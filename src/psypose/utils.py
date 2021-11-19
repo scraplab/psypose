@@ -30,6 +30,7 @@ from io import BytesIO
 import shutil
 import torchvision
 import torch
+import urllib.request
 
 def convert_cam_to_3d_trans(cams, weight=2.):
     trans3d = []
@@ -202,7 +203,7 @@ def check_match(bod, fac):
     else:
         return False
     
-def frame2array(frame_no, video_opened):
+def  ay(frame_no, video_opened):
     # returns a video from as a numpy array in uint8
     video_opened.set(cv2.CAP_PROP_POS_FRAMES,frame_no)
     ret, frame = video_opened.read()
@@ -489,7 +490,31 @@ PSYPOSE_DATA_FILES = {
 }
 
 PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
+this_dir = Path(os.path.dirname(__file__))
+POSE_EST_DIR = Path(os.path.join(this_dir, 'pose_estimation'))
+ROMP_REPO_DIR = Path(os.path.join(POSE_EST_DIR, 'romp'))
 
+
+def dl_git_file(link, dest_path, unzip_path):
+    """
+    Downloads a zipped file from github and unzips it.
+    link: Link to file.
+    dest_path: where you want the zip file to go
+    unzip_path: where you want to put the contents of the zipped file
+    """
+    urllib.request.urlretrieve(link, dest_path)
+    z = zipfile.ZipFile(str(dest_path))
+    z.extractall(str(unzip_path))
+    os.remove(dest_path)
+
+def check_romp_installation():
+    if os.path.isdir(ROMP_REPO_DIR):
+        None
+    else:
+        print('Psypose needs to download the ROMP software package. Downloading now...')
+        dl_git_file('https://github.com/Arthur151/ROMP/releases/download/v1.1/source_code.zip', POSE_EST_DIR.joinpath('source_code.zip'), POSE_EST_DIR)
+        if not os.path.isdir(ROMP_REPO_DIR.joinpath('model_data')):
+            dl_git_file('https://github.com/Arthur151/ROMP/releases/download/v1.1/model_data.zip', POSE_EST_DIR.joinpath('model_data.zip'), POSE_EST_DIR)
 
 def check_data_files(prompt_confirmation=False):
     missing_files = PSYPOSE_DATA_FILES.copy()
