@@ -41,4 +41,3 @@ src/psypose/models/__pycache__
 
 venv
 src/psypose.egg-info
-src/psypose/pose_estimation
