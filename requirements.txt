@@ -6,7 +6,6 @@ umap-learn
 pytube
 jpy-video
 plotly>=4.14.3
-nibabel
 networkx
 scikit-learn
 scenedetect
@@ -15,7 +14,6 @@ numba
 #pytube
 h5py
 opencv-contrib-python
-prettytable
 torchfile
 plyfile
 munkres
@@ -38,7 +36,7 @@ scipy==1.7.0
 pyyaml==5.3.1
 yacs==0.1.8
 matplotlib==3.4.2
-scikit-image==0.17.2
+scikit-image>=0.18.0
 pillow==8.2.0
 pytorch-lightning==1.1.8
 numba==0.54.1
