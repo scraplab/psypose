@@ -15,6 +15,7 @@ zip_address = 'https://www.dropbox.com/s/aeulffqzb3zmh8x/pare-github-data.zip'
 zip_path = osp.join(pare_loc, 'pare-github-data.zip')
 
 def install_pare_models():
+    os.mkdir(osp.join(pare_loc, 'data'))
     os.mkdir(osp.join(pare_loc, 'data/dataset_folders'))
     r = requests.get(zip_address)
 
