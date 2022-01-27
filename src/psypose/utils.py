@@ -492,7 +492,7 @@ PSYPOSE_DATA_FILES = {
 PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
 
 
-def check_data_files(prompt_confirmation=False):
+def check_data_files(prompt_confirmation=True):
     missing_files = PSYPOSE_DATA_FILES.copy()
     if PSYPOSE_DATA_DIR.is_dir():
         for fname in PSYPOSE_DATA_FILES.keys():

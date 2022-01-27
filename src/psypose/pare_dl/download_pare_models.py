@@ -15,20 +15,20 @@ zip_address = 'https://www.dropbox.com/s/aeulffqzb3zmh8x/pare-github-data.zip'
 zip_path = osp.join(pare_loc, 'pare-github-data.zip')
 
 def install_pare_models():
-    os.makedirs(osp.join(pare_loc, 'data/dataset_folders'))
-    r = requests.get(zip_address)
-
-    with open(zip_path, 'wb') as f:
-        f.write(r.content)
+    # r = requests.get(zip_address)
+    #
+    # with open(zip_path, 'wb') as f:
+    #     f.write(r.content)
+    print('Downloading PARE data...\n')
+    os.system('wget https://www.dropbox.com/s/aeulffqzb3zmh8x/pare-github-data.zip -P '+pare_loc)
 
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(pare_loc)
 
-    os.mkdir(osp.join(torch_loc, 'models'))
-    shutil.move(osp.join(pare_loc, 'data/yolov3.weights'), osp.join(torch_loc, models, 'yolov3.weights'))
+    os.makedirs(osp.join(torch_loc, 'models'), exist_ok=True)
+    shutil.move(osp.join(pare_loc, 'data/yolov3.weights'), osp.join(torch_loc, 'models', 'yolov3.weights'))
 
     os.remove(zip_path)
-
-
+    os.makedirs(osp.join(pare_loc, 'data/dataset_folders'), exist_ok=True)
 
 
