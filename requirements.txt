@@ -1,5 +1,4 @@
 py-feat @ git+https://github.com/cosanlab/py-feat.git
-yolov3 @ git+https://github.com/mkocabas/yolov3-pytorch.git
 pare @ git+https://github.com/mkocabas/PARE.git
 gdown
 moviepy
