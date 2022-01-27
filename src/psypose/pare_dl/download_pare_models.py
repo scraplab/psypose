@@ -9,6 +9,8 @@ import shutil
 pare_loc = osp.dirname(pare.__file__)
 torch_loc = osp.dirname(torch.__file__)
 
+pare_status = osp.exists(osp.join(pare_loc, 'data/dataset_folders'))
+
 zip_address = 'https://www.dropbox.com/s/aeulffqzb3zmh8x/pare-github-data.zip'
 zip_path = osp.join(pare_loc, 'pare-github-data.zip')
 

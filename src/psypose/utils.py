@@ -30,7 +30,7 @@ from io import BytesIO
 import shutil
 import torchvision
 import torch
-from psypose.pare_dl.download_pare_models import install_pare_models
+from psypose.pare_dl.download_pare_models import install_pare_models, pare_status
 
 def convert_cam_to_3d_trans(cams, weight=2.):
     trans3d = []
@@ -548,22 +548,23 @@ def check_data_files(prompt_confirmation=False):
             )
 
 def check_pare_install():
-    msg = (
-        f"Pare needs to download model weights in order to run. Do you want to download them now?\n[Y/n] \n "
-    )
-    response = input(msg).lower().strip()
-    if response in ('y', ''):
-        confirmed = True
-        break
-    elif response == 'n':
-        confirmed = False
-        break
+    if not pare_status:
+        msg = (
+            f"Pare needs to download model weights in order to run. Do you want to download them now?\n[Y/n] \n "
+        )
+        response = input(msg).lower().strip()
+        if response in ('y', ''):
+            confirmed = True
+        elif response == 'n':
+            confirmed = False
+        else:
+            confirmed = True
+        if confirmed:
+            install_pare_models()
+        else:
+            print('Psypose will try to download PARE in the future.\n\n')
     else:
-        confirmed = True
-    if confirmed:
-        install_pare_models()
-    else:
-        print('Psypose will try to donwload PARE in the future.\n\n')
+        None
 
 
 def download_from_gdrive(gdrive_id, dest_path):
