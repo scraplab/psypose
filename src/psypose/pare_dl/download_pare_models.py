@@ -19,7 +19,7 @@ def install_pare_models():
     r = requests.get(zip_address)
 
     with open(zip_path, 'wb') as f:
-        r.write(r.content)
+        f.write(r.content)
 
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(pare_loc)
