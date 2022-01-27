@@ -13,6 +13,7 @@ from multi_person_tracker import MPT
 def extract_tracks(path, image_folder=None):
     needs_parsing = True
     framecount = utils.get_framecount(path)
+    image_folder
     if not image_folder:
         warnings.warn(
             "No image folder location chosen. Images will temporarily be saved to this system's root directory",
@@ -34,7 +35,7 @@ def extract_tracks(path, image_folder=None):
 
     ########## Run person tracking ##########
     if needs_parsing:
-        image_folder = utils.video_to_images(vid_path, img_folder=image_folder, return_info=False)
+        image_folder = utils.video_to_images(path, img_folder=image_folder, return_info=False)
     else:
         num_frames, img_shape = utils.get_n_frames(path), utils.get_image_shape(path)
 
