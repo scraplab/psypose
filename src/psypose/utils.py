@@ -549,7 +549,7 @@ def check_data_files(prompt_confirmation=False):
 
 def check_pare_install():
     msg = (
-        f"Pare needs to download model weights in order to run. Do you want to download them now?}\n[Y/n] \n "
+        f"Pare needs to download model weights in order to run. Do you want to download them now?\n[Y/n] \n "
     )
     response = input(msg).lower().strip()
     if response in ('y', ''):
