@@ -19,6 +19,8 @@ plyfile
 munkres
 shyaml
 pyquaternion
+quaternion
+numpy-quaternion
 numpy
 
 # pare-specific reqs

@@ -21,7 +21,7 @@ from tqdm import tqdm
 import atexit
 import shutil
 
-from ROMP_psypose.core.test import estimate_pose
+from psypose.pose_estimation import estimate_pose
 
 from psypose import utils
 #from psypose.tracking import extract_tracks
