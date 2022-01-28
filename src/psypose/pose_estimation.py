@@ -89,7 +89,7 @@ parser.add_argument('--batch_size', type=int, default=16,
 parser.add_argument('--display', type=bool, default=False,
                     help='visualize the results of each step during demo')
 
-parser.add_argument('--smooth', type=bool, default=True
+parser.add_argument('--smooth', type=bool, default=True,
                     help='smooth the results to prevent jitter')
 
 parser.add_argument('--min_cutoff', type=float, default=0.004,

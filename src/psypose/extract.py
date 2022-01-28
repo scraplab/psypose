@@ -37,7 +37,7 @@ sys.path.append(os.getcwd())
 def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepface', 
              every=1, output_path=None, save_results=True, shot_detection=True,
              person_tracking=True, extract_aus=True, extract_face_id=True, num_workers=None,
-             image_folder=None):
+             smooth=True, image_folder=None):
 
 
     # if output path is not defined, a directory named after the input video will be created in whatever directory the script is ran.
@@ -64,14 +64,14 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
         tqdm.write("Detecting shots...")
         shots = utils.get_shots(pose.vid_path)
         # Here, shots is a list of tuples (each tuple contains the in and out frames of each shot)
-        pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
+        #pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
         pose.shots = shots
 
      ########## Run pose estimation ##########
-
+    pose.smooth = smooth
     pose_data = estimate_pose(pose)
     print("Processing output data...")
-    fuse_bboxes(pose)
+    #fuse_bboxes(pose)
     pose_data = add_quaternion(pose_data)
     # Split tracks based on shot detection
 

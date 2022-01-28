@@ -1,5 +1,5 @@
 py-feat @ git+https://github.com/cosanlab/py-feat.git
-pare @ git+https://github.com/mkocabas/PARE.git
+pare @ git+https://github.com/LandryBulls/PARE.git@pare_scrap
 gdown
 moviepy
 umap-learn
@@ -22,6 +22,8 @@ pyquaternion
 quaternion
 numpy-quaternion
 numpy
+keras
+tensorflow
 
 # pare-specific reqs
 torch==1.6.0
