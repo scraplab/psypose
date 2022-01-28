@@ -38,7 +38,7 @@ yacs==0.1.8
 matplotlib==3.4.2
 scikit-image
 pillow==8.2.0
-pytorch-lightning==1.1.8
+pytorch-lightning
 numba==0.54.1
 filterpy==1.4.5
 flatten-dict==0.2.0

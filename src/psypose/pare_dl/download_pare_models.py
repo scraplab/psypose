@@ -30,5 +30,6 @@ def install_pare_models():
 
     os.remove(zip_path)
     os.makedirs(osp.join(pare_loc, 'data/dataset_folders'), exist_ok=True)
+    print('Complete.')
 
 

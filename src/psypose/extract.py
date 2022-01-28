@@ -24,8 +24,8 @@ import shutil
 from ROMP_psypose.core.test import estimate_pose
 
 from psypose import utils
-from psypose.tracking import extract_tracks
-from psypose.augment import gather_tracks, smooth_pose_data, add_quaternion, fuse_bboxes
+#from psypose.tracking import extract_tracks
+from psypose.augment import add_quaternion
 from psypose.face_identification import add_face_id
 
 import sys
@@ -38,6 +38,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
              every=1, output_path=None, save_results=True, shot_detection=True,
              person_tracking=True, extract_aus=True, extract_face_id=True, num_workers=None,
              image_folder=None):
+
 
     # if output path is not defined, a directory named after the input video will be created in whatever directory the script is ran.
     if output_path==None:
@@ -55,11 +56,19 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
         image_folder = osp.join(utils.PSYPOSE_DATA_DIR, pose.vid_name)
     else:
         image_folder = osp.join(image_folder, pose.vid_name)
+    pose.image_folder = image_folder
 
-    pose.mpt = extract_tracks(pose.vid_path, image_folder=image_folder)
+    ########## Run shot detection ##########
+    pose.shot_detection = shot_detection
+    if shot_detection:
+        tqdm.write("Detecting shots...")
+        shots = utils.get_shots(pose.vid_path)
+        # Here, shots is a list of tuples (each tuple contains the in and out frames of each shot)
+        pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
+        pose.shots = shots
 
      ########## Run pose estimation ##########
-     
+
     pose_data = estimate_pose(pose)
     print("Processing output data...")
     fuse_bboxes(pose)
@@ -67,16 +76,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
     # Split tracks based on shot detection
 
 
-     ########## Run shot detection ##########
-     
-    if shot_detection:
-        tqdm.write("Detecting shots...")
-        shots = utils.get_shots(pose.vid_path)
-    # Here, shots is a list of tuples (each tuple contains the in and out frames of each shot)
-        pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
-        pose.shots = shots
-
-    pose_data = smooth_pose_data(pose_data)  # applying one euro filter
+    #pose_data = smooth_pose_data(pose_data)  # applying one euro filter
 
     # Add pose data to the pose object
     pose.pose_data = pose_data
