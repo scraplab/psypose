@@ -70,6 +70,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      ########## Run pose estimation ##########
     pose.smooth = smooth
     pose_data = estimate_pose(pose)
+    joblib.dump(pose_data, 'raw_pare_bb.pkl')
     print("Processing output data...")
     #fuse_bboxes(pose)
     pose_data = add_quaternion(pose_data)
