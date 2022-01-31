@@ -431,14 +431,18 @@ def split_track(idx, track):
 def split_tracks(data, shots):
     tracks_split = []
     num_splits = 0
+    track_labels = list(data.keys())
+    # frame key could be either 'frames' or 'frame_ids' - checking that here
+    frame_label = str([i for i in list(data[track_labels[0]].keys()) if 'frame' in i][0])
+    #frame_label='frames'
     for track in data:
         split = False
-        frames = data[track]['frame_ids']
+        frames = data[track][frame_label]
         for shot in shots:
             out = shot[1]-1
             if (out in frames) and (frames[-1] != out): # if the last frame in a shot is not the last frame in a track,
                 split = True
-                cut_idx = np.where(frames==out)[0][0] + 1 # not sure if this is the problem
+                cut_idx = np.where(frames==out)[0][0] + 1
                 first_half, second_half = split_track(cut_idx, data[track])
                 track_segmented = [first_half, second_half]
         if split:

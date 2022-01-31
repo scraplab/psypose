@@ -194,7 +194,8 @@ def estimate_pose(pose):
         total_time = time.time()
         tracking_results = tester.run_tracking(video_file, input_image_folder)
         if args.shot_detection:
-            tracking_results = split_tracks(tracking_results, pose.shots)
+            print('\n'+'\033[1m'+'Splitting tracks based on shot detection...\n')
+            tracking_results, pose.num_splits = split_tracks(tracking_results, pose.shots)
         pare_time = time.time()
         pare_results = tester.run_on_video(tracking_results, input_image_folder, orig_width, orig_height)
         if not args.save_vertices:
@@ -232,6 +233,7 @@ def estimate_pose(pose):
             shutil.rmtree(output_img_folder)
 
         shutil.rmtree(input_image_folder)
+        return pare_results
     elif args.mode == 'folder':
         logger.info(f'Number of input frames {num_frames}')
 
