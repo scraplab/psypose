@@ -124,12 +124,12 @@ def gather_tracks(input_data):
     return output_data
 
 def add_quaternion(pose_dat):
+    # PARE represents each joint as a rotation matrix (docs say otherwise but oh well)
     for track, data in pose_dat.items():
         n_frames = len(data['pose'])
         quats = np.empty((n_frames,24,4))
-        for i, pose_vec in enumerate(data['pose']):
-            pose_vec = pose_vec.reshape((24,3))
-            quats[i] = R.from_rotvec(pose_vec).as_quat()
+        for frame in range(n_frames):
+            quats[frame] = np.array([R.from_matrix(data['pose'][frame][joint]).as_quat() for joint in range(24)])
         pose_dat[track].update({'quaternion':as_quat_array(quats)})
     return pose_dat
 
