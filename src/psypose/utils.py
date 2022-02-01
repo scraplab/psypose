@@ -232,8 +232,10 @@ def crop_image_wh(array, data):
 
 def crop_image_body(array, data):
     # you can now just use on crop image function because the body and face bboxes are in the same format
+    #cx, cy, w, h = [float(i) for i in data]
+    #top, right, bottom, left = [int(round(i)) for i in [(cy - h / 2), (cx + w / 2), (cy + h / 2), (cx - w / 2)]]
     cx, cy, w, h = [i for i in data]
-    top, right, bottom, left = [int(round(i)) for i in [(cy-h), int(cx+w), int(cy), (cx)]]
+    top, right, bottom, left = [int(round(i)) for i in [cy, cx+w, cy+h, cx]]
     new_img = array[top:bottom, left:right, :]
     return new_img
 
