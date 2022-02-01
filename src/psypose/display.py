@@ -94,7 +94,7 @@ def track(pose, trackID):
     plt.ion()
     
     pkl = pkl[trackID]
-    joints = pkl['j3d_smpl24']
+    joints = pkl['joints3d']
     boxes = pkl['bboxes']
     track_frames = pkl['frame_ids']
     frameCount = len(track_frames)
@@ -172,7 +172,7 @@ def track(pose, trackID):
         sk.add_nodes_from(netDict.keys())
         for n, p in netDict.items():
             sk.nodes[n]['pos']=p
-            sk.add_edges_from(smpl24_skeleton)
+            sk.add_edges_from(spin_skel)
         all_graphs.append(sk)
     
     ts_graph = all_graphs[pose_loc]
@@ -212,7 +212,7 @@ def render_track(pose, track, format='mp4', outdir=None, loop=None):
     #frameCount = pose.n_frames
     fps = pose.fps
     
-    joints = pose.pose_data[track]['j3d_smpl24']
+    joints = pose.pose_data[track]['joints3d']
     frame_ids =  pose.pose_data[track]['frame_ids']
     bboxes = pose.pose_data[track]['bboxes']
     
@@ -241,7 +241,7 @@ def render_track(pose, track, format='mp4', outdir=None, loop=None):
         sk.add_nodes_from(netDict.keys())
         for n, p in netDict.items():
             sk.nodes[n]['pos']=p
-        sk.add_edges_from(smpl24_skeleton)
+        sk.add_edges_from(spin_skel)
         
         ax2 = fig.add_subplot(122, projection='3d')
         ax2._axis3don = False
@@ -413,7 +413,7 @@ def scatter_fig(fig, x_dat, y_dat, z_dat):
     sk.add_nodes_from(netDict.keys())
     for n, p in netDict.items():
         sk.nodes[n]['pos']=p
-        sk.add_edges_from(smpl24_skeleton)
+        sk.add_edges_from(spin_skel)
     Edges = list(sk.edges())
     Nodes = list(sk.nodes())
     node_attrs = nx.get_node_attributes(sk, 'pos')
@@ -473,7 +473,7 @@ def scatter_fig_singleframe(fig, x_dat, y_dat, z_dat):
     sk.add_nodes_from(netDict.keys())
     for n, p in netDict.items():
         sk.nodes[n]['pos']=p
-        sk.add_edges_from(smpl24_skeleton)
+        sk.add_edges_from(spin_skel)
     Edges = list(sk.edges())
     Nodes = list(sk.nodes())
     node_attrs = nx.get_node_attributes(sk, 'pos')
@@ -551,7 +551,7 @@ def body3d_singleframe(fig, pose_data):
 
 def frame3d(pose, track, idx):
     fig = go.Figure()
-    pose_data = pose.pose_data[track]['j3d_smpl24'][idx]
+    pose_data = pose.pose_data[track]['joints3d'][idx]
     body3d_singleframe(fig, pose_data)
     fig.show()
 
@@ -579,38 +579,28 @@ def frame3d(pose, track, idx):
 
 def extract_body_image(array, data):
     # This takes an image in numpy format and a body bbox, crops the image, and scales it down to 100x100
-    abs_w, abs_h = array.shape[0], array.shape[1]
+    abs_h, abs_w = array.shape[0], array.shape[1]
     cx, cy, w, h = [i for i in data]
-    # make images square for visualization
-    if h > w:
-        stretch = int(h-w)
-        w = h
-        cx-=int(round(stretch/2))
-    elif w > h:
-        stretch = int(w-h)
-        h = w
-        cy+=int(round(stretch/2))
-    top, right, bottom, left = [int(round(i)) for i in [cy-h, cx+w, cy, cx]]
+    top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
+
     # Padding images with black if the bbox is out-of-frame
+
     if right > abs_w:
-        r_overhang = right-round(abs_w) + 1
-        array = np.pad(array, ((0,r_overhang),(0,0),(0,0)))
-
+      r_overhang = right-round(abs_w) + 10
+      array = np.pad(array, ((0,r_overhang),(0,0),(0,0)))
     if left < 0:
-        l_overhang = -1*left
-        right-=left
-        left = 0
-        array = np.pad(array, ((l_overhang,0),(0,0),(0,0)))
-
+      l_overhang = -1*left
+      right-=left
+      left = 0
+      array = np.pad(array, ((l_overhang,0),(0,0),(0,0)))
     if bottom > abs_h:
-        b_overhang = bottom-round(abs_h) + 1
-        array = np.pad(array, ((0,0),(0,b_overhang),(0,0)))
-
+      b_overhang = bottom-round(abs_h) + 10
+      array = np.pad(array, ((0,0),(0,b_overhang),(0,0)))
     if top < 0:
-        t_overhang = -1*top
-        bottom-=top
-        top=0
-        array = np.pad(array, ((0,0),(t_overhang,0),(0,0)))
+      t_overhang = -1*top
+      bottom-=top
+      top=0
+      array = np.pad(array, ((0,0),(t_overhang,0),(0,0)))
 
     new_img = array[top:bottom, left:right, :]
     out_img = utils.resize_image(new_img, (100,100))
@@ -730,7 +720,7 @@ def track3d(pose, track_id, export_to_path=None):
     #vid_array = pose.video_array
     vid = pose.video_cv2
     frame_ids = data['frame_ids']
-    pose_data = data['j3d_smpl24']
+    pose_data = data['joints3d']
     bboxes = data['bboxes']
     n_frames = len(frame_ids)
     vid_shape = pose.video_shape
