@@ -190,10 +190,12 @@ def frame_to_ts(frame, fps):
     return ts
 
 def check_match(bod, fac):
-    bcx, bcy, bw, bh = [float(i) for i in bod] #body corner is bottom left
-    fcx, fcy, fw, fh = [float(i) for i in fac] #face corner is top left
-    top_b, right_b, bottom_b, left_b = [bcy-bh, bcx+bw, bcy, bcx]
+    bcx, bcy, bw, bh = [float(i) for i in bod] # body corner is bottom left
+    fcx, fcy, fw, fh = [float(i) for i in fac] # face corner is top left
+
+    top_b, right_b, bottom_b, left_b = [(bcy-bh/2), (bcx+bw/2), (bcy+bh/2), (bcx-bw/2)]
     top_f, right_f, bottom_f, left_f = [fcy, fcx+fw, fcy+fh, fcx]
+
     face_x = (right_f-left_f)/2 + left_f
     face_y = (bottom_f-top_f)/2 + top_f
 
