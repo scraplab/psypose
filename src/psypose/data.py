@@ -74,10 +74,10 @@ class pose(object):
         pkl_open = joblib.load(pkl_path)
         if isinstance(pkl_open, list):
             self.is_raw=True
-        else:
-            for track_id, data in pkl_open.items():
-                data['quaternion'] = as_quat_array(data['quaternion'])
-            self.n_tracks = len(pkl_open)
+        # else:
+        #     for track_id, data in pkl_open.items():
+        #         data['quaternion'] = as_quat_array(data['quaternion'])
+        self.n_tracks = len(pkl_open)
         self.pose_data = pkl_open
 
     def reinit_video(self):
