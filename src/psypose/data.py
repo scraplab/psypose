@@ -114,9 +114,6 @@ class pose(object):
         if self.pose_data is not None:
             out_obj['pose_data'] = self.pose_data
 
-        if output_path=='.':
-            output_path = os.getcwd()
-
         if not save_as:
             save_as = os.path.join(os.getcwd(), self.vid_name) + '.pose'
 
