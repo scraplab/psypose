@@ -67,6 +67,7 @@ def face_model(mod_weights):
 
 vgg_model = face_model(modelfile)
 
+
 def encode(array):
     # this will convert cv2 arrays into a format readable to the VGG NN
     array = cv2.resize(array, dsize=(224,224), interpolation=cv2.INTER_CUBIC)

@@ -107,11 +107,11 @@ class pose(object):
         out_obj['fps'] = self.fps
         out_obj['video_time'] = self.video_time
         out_obj['video_shape'] = self.video_shape
-        if self.face_data:
+        if self.face_data is not None:
             out_obj['face_data'] = self.face_data
-            if self.face_data_path:
+            if self.face_data_path is not None:
                 out_obj['face_data_path'] = self.face_data_path
-        if self.pose_data:
+        if self.pose_data is not None:
             out_obj['pose_data'] = self.pose_data
 
         if output_path=='.':
