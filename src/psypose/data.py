@@ -126,7 +126,7 @@ class pose(object):
             self.load_pkl(pose_path)
         else:
             poseobj = joblib.load(pose_path)
-            self.vid_path = poseobj['vidpath']
+            self.vid_path = poseobj['vid_path']
             self.vid_name = poseobj['vid_name']
             self.framecount = poseobj['framecount']
             self.fps = poseobj['fps']
