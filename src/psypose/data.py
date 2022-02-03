@@ -13,6 +13,7 @@ import cv2
 import nibabel as nib
 from tqdm import tqdm
 from quaternion import as_quat_array
+import warnings
 
 import pandas as pd
 
@@ -21,6 +22,14 @@ from psypose import utils
 
 import torch
 
+
+def check_keys(obj, keystr):
+    allkeys = list(obj.keys())
+    if keystr in allkeys:
+        return True
+    else:
+        return False
+
 class pose(object):
     
     def __init__(self):
@@ -28,6 +37,9 @@ class pose(object):
         self.clusters_named = False
         self.shots = None
         self.is_raw = False
+        self.face_data = None
+        self.face_data_path = None
+        self.pose_data = None
         pass
             
     def load_fmri(self, fmri_path, TR):
@@ -86,3 +98,50 @@ class pose(object):
         
     # def consolidate_clusters(self):
     #     tot_frames = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    def save_to_pose(self, save_as = None):
+        out_obj = {}
+        out_obj['vid_path'] = self.vid_path
+        out_obj['vid_name'] = self.vid_name
+        out_obj['framecount'] = self.framecount
+        out_obj['fps'] = self.fps
+        out_obj['video_time'] = self.video_time
+        out_obj['video_shape'] = self.video_shape
+        if self.face_data:
+            out_obj['face_data'] = self.face_data
+            if self.face_data_path:
+                out_obj['face_data_path'] = self.face_data_path
+        if self.pose_data:
+            out_obj['pose_data'] = self.pose_data
+
+        if output_path=='.':
+            output_path = os.getcwd()
+
+        if not save_as:
+            save_as = os.path.join(os.getcwd(), self.vid_name) + '.pose'
+
+        print('Writing to pose_object...')
+        joblib.dump(out_obj, save_as)
+
+    def load_pose(self, pose_path):
+        if 'pkl' in pose_path:
+            warnings.Warn('This is an unlabeled pkl file carrying pose information. The source video is unknown.', UserWarning)
+            self.load_pkl(pose_path)
+        else:
+            poseobj = joblib.load(pose_path)
+            self.vid_path = poseobj['vidpath']
+            self.vid_name = poseobj['vid_name']
+            self.framecount = poseobj['framecount']
+            self.fps = poseobj['fps']
+            self.video_time = poseobj['video_time']
+            self.video_shape = poseobj['video_shape']
+            if check_keys(poseobj, 'face_data'):
+                self.face_data = pose_obj['face_data']
+            if check_keys(poseobj, 'pose_data'):
+                self.pose_data = poseobj['pose_data']
+
+
+
+
+
+
