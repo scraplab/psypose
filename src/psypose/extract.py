@@ -27,6 +27,7 @@ from psypose import utils
 #from psypose.tracking import extract_tracks
 from psypose.augment import add_quaternion
 from psypose.face_identification import add_face_id
+from psypose
 
 import sys
 
@@ -36,7 +37,7 @@ sys.path.append(os.getcwd())
 
 def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepface', 
              every=1, output_path=None, save_results=True, shot_detection=True,
-             person_tracking=True, extract_aus=True, extract_face_id=True, num_workers=None,
+             person_tracking=True, extract_aus=True, extract_face_id=True, run_clustering=True, num_workers=None,
              smooth=True, image_folder=None):
 
 
