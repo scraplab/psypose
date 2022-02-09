@@ -26,8 +26,7 @@ from psypose.pose_estimation import estimate_pose
 from psypose import utils
 #from psypose.tracking import extract_tracks
 from psypose.augment import add_quaternion
-from psypose.face_identification import add_face_id
-from psypose
+from psypose.face_identification import add_face_id, cluster_ID
 
 import sys
 
@@ -98,6 +97,10 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
 
     if extract_aus and extract_face_id:
         add_face_id(pose)
+
+    ############ Run face encoding clustering for identification ####################
+
+
      
      ########## Saving results ##########
     if save_results:
