@@ -434,6 +434,7 @@ def split_track(idx, track):
 
 def split_tracks(data, shots):
     tracks_split = []
+    split_frames = []
     num_splits = 0
     track_labels = list(data.keys())
     # frame key could be either 'frames' or 'frame_ids' - checking that here
@@ -452,6 +453,7 @@ def split_tracks(data, shots):
         if split:
             for sp in track_segmented:
                 tracks_split.append(sp)
+                split_frames.append(out)
                 num_splits += 1
         else:
             tracks_split.append(data[track])
@@ -459,7 +461,7 @@ def split_tracks(data, shots):
     out = {}
     for i, track in enumerate(tracks_split):
         out[i] = track
-    return out, num_splits
+    return out, num_splits, split_frames
 
 def get_bbox(row):
     # gets bboxes from py-feat output

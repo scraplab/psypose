@@ -31,15 +31,6 @@ import base64
 from io import BytesIO
 from IPython.display import HTML
 
-#matplotlib.get_backend()
-
-#os.chdir('/Users/f004swn/Documents')
-#pickle = 'vibe_output.pkl'
-#video = '/Users/f004swn/Documents/Code/packages/VIBE/sample_video.mp4'
-
-#pickle = '/Users/f004swn/Documents/Code/pose_data/500_cut_unsquish.pkl'
-#video = '/Users/f004swn/Documents/Code/pose_data/500_cut_unsquish.mp4'
-
 #creating edges from list of tuples
 # I now realize I can use get_spin_skeleton() for this (VIBE function)
 
@@ -75,8 +66,18 @@ spin_skel = [tuple(i) for i in [
 # following skeleton taken from https://github.com/Arthur151/ROMP/blob/173288a795cb15267ba0aa1f6d3a9aeef83c1462/src/constants.py#L166
 smpl24_skeleton = np.array([0,1, 0,2, 0,3, 1,4,4,7,7,10, 2,5,5,8,8,11, 3,6,6,9,9,12,12,15, 12,13,13,16,16,18,18,20,20,22, 12,14,14,17,17,19,19,21,21,23 ]).reshape(-1, 2)
 
-#oPickle = dict(joblib.load(pickle))
 def plot_box(ax_obj, data, fb, color):
+    """
+    Plots a bounding box on top of an image given the axis object generate by matplotlib.
+    @param ax_obj: Axis object in matplotlib.
+    @type ax_obj: Matplotlib axis object.
+    @param data: Pose data in nested dict format.
+    @type data: dict
+    @param fb: Whether you are plotting a face or body box (e.g., 'face' or 'body')
+    @type fb: str
+    @param color: Matplotlib color code
+    @type color: str
+    """
     if fb == 'body':
         cx, cy, w, h = [float(i) for i in data]
         top, right, bottom, left = [(cy-h/2), (cx+w/2), (cy+h/2), (cx-w/2)]
@@ -87,123 +88,145 @@ def plot_box(ax_obj, data, fb, color):
         ax_obj.hlines(y=[data[0], data[2]], xmin=data[3], xmax=data[1], color=color)
 
 
-def track(pose, trackID):
-    video = pose.video_cv2
-    pkl = pose.pose_data
-    
-    plt.ion()
-    
-    pkl = pkl[trackID]
-    joints = pkl['joints3d']
-    boxes = pkl['bboxes']
-    track_frames = pkl['frame_ids']
-    frameCount = len(track_frames)
-
-    #change this to utils.frame2array()?
-
-    #here, the global flag makes the frameLoc variable available for the nested function to change
-    global frameLoc
-    frameLoc = int(track_frames[0])
-    #frameLoc = np.where(np.asarray(ts)==min(ts, key=lambda x:abs(x-conv_ts)))[0][0]
-    video.set(cv2.CAP_PROP_POS_FRAMES,frameLoc)
-    ret, frame = video.read()
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    global pose_loc
-    pose_loc = 0
-    def switch_frame(event):
-        global frameLoc
-        global pose_loc
-        if event.key == 'right':
-            frameLoc+=1
-            pose_loc+=1
-        elif event.key == 'left':
-            frameLoc-=1
-            pose_loc-=1
-        ax1.clear()
-        video.set(cv2.CAP_PROP_POS_FRAMES,frameLoc)
-        ret, frame = video.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        vid_frame = ax1.imshow(frame)
-        ax1.axis('off')
-        vid_frame.set_data(frame)
-        plot_box(ax1, boxes[pose_loc], 'body', 'red')
-
-        
-        ts_graph = all_graphs[pose_loc]
-        ax2.clear()
-        ax2._axis3don = False
-        ax2.set_xlim3d(-1,1)
-        ax2.set_ylim3d(-1.3,0.7)
-        ax2.set_zlim3d(-1,1)
-        for key, value in graph_dicts[pose_loc].items():
-            xi = value[0]
-            yi = value[1]
-            zi = value[2]
-            ax2.scatter(xi, yi, zi, color='green')
-            pos = nx.get_node_attributes(ts_graph, 'pos')
-        for i, j in enumerate(ts_graph.edges()):
-            x = np.array((pos[j[0]][0], pos[j[1]][0]))
-            y = np.array((pos[j[0]][1], pos[j[1]][1]))
-            z = np.array((pos[j[0]][2], pos[j[1]][2]))   
-            ax2.plot(x, y, z, color='blue')
-                    
-        fig.canvas.draw()
-
-    fig = plt.figure(figsize=(20,10), dpi=100)
-    fig.canvas.mpl_connect('key_press_event', switch_frame)
-        
-    ax1 = fig.add_subplot(121)
-    ax1.axis('off')
-    vid_frame = ax1.imshow(frame)
-    plot_box(ax1, boxes[pose_loc], 'body', 'red')
-    
-    
-    all_graphs = []
-    graph_dicts = []
-    for fr in range(frameCount):
-        pkl_frame=None
-        pkl_frame = joints[fr]
-        netDict = {}
-        for i in range(45):
-            netDict.update({i:tuple(pkl_frame[i])})
-        graph_dicts.append(netDict)
-        sk=''
-        sk = nx.Graph()
-        sk.add_nodes_from(netDict.keys())
-        for n, p in netDict.items():
-            sk.nodes[n]['pos']=p
-            sk.add_edges_from(spin_skel)
-        all_graphs.append(sk)
-    
-    ts_graph = all_graphs[pose_loc]
-    ax2 = fig.add_subplot(122, projection='3d')
-    ax2._axis3don = False
-    ax2.set_xlim3d(-1,1)
-    ax2.set_ylim3d(-1.3,0.7)
-    ax2.set_zlim3d(-1,1)
-    for key, value in graph_dicts[pose_loc].items():
-        xi = value[0]
-        yi = value[1]
-        zi = value[2]
-        ax2.scatter(xi, yi, zi, color='green')
-    pos = nx.get_node_attributes(ts_graph, 'pos')
-    for i, j in enumerate(ts_graph.edges()):
-        x = np.array((pos[j[0]][0], pos[j[1]][0]))
-        y = np.array((pos[j[0]][1], pos[j[1]][1]))
-        z = np.array((pos[j[0]][2], pos[j[1]][2]))   
-        ax2.plot(x, y, z, color='blue')
-    ax2.view_init(270,270)
-    fig.suptitle(str(trackID), fontsize=50)
+# def track(pose, trackID):
+#     """"
+#     """
+#     video = pose.video_cv2
+#     pkl = pose.pose_data
+#
+#     plt.ion()
+#
+#     pkl = pkl[trackID]
+#     joints = pkl['joints3d']
+#     boxes = pkl['bboxes']
+#     track_frames = pkl['frame_ids']
+#     frameCount = len(track_frames)
+#
+#     #change this to utils.frame2array()?
+#
+#     #here, the global flag makes the frameLoc variable available for the nested function to change
+#     global frameLoc
+#     frameLoc = int(track_frames[0])
+#     #frameLoc = np.where(np.asarray(ts)==min(ts, key=lambda x:abs(x-conv_ts)))[0][0]
+#     video.set(cv2.CAP_PROP_POS_FRAMES,frameLoc)
+#     ret, frame = video.read()
+#     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#     global pose_loc
+#     pose_loc = 0
+#     def switch_frame(event):
+#         global frameLoc
+#         global pose_loc
+#         if event.key == 'right':
+#             frameLoc+=1
+#             pose_loc+=1
+#         elif event.key == 'left':
+#             frameLoc-=1
+#             pose_loc-=1
+#         ax1.clear()
+#         video.set(cv2.CAP_PROP_POS_FRAMES,frameLoc)
+#         ret, frame = video.read()
+#         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#         vid_frame = ax1.imshow(frame)
+#         ax1.axis('off')
+#         vid_frame.set_data(frame)
+#         plot_box(ax1, boxes[pose_loc], 'body', 'red')
+#
+#
+#         ts_graph = all_graphs[pose_loc]
+#         ax2.clear()
+#         ax2._axis3don = False
+#         ax2.set_xlim3d(-1,1)
+#         ax2.set_ylim3d(-1.3,0.7)
+#         ax2.set_zlim3d(-1,1)
+#         for key, value in graph_dicts[pose_loc].items():
+#             xi = value[0]
+#             yi = value[1]
+#             zi = value[2]
+#             ax2.scatter(xi, yi, zi, color='green')
+#             pos = nx.get_node_attributes(ts_graph, 'pos')
+#         for i, j in enumerate(ts_graph.edges()):
+#             x = np.array((pos[j[0]][0], pos[j[1]][0]))
+#             y = np.array((pos[j[0]][1], pos[j[1]][1]))
+#             z = np.array((pos[j[0]][2], pos[j[1]][2]))
+#             ax2.plot(x, y, z, color='blue')
+#
+#         fig.canvas.draw()
+#
+#     fig = plt.figure(figsize=(20,10), dpi=100)
+#     fig.canvas.mpl_connect('key_press_event', switch_frame)
+#
+#     ax1 = fig.add_subplot(121)
+#     ax1.axis('off')
+#     vid_frame = ax1.imshow(frame)
+#     plot_box(ax1, boxes[pose_loc], 'body', 'red')
+#
+#
+#     all_graphs = []
+#     graph_dicts = []
+#     for fr in range(frameCount):
+#         pkl_frame=None
+#         pkl_frame = joints[fr]
+#         netDict = {}
+#         for i in range(45):
+#             netDict.update({i:tuple(pkl_frame[i])})
+#         graph_dicts.append(netDict)
+#         sk=''
+#         sk = nx.Graph()
+#         sk.add_nodes_from(netDict.keys())
+#         for n, p in netDict.items():
+#             sk.nodes[n]['pos']=p
+#             sk.add_edges_from(spin_skel)
+#         all_graphs.append(sk)
+#
+#     ts_graph = all_graphs[pose_loc]
+#     ax2 = fig.add_subplot(122, projection='3d')
+#     ax2._axis3don = False
+#     ax2.set_xlim3d(-1,1)
+#     ax2.set_ylim3d(-1.3,0.7)
+#     ax2.set_zlim3d(-1,1)
+#     for key, value in graph_dicts[pose_loc].items():
+#         xi = value[0]
+#         yi = value[1]
+#         zi = value[2]
+#         ax2.scatter(xi, yi, zi, color='green')
+#     pos = nx.get_node_attributes(ts_graph, 'pos')
+#     for i, j in enumerate(ts_graph.edges()):
+#         x = np.array((pos[j[0]][0], pos[j[1]][0]))
+#         y = np.array((pos[j[0]][1], pos[j[1]][1]))
+#         z = np.array((pos[j[0]][2], pos[j[1]][2]))
+#         ax2.plot(x, y, z, color='blue')
+#     ax2.view_init(270,270)
+#     fig.suptitle(str(trackID), fontsize=50)
 
 #plot = show_pose(video, pickle, 6)
 
 def frame(pose, frame_number):
+    """
+    Displays single frame from input video file.
+    @param pose: Pose object
+    @type pose: PsyPose pose object.
+    @param frame_number: The frame ID to view.
+    @type frame_number: int
+    @return: Visualization
+    """
     frame = utils.frame2array(frame_number, pose.video_cv2)
     f = px.imshow(frame)
     f.show()
     del frame
     
 def render_track(pose, track, format='mp4', outdir=None, loop=None):
+    """
+
+    @param pose: Pose object
+    @param track: Track ID
+    @type track: int
+    @param format: Video codec
+    @type format: str
+    @param outdir: Ouptut path
+    @type outdir: str
+    @param loop: Whether to loop (only for gif format)
+    @type loop: bool
+    """
     if not outdir and format=='mp4':
         outdir=str(track)+'.mp4'
     elif not outdir and format=='gif':
@@ -278,19 +301,31 @@ def render_track(pose, track, format='mp4', outdir=None, loop=None):
         imgs[0].save(outdir, save_all=True, append_images=imgs[1:], duration=dur, loop=loop)
 
 def pkl_to_array(pose):
+    """
+    Converts nested dict of pose data to a person presence matrix.
+    @param pose: Pose object.
+    @type pose: Pyspose Pose object.
+    @return: Numpy array of shape n_tracks x n_frames.
+    @rtype: ndarray
+    """
     data = pose.pose_data
     tracks = len(data)
-    #video = cv2.VideoCapture(video_path)
-    #frameCount = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
     arr = np.zeros((tracks, pose.framecount))
     track_ids = list(data.keys())
     for t, track in enumerate(track_ids):
-        frameIDs = data.get(track).get('frame_ids')
+        frameIDs = data[track]['frame_ids']
         arr[t][frameIDs]=1
     return arr
         
 #pkl_arr = pkl_to_array(pickle, video)
 def collapse(pickle_array):
+    """
+    Collapse person track presence array into single n_people vector that is 1 x n_frames.
+    @param pickle_array: Array generated using pkl_to_array()
+    @type pickle_array: ndarray
+    @return: One-dimensional array.
+    @rtype: ndarray
+    """
     frames = pickle_array.shape[1]
     regr = np.zeros((frames))
     for frame in range(frames):
@@ -301,6 +336,7 @@ def collapse(pickle_array):
 
 
 def show_tracks(pose, dpi=100, figsize=(10,5)):
+
     pkl_arr = pkl_to_array(pose)
     #pkl_arr = collapse(pkl_arr)
 
@@ -344,9 +380,10 @@ def cluster(pose, cluster_num):
         clusters = pose.named_clusters
     else:
         clusters = pose.clusters
-    track_ids = clusters.get(cluster_num)
+    track_ids = clusters[cluster_num]
     face_data = pose.face_data.copy()
     cluster_face_data = face_data[face_data['track_id'].isin(track_ids)]
+
     images = []
     for r in range(len(cluster_face_data)):
         row = cluster_face_data.iloc[r]
@@ -780,32 +817,68 @@ def add_layout_image(figure, b_string, x, y, sizex, sizey):
 
 
 def clusters(pose, type='unnamed'):
-  df = pd.DataFrame(columns=['trackID', 'clusterID'])
-  df['trackID'], df['clusterID'] = pose.track_encoding_avgs.keys(), pose.face_clustering.labels_
-  f = px.scatter()
-  #f.update_layout(yaxis=dict(autorange='reversed'))
-  unq_tracks = np.unique(df['trackID'])
-  unq_clusters = np.unique(df['clusterID'])
-  markers_x, markers_y, trackIDs, clusterIDs = [], [], [], []
-  for y, j in enumerate(unq_clusters):
-      clus_df = df[df['clusterID']==j]
-      tracks = np.unique(clus_df['trackID'])
-      for x, l in enumerate(tracks):
-          img_str = retrieve_face(pose, l)
-          add_layout_image(f, img_str, x, y, 1, 1)
-          markers_x.append(x+0.5)
-          markers_y.append(y+0.5)
-          trackIDs.append(l)
-          clusterIDs.append(j)
-  marker_frame = pd.DataFrame(dict(zip(['x', 'y', 'track', 'cluster'],
-                                       [markers_x, markers_y, trackIDs, clusterIDs])))
-  f.update_layout(height=1000, width=1000, xaxis=dict(range=[0, 15], showgrid=False, showticklabels=False, title='Tracks'), 
-                  yaxis=dict(range=[0, 15], gridwidth=2, nticks=16, title='Cluster ID'))
-  
-  f.add_trace(go.Scatter(x=markers_x, y=markers_y, hovertext=['Track '+str(i) for i in trackIDs], hoverinfo='text', showlegend=False, mode="markers"))
-  f.update_layout(hoverlabel=dict(bgcolor='white'))
-  f.show(config={"modeBarButtonsToRemove":['zoom2d', 'toggleSpikeLines', 'lasso2d', 'autoscale2d', 'select2d'], 
-                 "displayModeBar":True})
+    if type=='unnamed':
+      df = pd.DataFrame(columns=['trackID', 'clusterID'])
+      df['trackID'], df['clusterID'] = pose.track_encoding_avgs.keys(), pose.face_clustering.labels_
+      f = px.scatter()
+      #f.update_layout(yaxis=dict(autorange='reversed'))
+      unq_tracks = np.unique(df['trackID'])
+      unq_clusters = np.unique(df['clusterID'])
+      markers_x, markers_y, trackIDs, clusterIDs = [], [], [], []
+      for y, j in enumerate(unq_clusters):
+          clus_df = df[df['clusterID']==j]
+          tracks = np.unique(clus_df['trackID'])
+          for x, l in enumerate(tracks):
+              img_str = retrieve_face(pose, l)
+              add_layout_image(f, img_str, x, y, 1, 1)
+              markers_x.append(x+0.5)
+              markers_y.append(y+0.5)
+              trackIDs.append(l)
+              clusterIDs.append(j)
+      marker_frame = pd.DataFrame(dict(zip(['x', 'y', 'track', 'cluster'],
+                                           [markers_x, markers_y, trackIDs, clusterIDs])))
+      f.update_layout(height=1000, width=1000, xaxis=dict(range=[0, 15], showgrid=False, showticklabels=False, title='Tracks'),
+                      yaxis=dict(range=[0, 15], gridwidth=2, nticks=16, title='Cluster ID'))
+
+      f.add_trace(go.Scatter(x=markers_x, y=markers_y, hovertext=['Track '+str(i) for i in trackIDs], hoverinfo='text', showlegend=False, mode="markers"))
+      f.update_layout(hoverlabel=dict(bgcolor='white'))
+      f.show(config={"modeBarButtonsToRemove":['zoom2d', 'toggleSpikeLines', 'lasso2d', 'autoscale2d', 'select2d'],
+                     "displayModeBar":True})
+    elif type=='named':
+        if not pose.clusters_named:
+            print('Please load a naming dictionary with psypose.face_identification.name_clusters(pose_obj, dict) before viewing named clusters.')
+        else:
+            df = pd.DataFrame(columns=['trackID', 'clusterID'])
+            df['trackID'], df['clusterID'] = pose.track_encoding_avgs.keys(), pose.face_clustering.labels_
+            f = px.scatter()
+            # f.update_layout(yaxis=dict(autorange='reversed'))
+            unq_tracks = np.unique(df['trackID'])
+            unq_clusters = np.unique(df['clusterID'])
+            markers_x, markers_y, trackIDs, clusterIDs = [], [], [], []
+            for y, j in enumerate(unq_clusters):
+                clus_df = df[df['clusterID'] == j]
+                tracks = np.unique(clus_df['trackID'])
+                for x, l in enumerate(tracks):
+                    img_str = retrieve_face(pose, l)
+                    add_layout_image(f, img_str, x, y, 1, 1)
+                    markers_x.append(x + 0.5)
+                    markers_y.append(y + 0.5)
+                    trackIDs.append(l)
+                    clusterIDs.append(j)
+            marker_frame = pd.DataFrame(dict(zip(['x', 'y', 'track', 'cluster'],
+                                                 [markers_x, markers_y, trackIDs, clusterIDs])))
+            f.update_layout(height=1000, width=1000,
+                            xaxis=dict(range=[0, 15], showgrid=False, showticklabels=False, title='Tracks'),
+                            yaxis=dict(range=[0, 15], gridwidth=2, nticks=16, title='Cluster ID'))
+
+            f.add_trace(
+                go.Scatter(x=markers_x, y=markers_y, hovertext=['Track ' + str(i) for i in trackIDs], hoverinfo='text',
+                           showlegend=False, mode="markers"))
+            f.update_layout(hoverlabel=dict(bgcolor='white'))
+            f.show(
+                config={"modeBarButtonsToRemove": ['zoom2d', 'toggleSpikeLines', 'lasso2d', 'autoscale2d', 'select2d'],
+                        "displayModeBar": True})
+
 
 
     

@@ -13,6 +13,7 @@ from keras.applications.resnet import preprocess_input
 import cv2
 from psypose.utils import PSYPOSE_DATA_DIR
 
+# this model has been adopted from: https://sefiks.com/2018/08/06/deep-face-recognition-with-keras/
 
 modelfile = PSYPOSE_DATA_DIR.joinpath('vgg_face_weights.h5')
 

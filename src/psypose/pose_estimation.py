@@ -195,7 +195,7 @@ def estimate_pose(pose):
         tracking_results = tester.run_tracking(video_file, input_image_folder)
         if args.shot_detection:
             print('\n'+'\033[1m'+'Splitting tracks based on shot detection...\n')
-            tracking_results, pose.num_splits = split_tracks(tracking_results, pose.shots)
+            tracking_results, pose.num_splits, pose.split_frames = split_tracks(tracking_results, pose.shots)
         pare_time = time.time()
         pare_results = tester.run_on_video(tracking_results, input_image_folder, orig_width, orig_height)
         if not args.save_vertices:

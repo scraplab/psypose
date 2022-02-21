@@ -24,6 +24,7 @@ import torch
 
 
 def check_keys(obj, keystr):
+
     allkeys = list(obj.keys())
     if keystr in allkeys:
         return True
@@ -40,9 +41,18 @@ class pose(object):
         self.face_data = None
         self.face_data_path = None
         self.pose_data = None
+        self.split_frames = None
         pass
             
     def load_fmri(self, fmri_path, TR):
+        """
+        @param fmri_path: Path to fMRI data (.nii.gz)
+        @type fmri_path: str
+        @param TR: Length of TR in seconds
+        @type TR: float or int
+        @return: None
+        """
+
         self.fmri_path = fmri_path
         self.brain_data = nib.load(fmri_path).get_fdata()
         # pull TR from file header
@@ -62,6 +72,10 @@ class pose(object):
     #     self.face_data = face_df
         
     def load_face_data(self, face_data):
+        """
+        @param face_data: Path to previously generated face data.
+        @type face_data: str
+        """
         #expects py-feat face df in csv
         self.face_data_path = os.path.abspath(face_data)
         self.face_data = pd.read_csv(face_data)

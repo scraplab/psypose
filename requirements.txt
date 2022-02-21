@@ -2,7 +2,6 @@ py-feat @ git+https://github.com/cosanlab/py-feat.git
 pare @ git+https://github.com/LandryBulls/PARE.git@pare_scrap
 gdown
 moviepy
-umap-learn
 pytube
 jpy-video
 plotly>=4.14.3
@@ -11,12 +10,9 @@ scikit-learn
 scenedetect
 future
 numba
-#pytube
 h5py
 opencv-contrib-python
 torchfile
-plyfile
-munkres
 shyaml
 pyquaternion
 quaternion

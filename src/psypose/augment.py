@@ -124,6 +124,13 @@ def gather_tracks(input_data):
     return output_data
 
 def add_quaternion(pose_dat):
+    """
+    Adds quaternion representation to pose data.
+    @param pose_dat: Pose data object
+    @type pose_dat: dict
+    @return: pose_dat
+    @rtype: dict
+    """
     # PARE represents each joint as a rotation matrix (docs say otherwise but oh well)
     for track, data in pose_dat.items():
         n_frames = len(data['pose'])
@@ -201,7 +208,6 @@ def smooth_pose_data(pose_data):
     return pose_data
 
 track_keys = ['cam', 'pose', 'j3d_smpl24', 'j3d_spin24', 'j3d_op25', 'pj2d', 'pj2d_org', 'trans']
-
 
 def track_template(frame_ids):
     fc = len(frame_ids)
