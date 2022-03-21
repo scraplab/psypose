@@ -434,12 +434,13 @@ def check_data_files(prompt_confirmation=False):
                 PSYPOSE_DATA_DIR.mkdir(parents=False, exist_ok=False)
             errors = {}
             for fname, gdrive_id in missing_files.items():
+
                 dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
                 print(f"downloading {fname} ...")
                 try:
                     download_from_gdrive(gdrive_id, dest_path)
                 except (MissingSchema, OSError) as e:
-                    errors[item[0]] = e
+                    errors[fname] = e
             if any(errors):
                 print(
                          f"Failed to download {len(errors)} files. See stack "
