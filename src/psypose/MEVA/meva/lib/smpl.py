@@ -82,7 +82,13 @@ class SMPL(_SMPL):
         extra_joints = vertices2joints(self.J_regressor_extra, smpl_output.vertices)
         joints = torch.cat([smpl_output.joints, extra_joints], dim=1)
         joints = joints[:, self.joint_map, :]
-        output = ModelOutput(vertices=smpl_output.vertices,
+        # output = ModelOutput(vertices=smpl_output.vertices,
+        #                      global_orient=smpl_output.global_orient,
+        #                      body_pose=smpl_output.body_pose,
+        #                      joints=joints,
+        #                      betas=smpl_output.betas,
+        #                      full_pose=smpl_output.full_pose)
+        output = SMPLOutput(vertices=smpl_output.vertices,
                              global_orient=smpl_output.global_orient,
                              body_pose=smpl_output.body_pose,
                              joints=joints,
