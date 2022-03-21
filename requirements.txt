@@ -18,7 +18,7 @@ scipy
 chumpy
 numba
 pyquaternion
-yacsf
+yacs
 joblib
 trimesh
 pyrender
