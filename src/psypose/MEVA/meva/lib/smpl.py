@@ -6,7 +6,7 @@ import numpy as np
 import os.path as osp
 from smplx import SMPL as _SMPL
 # from smplx.body_models import ModelOutput
-from smplx.utils import ModelOutput
+from smplx.utils import SMPLOutput
 from smplx.lbs import vertices2joints
 from scipy.spatial.transform import Rotation as sRot
 
