@@ -5,7 +5,8 @@ import torch
 import numpy as np
 import os.path as osp
 from smplx import SMPL as _SMPL
-from smplx.body_models import ModelOutput
+# from smplx.body_models import ModelOutput
+from smplx.smplx.utils import ModelOutput
 from smplx.lbs import vertices2joints
 from scipy.spatial.transform import Rotation as sRot
 
@@ -87,6 +88,7 @@ class SMPL(_SMPL):
                              joints=joints,
                              betas=smpl_output.betas,
                              full_pose=smpl_output.full_pose)
+
         return output
 
 
