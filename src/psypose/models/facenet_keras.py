@@ -17,20 +17,21 @@ import os
 print(os.getcwd())
 
 model_path = PSYPOSE_DATA_DIR.joinpath('facenet_keras.h5')
-model = load_model(model_path, compile=False)
-#facenet expects that the pixel values be standardized 
+#model = load_model(model_path, compile=False)
+#facenet expects that the pixel values be standardized
 
-def encode(face_array):
+def encode(face_array, loaded_model):
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
         # this takes the RGB form image array that is output my the PLIERS loop
         face = Image.fromarray(face_array)
         face = face.resize((160,160))
         face = np.asarray(face)
         face = face.astype('float32')
+        # normalize
         mean, std = face.mean(), face.std()
         face = (face - mean) / std
         samples = np.expand_dims(face, axis=0)
-        yhat = model.predict(samples)
+        yhat = loaded_model.predict(samples)
         encoding = yhat[0]
         return encoding
 

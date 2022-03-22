@@ -10,7 +10,10 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from psypose import utils
-from psypose.models import facenet_keras, deepface
+from psypose.models.facenet_keras import model_path as facenet_path
+from psypose.models.deepface import model_path as deepface_path
+from psypose.models.deepface import face_model as load_deepface_model
+from keras.models import load_model
 
 def add_face_id(pose, overwrite=False, encoder='facenet', use_TR=False, out=None):
     
@@ -29,9 +32,11 @@ def add_face_id(pose, overwrite=False, encoder='facenet', use_TR=False, out=None
     if encoder=='facenet':
         encoding_length = 128
         encode = facenet_keras.encode
+        loaded_model = load_model(facenet_path)
     elif encoder=='deepface':
         encoding_length = 2622
         encode = deepface.encode
+        loaded_model = load_deepface_model(deepface_path)
     
     encoding_array = np.empty((faces_to_process, encoding_length))
         
@@ -45,7 +50,7 @@ def add_face_id(pose, overwrite=False, encoder='facenet', use_TR=False, out=None
             row = sub.iloc[loc]
             bbox = row[['FaceRectX', 'FaceRectY', 'FaceRectWidth', 'FaceRectHeight']]
             face_cropped = utils.crop_face(img, bbox)
-            encoding = encode(face_cropped)
+            encoding = encode(face_cropped, loaded_model)
             counter+=1
             encoding_array[counter] = encoding
             pbar.update(1)

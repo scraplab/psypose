@@ -13,8 +13,7 @@ from keras.applications.resnet import preprocess_input
 import cv2
 from psypose.utils import PSYPOSE_DATA_DIR
 
-
-modelfile = PSYPOSE_DATA_DIR.joinpath('vgg_face_weights.h5')
+model_path = PSYPOSE_DATA_DIR.joinpath('vgg_face_weights.h5')
 
 def face_model(mod_weights):
     model = Sequential()
@@ -65,9 +64,9 @@ def face_model(mod_weights):
     model.load_weights(mod_weights)
     return model
 
-vgg_model = face_model(modelfile)
+#vgg_model = face_model(modelfile)
 
-def encode(array):
+def encode(array, loaded_model):
     # this will convert cv2 arrays into a format readable to the VGG NN
     array = cv2.resize(array, dsize=(224,224), interpolation=cv2.INTER_CUBIC)
     array = cv2.cvtColor(array, cv2.COLOR_BGR2RGB)
@@ -75,7 +74,7 @@ def encode(array):
         array = array.astype(dtype='float32')
     array = np.expand_dims(array, axis=0)
     array = preprocess_input(array)
-    return vgg_model.predict(array)[0,:]
+    return loaded.predict(array)[0,:]
 
 
 
