@@ -390,9 +390,11 @@ def crop_face(array, data):
     return new_img
 
 PSYPOSE_DATA_FILES = {
+
     'facenet_keras.h5': '1PjxQeKSfBtzh36b6G3-dg74HTts_1aDT',
     'vgg_face_weights.h5': '1Vi8kHjPluTZhZR93PMl2Ex8O2GqtUb_g',
-    'meva_data.zip': '1ICZtiaQm77duuDiJX_eie0RRQXfJpBif',
+    'meva_data.zip': '1ICZtiaQm77duuDiJX_eie0RRQXfJpBif'
+
 }
 
 
