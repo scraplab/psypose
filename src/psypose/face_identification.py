@@ -11,7 +11,9 @@ import pandas as pd
 from tqdm import tqdm
 from psypose import utils
 from psypose.models.facenet_keras import model_path as facenet_path
+from psypose.models.facenet_keras import encode as facenet_encoder
 from psypose.models.deepface import model_path as deepface_path
+from psypose.models.deepface import encode as deepface_encoder
 from psypose.models.deepface import face_model as load_deepface_model
 from keras.models import load_model
 
@@ -28,14 +30,14 @@ def add_face_id(pose, overwrite=False, encoder='facenet', use_TR=False, out=None
 
     #if encoder=='default':
     #    encoding_length = 128
-    #    encode = utils.default_encoding
+    #    encode = utils.default_encodings
     if encoder=='facenet':
         encoding_length = 128
-        encode = facenet_keras.encode
+        encode = facenet_encoder
         loaded_model = load_model(facenet_path)
     elif encoder=='deepface':
         encoding_length = 2622
-        encode = deepface.encode
+        encode = deepface_encoder
         loaded_model = load_deepface_model(deepface_path)
     
     encoding_array = np.empty((faces_to_process, encoding_length))
