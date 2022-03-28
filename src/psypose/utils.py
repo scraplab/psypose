@@ -31,7 +31,6 @@ from io import BytesIO
 import shutil
 import torchvision
 import torch
-from psypose.pare_dl.download_pare_models import install_pare_models, pare_status
 
 
 def convert_cam_to_3d_trans(cams, weight=2.):
