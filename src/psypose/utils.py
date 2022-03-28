@@ -21,7 +21,7 @@ import subprocess
 import traceback
 from pathlib import Path
 import gdown
-from torchvision.datasets.utils import download_file_from_goole_drive
+from torchvision.datasets.utils import download_file_from_google_drive
 from requests.exceptions import MissingSchema
 import zipfile
 from sklearn.metrics import confusion_matrix
