@@ -574,7 +574,7 @@ PSYPOSE_DATA_FILES = {
 PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
 
 
-def check_data_files(prompt_confirmation=True):
+def check_data_files(prompt_confirmation=False):
     missing_files = PSYPOSE_DATA_FILES.copy()
     if PSYPOSE_DATA_DIR.is_dir():
         for fname in PSYPOSE_DATA_FILES.keys():
@@ -663,7 +663,7 @@ def check_pare_install():
 
 def download_from_gdrive(gdrive_id, filename):
     dest_path = PSYPOSE_DATA_DIR.joinpath(filename)
-    download_file_from_goole_drive(file_id=gdrive_id, root=PSYPOSE_DATA_DIR, filename=filename)
+    download_file_from_google_drive(file_id=gdrive_id, root=PSYPOSE_DATA_DIR, filename=filename)
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
         z = zipfile.ZipFile(str(dest_path))
