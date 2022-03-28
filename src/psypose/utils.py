@@ -662,7 +662,7 @@ def check_pare_install():
 #         dest_path.unlink()
 
 def download_from_gdrive(gdrive_id, filename):
-    dest_path = PSYPOSE_DATA_DIR.join(filename)
+    dest_path = PSYPOSE_DATA_DIR.joinpath(filename)
     download_file_from_goole_drive(file_id=gdrive_id, root=PSYPOSE_DATA_DIR, filename=filename)
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
