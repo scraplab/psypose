@@ -111,6 +111,12 @@ def frame_to_ts(frame, fps):
     ts = time.strftime('%H:%M:%S', time.gmtime(seconds))
     return ts
 
+def timestamp_list(pose):
+    timestamp_list = []
+    fps = pose.fps
+    for f in range(pose.framecount):
+        timestamp_list.append(frame_to_ts(f, fps))
+
 def check_match(bod, fac):
     # need to update this because of newly added py-feat face detection
     bcx, bcy, bw, bh = [float(i) for i in bod] #body corner is bottom left
@@ -352,6 +358,15 @@ def split_track(idx, track):
     return A, B
 
 def split_tracks(data, shots):
+    """
+
+    Args:
+        data (): Pose data.
+        shots (): List of tuples describing in and out shots.
+
+    Returns: Tracks split based on the frame IDs defined in shots.
+
+    """
     tracks_split = []
     num_splits = 0
     for track in data:
