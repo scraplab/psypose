@@ -564,10 +564,17 @@ def slice_pose(pose, frame_range):
             allFrames.extend(list(pose.pose_data[track]['frame_ids']))
 
 
+# PSYPOSE_DATA_FILES = {
+#     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
+#     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
+#     'meva_data.zip': '1ICZtiaQm77duuDiJX_eie0RRQXfJpBif'
+#
+# }
+
 PSYPOSE_DATA_FILES = {
-    'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
-    'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
-    'meva_data.zip': '1ICZtiaQm77duuDiJX_eie0RRQXfJpBif'
+    'facenet_keras.h5': 'http://scraplab.org/psypose_files/facenet_keras.h5',
+    'vgg_face_weights.h5': 'http://scraplab.org/psypose_files/vgg_face_weights.h5',
+    'meva_data.zip': 'http://scraplab.org/psypose_files/meva_data.zip'
 
 }
 
@@ -606,11 +613,11 @@ def check_data_files(prompt_confirmation=False):
                 print(f"creating {PSYPOSE_DATA_DIR} ...")
                 PSYPOSE_DATA_DIR.mkdir(parents=False, exist_ok=False)
             errors = {}
-            for fname, gdrive_id in missing_files.items():
+            for fname, url in missing_files.items():
                 # dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
                 print(f"downloading {fname} ...")
                 try:
-                    download_from_gdrive(gdrive_id, fname)
+                    download_file_from_web(url, fname)
                 except (MissingSchema, OSError) as e:
                     errors[fname[0]] = e
             if any(errors):
@@ -628,26 +635,6 @@ def check_data_files(prompt_confirmation=False):
                 "missing required files. Some Psypose "
                 "functionality may be unavailable"
             )
-
-
-def check_pare_install():
-    if not pare_status:
-        msg = (
-            f"Pare needs to download model weights in order to run. Do you want to download them now?\n[Y/n] \n "
-        )
-        response = input(msg).lower().strip()
-        if response in ('y', ''):
-            confirmed = True
-        elif response == 'n':
-            confirmed = False
-        else:
-            confirmed = True
-        if confirmed:
-            install_pare_models()
-        else:
-            print('Psypose will try to download PARE in the future.\n\n')
-    else:
-        None
 
 
 # def download_from_gdrive(gdrive_id, dest_path):
@@ -671,5 +658,17 @@ def download_from_gdrive(gdrive_id, filename):
         # zipfile.extractall(str(dest_path))
         print(f"removing {dest_path} ...")
         dest_path.unlink()
+
+def download_file_from_web(url, filename):
+    dest_path = PSYPOSE_DATA_DIR.joinpath(filename)
+    urllib.request.urlretrieve(url, dest_path)
+    if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
+        print(f"extracting {dest_path} ...")
+        z = zipfile.ZipFile(str(dest_path))
+        z.extractall(PSYPOSE_DATA_DIR)
+        # zipfile.extractall(str(dest_path))
+        print(f"removing {dest_path} ...")
+        dest_path.unlink()
+
 
 
