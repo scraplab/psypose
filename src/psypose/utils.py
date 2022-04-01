@@ -580,6 +580,8 @@ PSYPOSE_DATA_FILES = {
 }
 
 PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
+MEVA_CFG_DIR = osp.join(osp.dirname(__file__), "MEVA", "meva", "cfg")
+MEVA_DATA_DIR = osp.join(PSYPOSE_DATA_DIR, 'meva_data')
 
 
 def check_data_files(prompt_confirmation=False):
