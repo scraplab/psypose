@@ -455,34 +455,27 @@ def split_track(idx, track):
 
 def split_tracks(data, shots):
     tracks_split = []
-    split_frames = []
     num_splits = 0
-    track_labels = list(data.keys())
-    # frame key could be either 'frames' or 'frame_ids' - checking that here
-    frame_label = str([i for i in list(data[track_labels[0]].keys()) if 'frame' in i][0])
-    # frame_label='frames'
-    for track in track_labels:
+    for track in data:
         split = False
-        frames = data[track][frame_label]
+        frames = data[track]['frame_ids']
         for shot in shots:
-            out = shot[1] - 1
-            if (out in frames) and (frames[-1] != out):  # if the last frame in a shot is not the last frame in a track,
+            out = shot[1]-1
+            if (out in frames) and (frames[-1] != out): # if the last frame in a shot is not the last frame in a track,
                 split = True
-                cut_idx = np.where(frames == out)[0][0] + 1
+                cut_idx = np.where(frames==out)[0][0] + 1 # not sure if this is the problem
                 first_half, second_half = split_track(cut_idx, data[track])
                 track_segmented = [first_half, second_half]
         if split:
             for sp in track_segmented:
                 tracks_split.append(sp)
-                split_frames.append(out)
                 num_splits += 1
         else:
             tracks_split.append(data[track])
-
     out = {}
     for i, track in enumerate(tracks_split):
         out[i] = track
-    return out, num_splits, split_frames
+    return out, num_splits
 
 
 def get_bbox(row):
@@ -565,12 +558,6 @@ def slice_pose(pose, frame_range):
             allFrames.extend(list(pose.pose_data[track]['frame_ids']))
 
 
-# PSYPOSE_DATA_FILES = {
-#     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
-#     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
-#     'meva_data.zip': '1ICZtiaQm77duuDiJX_eie0RRQXfJpBif'
-#
-# }
 
 PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': 'http://scraplab.org/psypose_files/facenet_keras.h5',
@@ -639,28 +626,6 @@ def check_data_files(prompt_confirmation=False):
                 "functionality may be unavailable"
             )
 
-
-# def download_from_gdrive(gdrive_id, dest_path):
-#     url = f"https://drive.google.com/uc?id={gdrive_id}"
-#     gdown.download(url, str(dest_path), quiet=False)
-#     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
-#         print(f"extracting {dest_path} ...")
-#         z = zipfile.ZipFile(str(dest_path))
-#         z.extractall(PSYPOSE_DATA_DIR)
-#         # zipfile.extractall(str(dest_path))
-#         print(f"removing {dest_path} ...")
-#         dest_path.unlink()
-
-def download_from_gdrive(gdrive_id, filename):
-    dest_path = PSYPOSE_DATA_DIR.joinpath(filename)
-    download_file_from_google_drive(file_id=gdrive_id, root=PSYPOSE_DATA_DIR, filename=filename)
-    if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
-        print(f"extracting {dest_path} ...")
-        z = zipfile.ZipFile(str(dest_path))
-        z.extractall(PSYPOSE_DATA_DIR)
-        # zipfile.extractall(str(dest_path))
-        print(f"removing {dest_path} ...")
-        dest_path.unlink()
 
 def download_file_from_web(url, filename):
     dest_path = PSYPOSE_DATA_DIR.joinpath(filename)
