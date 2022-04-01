@@ -31,6 +31,7 @@ from io import BytesIO
 import shutil
 import torchvision
 import torch
+import urllib.request
 
 
 def convert_cam_to_3d_trans(cams, weight=2.):
