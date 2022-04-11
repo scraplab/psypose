@@ -21,6 +21,7 @@ import subprocess
 import traceback
 from pathlib import Path
 import gdown
+#from torchvision.datasets.utils import download_file_from_goole_drive
 from requests.exceptions import MissingSchema
 import zipfile
 from sklearn.metrics import confusion_matrix
@@ -440,7 +441,7 @@ def split_tracks(data, shots):
     # frame key could be either 'frames' or 'frame_ids' - checking that here
     frame_label = str([i for i in list(data[track_labels[0]].keys()) if 'frame' in i][0])
     #frame_label='frames'
-    for track in data:
+    for track in track_labels:
         split = False
         frames = data[track][frame_label]
         for shot in shots:
@@ -494,15 +495,62 @@ def get_image_shape(vid_path):
     del cap
     return shape
 
+def track_presence_per_frame(pose):
+
+    """
+    Determine which tracks are present in each frame.
+    @param pose: PsyPose pose object.
+    @type pose: Pose
+    @return: Dictionary where keys are frame IDs and values are lists of track IDs.
+    @rtype: dict
+    """
+
+    frames = [i for i in range(pose.framecount)]
+    track_lists = []
+    for frame in frames:
+        tracks_present = []
+        for track, data in pose.pose_data.items():
+           if frame in data['frame_ids']:
+               tracks_present.append(track)
+        track_lists.append(tracks_present)
+
+    track_presence = dict(zip(frames, track_lists))
+    if not hassattr(pose, 'track_presence'):
+        pose.track_presence = track_presence
+    return track_presence
+
+
+
+
+def slice_pose(pose, frame_range):
+
+    """
+    Split pose data based on frame range.
+    @param pose: PsyPose pose object
+    @type pose: Pose
+    @param frame_range: In frame and out frame.
+    @type frame_range: Two-length iterable.
+    @return: Split pose data.
+    @rtype: dict
+    """
+
+    track_presence = track_presence_per_frame(pose)
+    frame_span = [i for i in range(frame_range[0], frame_range[1])]
+    tracks_subset = [track_presence[i] for i in frame_span] # list of lists
+    allFrames = []
+    for trackList in tracks_subset:
+        for track in trackList:
+            allFrames.extend(list(pose.pose_data[track]['frame_ids']))
+
+
 PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
-    'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv',
+    'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv'
 }
 
 PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
 
-
-def check_data_files(prompt_confirmation=True):
+def check_data_files(prompt_confirmation=False):
     missing_files = PSYPOSE_DATA_FILES.copy()
     if PSYPOSE_DATA_DIR.is_dir():
         for fname in PSYPOSE_DATA_FILES.keys():
@@ -534,11 +582,11 @@ def check_data_files(prompt_confirmation=True):
                 print(f"creating {PSYPOSE_DATA_DIR} ...")
                 PSYPOSE_DATA_DIR.mkdir(parents=False, exist_ok=False)
             errors = {}
-            for fname, gdrive_id in missing_files.items():
-                dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
+            for fname, url in missing_files.items():
+                # dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
                 print(f"downloading {fname} ...")
                 try:
-                    download_from_gdrive(gdrive_id, dest_path)
+                    download_file_from_web(url, fname)
                 except (MissingSchema, OSError) as e:
                     errors[fname[0]] = e
             if any(errors):
@@ -577,9 +625,9 @@ def check_pare_install():
         None
 
 
-def download_from_gdrive(gdrive_id, dest_path):
-    url = f"https://drive.google.com/uc?id={gdrive_id}"
-    gdown.download(url, str(dest_path), quiet=False)
+def download_file_from_web(url, filename):
+    dest_path = PSYPOSE_DATA_DIR.joinpath(filename)
+    urllib.request.urlretrieve(url, dest_path)
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
         z = zipfile.ZipFile(str(dest_path))
