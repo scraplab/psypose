@@ -30,7 +30,6 @@ opencv-python==4.1.2.30
 torch==1.10.0+cu111
 torchgeometry==0.1.2
 torchvision==0.11.1
-#+cu111
 tensorboard==2.8.0
 smplx @ git+https://github.com/ZhengyiLuo/smplx.git
 yolov3 @ git+https://github.com/mkocabas/yolov3-pytorch.git
