@@ -24,8 +24,6 @@ import shutil
 from psypose.pose_estimation import estimate_pose
 
 from psypose import utils
-#from psypose.tracking import extract_tracks
-from psypose.augment import add_quaternion
 from psypose.face_identification import add_face_id, cluster_ID
 
 import sys
@@ -71,7 +69,6 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
     pose.smooth = smooth
     pose_data = estimate_pose(pose)
     print("Processing output data...")
-    pose_data = add_quaternion(pose_data)
     # Split tracks based on shot detection
 
     #pose_data = smooth_pose_data(pose_data)  # applying one euro filter
@@ -90,7 +87,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
         tqdm.write("Extracting facial expressions...")
         pose.face_data = detector.detect_video(pose.vid_path, skip_frames = every)
      
-     ########## Extract face identify encodings ##########
+     ########## Extract face identity encodings ##########
 
     if extract_aus and extract_face_id:
         add_face_id(pose)
