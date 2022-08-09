@@ -4,8 +4,6 @@ Tools for formatting the ROMP pose estimation outputs, including track-stitching
 
 from psypose import utils
 import numpy as np
-from quaternion import as_quat_array
-#from pyquaternion import Quaternion
 from scipy.spatial.distance import euclidean
 from scipy.spatial.transform import Rotation as R
 
@@ -125,23 +123,23 @@ def gather_tracks(input_data):
     return output_data
 
 
-def add_quaternion(pose_dat):
-    """
-    Adds quaternion representation to pose data.
-    @param pose_dat: Pose data object
-    @type pose_dat: dict
-    @return: pose_dat
-    @rtype: dict
-    """
-    # PARE represents each joint as a rotation matrix (docs say otherwise but oh well)
-    for track, data in pose_dat.items():
-        n_frames = len(data['pose'])
-        quats = np.empty((n_frames,24,4))
-        for frame in range(n_frames):
-            quats[frame] = np.array([R.from_matrix(data['pose'][frame][joint]).as_quat() for joint in range(24)])
-        #pose_dat[track].update({'quaternion':as_quat_array(quats)}) as_quat_array has order w, x, y, z. The as_quat outputs x, y, z, w.
-        pose_dat[track].update({'quaternion': quats})
-    return pose_dat
+# def add_quaternion(pose_dat):
+#     """
+#     Adds quaternion representation to pose data.
+#     @param pose_dat: Pose data object
+#     @type pose_dat: dict
+#     @return: pose_dat
+#     @rtype: dict
+#     """
+#     # PARE represents each joint as a rotation matrix (docs say otherwise but oh well)
+#     for track, data in pose_dat.items():
+#         n_frames = len(data['pose'])
+#         quats = np.empty((n_frames,24,4))
+#         for frame in range(n_frames):
+#             quats[frame] = np.array([R.from_matrix(data['pose'][frame][joint]).as_quat() for joint in range(24)])
+#         #pose_dat[track].update({'quaternion':as_quat_array(quats)}) as_quat_array has order w, x, y, z. The as_quat outputs x, y, z, w.
+#         pose_dat[track].update({'quaternion': quats})
+#     return pose_dat
 
 ################## One Euro Filter ####################
 
@@ -230,13 +228,6 @@ def track_template(frame_ids):
         track_template[k][:] = np.nan
 
     return track_template
-
-def add_romp_frame(frame_id, body, final_dict):
-    track = body['track_id']
-    frameLoc = np.where(final_dict[track]['frame_ids']==frame_id)[0][0]
-    final_dict[track]['fill'][frameLoc] = 1
-    for k in track_keys:
-        final_dict[track][k][frameLoc] = body[k]
 
 def check_id(mpt_frame):
     return np.array([int(i[-1]) for i in mpt_frame])

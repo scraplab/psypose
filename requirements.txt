@@ -14,9 +14,6 @@ h5py
 opencv-contrib-python
 torchfile
 shyaml
-pyquaternion
-quaternion
-numpy-quaternion
 numpy
 keras
 tensorflow

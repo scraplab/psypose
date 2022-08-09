@@ -91,7 +91,7 @@ def plot_box(ax_obj, data, fb, color):
 # def track(pose, trackID):
 #     """"
 #     """
-#     video = pose.video_cv2
+#     video = pose.vid_cv2
 #     pkl = pose.pose_data
 #
 #     plt.ion()
@@ -209,7 +209,7 @@ def frame(pose, frame_number):
     @type frame_number: int
     @return: Visualization
     """
-    frame = utils.frame2array(frame_number, pose.video_cv2)
+    frame = utils.frame2array(frame_number, pose.vid_cv2)
     f = px.imshow(frame)
     f.show()
     del frame
@@ -231,7 +231,7 @@ def render_track(pose, track, format='mp4', outdir=None, loop=None):
         outdir=str(track)+'.mp4'
     elif not outdir and format=='gif':
         outdir=str(track)+'.gif'
-    vid = pose.video_cv2
+    vid = pose.vid_cv2
     #frameCount = pose.n_frames
     fps = pose.fps
     
@@ -392,7 +392,7 @@ def cluster(pose, cluster_num):
         frame = row['frame']
         cx, cy, w, h = utils.get_bbox(row)
         top, right, bottom, left = [int(round(i)) for i in [cy, cx+w, cy+h, cx]]
-        image = utils.frame2array(frame, pose.video_cv2)[top:bottom, left:right]
+        image = utils.frame2array(frame, pose.vid_cv2)[top:bottom, left:right]
         image = utils.resize_image(image, (100,100))
         images.append(image)
     if len(images) > 16:
@@ -409,7 +409,7 @@ def face(pose, face_loc):
     info = pose.face_data.iloc[face_loc]
     frame = info['frame']
     bbox = utils.get_bbox(info)
-    image = utils.frame2array(frame, pose.video_cv2)
+    image = utils.frame2array(frame, pose.vid_cv2)
     image = utils.crop_face(image, bbox)
     plt.imshow(image)
 
@@ -421,7 +421,7 @@ def body(pose, track, loc=None):
     bbox = pose.pose_data[track]['bboxes'][loc]
     cx, cy, w, h = list(bbox)
     top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
-    image = utils.frame2array(frame, pose.video_cv2)
+    image = utils.frame2array(frame, pose.vid_cv2)
     image = image[top:bottom, left:right, :]
     plt.imshow(image)
 
@@ -782,12 +782,12 @@ def track3d(pose, track_id, export_to_path=None, subset_range=None):
     print("Generating plot...\n", flush=True)
     dur = str(int(round((1/pose.fps)*1000)))
     data = pose.pose_data[track_id]
-    vid = pose.video_cv2
+    vid = pose.vid_cv2
     frame_ids = data['frame_ids']
     pose_data = data['joints3d']
     bboxes = data['bboxes']
     n_frames = len(frame_ids)
-    vid_shape = pose.video_shape
+    vid_shape = pose.vid_shape
     in_data = {'vid':vid, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
     fig = pose_subplot(in_data, 0, 'init')
     frames = [pose_subplot(in_data, i, 'frame') for i in tqdm(range(n_frames), position=0, leave=True)]
@@ -816,7 +816,7 @@ def retrieve_face(pose, trackID):
     df = df[df['track_id']==trackID]
     loc = df.loc[df['FaceScore'].idxmax()]
     bbox, frame = utils.get_bbox(loc), int(loc['frame'])
-    in_image = utils.frame2array(frame, pose.video_cv2)
+    in_image = utils.frame2array(frame, pose.vid_cv2)
     face_arr = extract_face_image(in_image, bbox)
     out = img_to_b64(face_arr)
     return out

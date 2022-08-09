@@ -11,7 +11,6 @@ import ast
 import time
 import cv2
 import pandas as pd
-#import face_recognition
 from scenedetect import VideoManager, SceneManager
 from scenedetect.detectors import ContentDetector
 from tqdm import tqdm
@@ -21,7 +20,6 @@ import subprocess
 import traceback
 from pathlib import Path
 import gdown
-#from torchvision.datasets.utils import download_file_from_goole_drive
 from requests.exceptions import MissingSchema
 import zipfile
 from sklearn.metrics import confusion_matrix

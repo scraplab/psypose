@@ -12,7 +12,6 @@ import numpy as np
 import cv2
 import nibabel as nib
 from tqdm import tqdm
-from quaternion import as_quat_array
 import warnings
 
 import pandas as pd
@@ -83,16 +82,12 @@ class pose(object):
     def load_video(self, vid_path):
         vid_path = os.path.abspath(vid_path)
         self.vid_name = os.path.splitext(os.path.basename(vid_path))[0]
-        self.video_cv2 = cv2.VideoCapture(vid_path)
-        #self.video_scenedetect = VideoManager([vid_path])
-        self.fps = self.video_cv2.get(cv2.CAP_PROP_FPS)
+        self.vid_cv2 = cv2.VideoCapture(vid_path)
+        self.fps = self.vid_cv2.get(cv2.CAP_PROP_FPS)
         self.vid_path = vid_path
-        self.framecount = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
-        self.video_time = [(1/self.fps)*1000*frame for frame in range(self.framecount)]
-        self.video_shape = (int(self.video_cv2.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.video_cv2.get(cv2.CAP_PROP_FRAME_WIDTH)))
-        #self.video_array = utils.video_to_array(self.video_cv2)
-        #self.video_bytes = utils.video_to_bytes(self.video_cv2)
-        #del video_array
+        self.framecount = int(self.vid_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.vid_time = [(1/self.fps)*1000*frame for frame in range(self.framecount)]
+        self.vid_shape = (int(self.vid_cv2.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.vid_cv2.get(cv2.CAP_PROP_FRAME_WIDTH)))
         
     def load_pkl(self, pkl_path):
         self.pkl_path = pkl_path
@@ -100,18 +95,15 @@ class pose(object):
         pkl_open = joblib.load(pkl_path)
         if isinstance(pkl_open, list):
             self.is_raw=True
-        # else:
-        #     for track_id, data in pkl_open.items():
-        #         data['quaternion'] = as_quat_array(data['quaternion'])
         self.n_tracks = len(pkl_open)
         self.pose_data = pkl_open
 
     def reinit_video(self):
-        del self.video_cv2
-        self.video_cv2 = cv2.VideoCapture(self.vid_path)
+        del self.vid_cv2
+        self.vid_cv2 = cv2.VideoCapture(self.vid_path)
         
     # def consolidate_clusters(self):
-    #     tot_frames = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
+    #     tot_frames = int(self.vid_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
 
     def save_to_pose(self, save_as = None):
         """
@@ -128,8 +120,8 @@ class pose(object):
         videodat['vid_name'] = self.vid_name
         videodat['framecount'] = self.framecount
         videodat['fps'] = self.fps
-        videodat['video_time'] = self.video_time
-        videodat['video_shape'] = self.video_shape
+        videodat['vid_time'] = self.vid_time
+        videodat['vid_shape'] = self.vid_shape
         if self.face_data is not None:
             out_obj['face_data'] = self.face_data
             if self.face_data_path is not None:
@@ -160,8 +152,8 @@ class pose(object):
             self.vid_name = poseobj['vid_name']
             self.framecount = poseobj['framecount']
             self.fps = poseobj['fps']
-            self.video_time = poseobj['video_time']
-            self.video_shape = poseobj['video_shape']
+            self.vid_time = poseobj['vid_time']
+            self.vid_shape = poseobj['vid_shape']
             if check_keys(poseobj, 'face_data'):
                 self.face_data = pose_obj['face_data']
             if check_keys(poseobj, 'pose_data'):
