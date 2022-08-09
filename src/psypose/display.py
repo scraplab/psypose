@@ -254,6 +254,8 @@ def render_track(pose, track, format='mp4', outdir=None, loop=None):
         ax1 = fig.add_subplot(121)
         ax1.axis('off')
         ax1.imshow(utils.crop_image_body(frame, bboxes[fr]))
+        ax1.imshow(extract_body_image(frame, bboxes[fr], downsample=False))
+        # this is where an edit needs to be made
         #plot_box(ax1, bboxes[fr], 'body', 'red')
         
         netDict = {}
@@ -409,6 +411,18 @@ def face(pose, face_loc):
     bbox = utils.get_bbox(info)
     image = utils.frame2array(frame, pose.video_cv2)
     image = utils.crop_face(image, bbox)
+    plt.imshow(image)
+
+def body(pose, track, loc=None):
+    frames = pose.pose_data[track]['frame_ids']
+    if loc==None:
+        loc = np.argsort(frames)[len(frames)//2
+    frame = frames[loc]
+    bbox = pose.pose_data[track]['bboxes'][loc]
+    cx, cy, w, h = list(bbox)
+    top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
+    image = utils.frame2array(frame, pose.video_cv2)
+    image = image[top:bottom, left:right, :]
     plt.imshow(image)
 
 def play_video(pose):
@@ -614,7 +628,18 @@ def frame3d(pose, track, idx):
 #    out_img = utils.resize_image(new_img, (100,100))
 #    return out_img
 
-def extract_body_image(array, data):
+def extract_body_image(array, data, downsample=True):
+    """
+    Given an image in the form of a numpy array and a bounding box, returns the cropped body.
+    @param array: Numpy array representing video frame.
+    @type array: numpy.ndarray
+    @param data: Bounding box [cx, cy, w, h]
+    @type data: list
+    @param downsample: Whether to normalize to 100x100 pixels
+    @type downsample: bool
+    @return: Cropped image as numpy array
+    @rtype: numpy.ndarray
+    """
     # This takes an image in numpy format and a body bbox, crops the image, and scales it down to 100x100
     abs_h, abs_w = array.shape[0], array.shape[1]
     cx, cy, w, h = [i for i in data]
@@ -640,7 +665,10 @@ def extract_body_image(array, data):
       array = np.pad(array, ((0,0),(t_overhang,0),(0,0)))
 
     new_img = array[top:bottom, left:right, :]
-    out_img = utils.resize_image(new_img, (100,100))
+    if downsample:
+        out_img = utils.resize_image(new_img, (100,100))
+    else:
+        out_img = new_img
     return out_img
 
 def draw_box(fig, bbox, color='Red'):
@@ -750,27 +778,21 @@ def play_pause(dur):
     }
     return [buttons]
 
-def track3d(pose, track_id, export_to_path=None):
+def track3d(pose, track_id, export_to_path=None, subset_range=None):
     print("Generating plot...\n", flush=True)
     dur = str(int(round((1/pose.fps)*1000)))
     data = pose.pose_data[track_id]
-    #vid_array = pose.video_array
     vid = pose.video_cv2
     frame_ids = data['frame_ids']
     pose_data = data['joints3d']
     bboxes = data['bboxes']
     n_frames = len(frame_ids)
     vid_shape = pose.video_shape
-    #in_data = {'vid':vid_array, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
     in_data = {'vid':vid, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
     fig = pose_subplot(in_data, 0, 'init')
     frames = [pose_subplot(in_data, i, 'frame') for i in tqdm(range(n_frames), position=0, leave=True)]
-    # testing a new pbar implementation
-    #plot_progress = [process(token) for token in tqdm(frames)]
     steps = [make_step(i, dur) for i in [frame_ids[j] for j in range(n_frames)]]
-    #sliders_dict = slider_dict(steps)
     fig.update(frames=frames)
-    #fig.layout['sliders']=[sliders_dict]
     fig.layout['updatemenus'] = play_pause(dur)
     fig.update_layout(height=600, width=1000, title_text="Track "+str(track_id))
     fig.show()
@@ -878,6 +900,9 @@ def clusters(pose, type='unnamed'):
             f.show(
                 config={"modeBarButtonsToRemove": ['zoom2d', 'toggleSpikeLines', 'lasso2d', 'autoscale2d', 'select2d'],
                         "displayModeBar": True})
+
+# begin function for displaying dynamic face videos. create renderable version first.
+#def render_face
 
 
 

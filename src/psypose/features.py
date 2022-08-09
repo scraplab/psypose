@@ -95,6 +95,19 @@ def synchrony(pose, type='static'):
 
 
 def series_to_wavelets(data, num_windows=10, min_window_width=10, max_window_width=90):
+    """
+    Convert any timeseries into wavelet matrix that is n_timepoints x num_windows
+    @param data: Input timeseries.
+    @type data: iterable
+    @param num_windows: Number of frequency windows.
+    @type num_windows: int
+    @param min_window_width: The minimum period of timepoints to consider.
+    @type min_window_width: int
+    @param max_window_width: The maximum period of timepoints to consider.
+    @type max_window_width: int
+    @return: Power spectrum wavelet matrix.
+    @rtype: ndarray
+    """
     widths = np.linspace(min_window_width, max_window_width, num_windows)
     wavelets = np.abs(cwt(data, morlet2, widths))
     return wavelets
@@ -128,10 +141,11 @@ def calculate_static_synchrony(A, B, frame_range='all'):
         assert isinstance(frame_range, tuple), 'If not "all", please input frame_range as tuple. Eg: (in_frame, out_frame).'
         framelist = np.arange(frame_range[0], frame_range[1])
         frameLocsA, frameLocsB = np.where(np.isin(framesA, framelist))[0], np.where(np.isin(framesB, framelist))[0]
-        for key, value in trackA.items():
-            trackA[key] = value[frameLocsA]
-        for key, value in trackB.items():
-            trackB[key] = value[frameLocsB]
+        #
+        # for key, value in trackA.items():
+        #     trackA[key] = value[frameLocsA]
+        # for key, value in trackB.items():
+        #     trackB[key] = value[frameLocsB]
         framecount = len(framelist)
     else:
         framecount = len(framesA)
@@ -140,15 +154,16 @@ def calculate_static_synchrony(A, B, frame_range='all'):
     trackA, trackB = trackA['quaternion'], trackB['quaternion']
     static_sync_timeseries = []
     for i in range(framecount):
-        pose1 = [Quaternion(j) for j in trackA[i]]
-        pose2 = [Quaternion(j) for j in trackB[i]]
+        #pose1 = [Quaternion(j) for j in trackA[i]]
+        #pose2 = [Quaternion(j) for j in trackB[i]]
+        pose1, pose2 = trackA[i], trackB[i]
         distance = np.sum([Quaternion.absolute_distance(pose1[k], pose2[k]) for k in range(1,20)])
         static_sync = -(2 * (distance / max_distance_static)) + 1
         static_sync_timeseries.append(static_sync)
     return np.array(static_sync_timeseries)
 
 
-def static_synchrony_all_avg(pose):
+def static_synchrony_all_avg(pose, frame_range='all'):
     """
     Args:
         pose: PsyPose pose object
@@ -247,12 +262,104 @@ def calculate_meta_synchrony_average_all(pose, frame_range='all', exclude_under=
             meta_timeseries.append(np.mean(np.corrcoef(power_spectrums)[0]))
     return meta_timeseries
 
-class Synchrony(object, pose):
+def preproccess_pose(pose, **kwargs):
+    """
+    Preprocess the pose data to fit desire parameters defined in **kwargs.
+    @param pose: PsyPose pose object.
+    @type pose: object
+    @param kwargs:
+    @type kwargs:
+    @return:
+    @rtype:
+    """
+
+class Synchrony(object):
+
+    """
+    Class for generating different synchrony measures time series.
+    """
+
     def __init__(self):
-        self.roi = 'body'
+        self.roi = 'body' # set to all
+        self.pose = None
+        self.joints = 'all' # upper, lower, all, or list
+        self.ignore_root = True # ignore root joint (pelvis)?
+        self.frame_range = 'all'
+        self.specificity = 'all' # or call it average, and let it be all or something
+        self.track_interest = None
+        self.laterality = 'mirrored' # naming convention ideas: agnostic, enantiomeric, chiral, isomeric, ???
+        self.lag = None
+        self.lag_id = None # need to specify who to lag
+        self.kwargs = self.__dict__
+
+    def set_pose(self, pose):
         self.pose = pose
+
+    def set_pars(self, pardict):
+        """
+        Manually update all the parameters of the Synchrony class with a configuration dictionary.
+        @param pardict: Dictionary of synchrony parameters as keys and values as values.
+        @type pardict: dict
+        """
+
+        self.__dict__.update(pardict)
+        self.kwargs.update(pardict)
+
     def set_roi(self, roi):
+        """
+        Set the region of interest (face or body).
+        @param roi: String representing face or body ('face' or 'body').
+        @type roi: str
+        """
         self.roi = roi
+
+    def set_joints(self, joint_key):
+        """
+        Set the joints to consider for synchrony measures.
+        @param joint_key: List of joint IDs from SMPL key.
+        @type joint_key: list
+        """
+        self.joints = joint_key
+
+    def set_tracks(self, people_of_interest):
+        """
+        Select which tracks to consider in synchrony calculation.
+        @param people_of_interest: List of track IDs or person labels from clustering.
+        @type people_of_interest: list
+        """
+
+        self.track_interest = people_of_interest
+
+    def static(self, **kwargs):
+        self.__dict__.update(**kwargs)
+        self.kwargs.update(kwargs)
+
+        if len(self.track_interest) == 2:
+            specificity = 'dyad'
+
+        elif len(self.track_interest) < 2:
+            raise ValueError('All synchrony calculations must include > 2 people.')
+
+        if specificity=='dyad':
+            trackA, trackB = self.pose.pose_data[self.track_interest[0]], self.pose.pose_data[self.track_interest[1]]
+            synchrony_out = calculate_static_synchrony(trackA, trackB, frame_range=self.frame_range)
+            return synchrony_out
+
+        #elif specificity=='all':
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

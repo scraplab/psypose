@@ -114,17 +114,28 @@ class pose(object):
     #     tot_frames = int(self.video_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
 
     def save_to_pose(self, save_as = None):
+        """
+        This is not finished...
+        @param save_as:
+        @type save_as:
+        @return:
+        @rtype:
+        """
         out_obj = {}
-        out_obj['vid_path'] = self.vid_path
-        out_obj['vid_name'] = self.vid_name
-        out_obj['framecount'] = self.framecount
-        out_obj['fps'] = self.fps
-        out_obj['video_time'] = self.video_time
-        out_obj['video_shape'] = self.video_shape
+        face = {}
+        videodat = {}
+        videodat['vid_path'] = self.vid_path
+        videodat['vid_name'] = self.vid_name
+        videodat['framecount'] = self.framecount
+        videodat['fps'] = self.fps
+        videodat['video_time'] = self.video_time
+        videodat['video_shape'] = self.video_shape
         if self.face_data is not None:
             out_obj['face_data'] = self.face_data
             if self.face_data_path is not None:
                 out_obj['face_data_path'] = self.face_data_path
+        else:
+            out_obj['face_data'] = None
         if self.pose_data is not None:
             out_obj['pose_data'] = self.pose_data
 
@@ -135,6 +146,11 @@ class pose(object):
         joblib.dump(out_obj, save_as)
 
     def load_pose(self, pose_path):
+        """
+        Load a .pose file into a pose object.
+        @param pose_path: Path to .pose file.
+        @type pose_path: str
+        """
         if 'pkl' in pose_path:
             warnings.Warn('This is an unlabeled pkl file carrying pose information. The source video is unknown.', UserWarning)
             self.load_pkl(pose_path)
