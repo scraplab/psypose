@@ -416,7 +416,7 @@ def face(pose, face_loc):
 def body(pose, track, loc=None):
     frames = pose.pose_data[track]['frame_ids']
     if loc==None:
-        loc = np.argsort(frames)[len(frames)//2
+        loc = np.argsort(frames)[len(frames)//2]
     frame = frames[loc]
     bbox = pose.pose_data[track]['bboxes'][loc]
     cx, cy, w, h = list(bbox)

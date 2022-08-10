@@ -541,6 +541,19 @@ def slice_pose(pose, frame_range):
             allFrames.extend(list(pose.pose_data[track]['frame_ids']))
 
 
+def make_presence_mat(pose):
+    dat = pose.pose_data.copy()
+    framecount = pose.framecount
+    dk = list(dat.keys())  # list of tracks
+    ntt = len(dk)  # number of tracks
+    ptmat = np.zeros((framecount, ntt))  # ntracks by nframes
+
+    # make presence matrix
+    for i in range(ntt):
+        ptmat[dat[dk[i]]['frame_ids'], i] = 1
+    return ptmat
+
+
 PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv'

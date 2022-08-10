@@ -9,7 +9,6 @@ Functions for the construction of second-order pose data and regressors
 import numpy as np
 import pandas as pd
 import scipy.stats
-from pyquaternion import Quaternion
 from psypose import utils
 import os
 
@@ -18,43 +17,71 @@ def imaging_pars(pose, functional = 'a_func_file', TR=2.0):
     #or provide a sample functional run for parameters (HRF, TR, etc)
     #this info will be used to generate the different regressors
     pose.TR = TR
-    
-def presence_matrix(pose, character_order, hertz=None):
-
-    # character order should be an iterable containing strings of character IDs
-    # that correspond to the labels given in name_clusters()
-    char_order = np.array(character_order)
-
-    # first make an empty array for character appearances
-    char_auto = np.zeros((pose.n_frames, len(char_order)))
-    # this is going to label a character presence array with ones and zeros
-    for i, tracklist in enumerate(list(pose.named_clusters.values())):
-        character = list(pose.named_clusters.keys())[i]
-        if character not in char_order:
-            continue
-        arr_placement = int(np.where(char_order==character)[0]) 
-        for track in tracklist:
-            track_frames = pose.pose_data.get(track).get('frame_ids')
-            char_auto[:,arr_placement][track_frames] = 1
-    char_frame = pd.DataFrame(char_auto, columns=character_order)
-    char_frame['frame_ids'] = np.arange(pose.n_frames)
-    pose.full_ID_annotations = char_frame
-    if hertz==None:
-        return char_frame
-    else:
-        needed_frames = np.arange(round((1/hertz)*pose.fps), pose.n_frames, round((1/hertz)*pose.fps))
-        auto_appearances_filt = char_frame.take(needed_frames[:-2], axis=0).reset_index(drop=True)
-        return auto_appearances_filt
 
 
-static_max = np.sqrt(2)*23
+def average_synchrony(pose):
+    dat = pose.pose_data
+    framecount = pose.framecount
+    dk = list(dat.keys())  # list of tracks
+    ntt = len(dk)  # number of tracks
+    # make presence matrix
+    ptmat = utils.make_presence_mat(pose)
 
-def get_pose_distance(p1, p2):
-    # p1 and p2 should just be the vectors
-    # may be the normal static vectors or those derived with numpy.gradient()
-    p1, p2 = [Quaternion(i) for i in p1[1:]], [Quaternion(i) for i in p2[1:]]
-    distance = np.sum([(p1[k]-p1[k]).norm for k in range(23)])
-    return distance
+    # compute synchrony
+    cid = np.where(ptmat)[0]  # get those track indexes here ** np.where() will return indices where number is not 0.
+    nj = 25  # number of joints
+    dsel = np.tril_indices(nj, k=-1)  # indices of lower triangle of joint similarity matrix
+    out = []
+
+    # for every frame, make an array that represents the joint distance mat of every every individual (in a subloop)
+    # after it's made for each frame, get the correlation matrix of distance matrices.  These represent the synchyrony matrix for all individuals
+    dk = np.array(dk)
+    # for i in tqdm(range(framecount)): # for every frame
+    n_people = []
+    for i in tqdm(range(framecount)):
+        track_ids = dk[np.where(ptmat[i, :])[0]]
+        n_presence = len(track_ids)
+        n_people.append(n_presence)
+        if not n_presence:
+            out.append(np.nan)
+        else:
+            dmats = np.zeros((300, n_presence))  # ((25*25)-25)/2, aka len() of the lower triangle of the sync mat
+            for j in range(
+                    n_presence):  # for every track, get the distance matrix of that track with all other tracks, then subset to the lower triangle
+                # track_ids = dk[np.where(ptmat[:,i])[0]]
+                pose_loc = np.where(dat[track_ids[j]]['frame_ids'] == i)[0][0]
+                pose = dat[track_ids[j]]['joints3d'][pose_loc, :25, :]
+                dmats[:, j] = pairwise_distances(pose)[dsel]
+            out.append(np.corrcoef(dmats, rowvar=False))  # fill this person-person synchrony matrix in the 'out' array
+
+    # out now represesents a synchrony matrix for every frame
+
+    # compute average synchrony
+
+    # making a list of subset indices
+    tsel = []
+    for i in out:
+        if isinstance(i, float):
+            tsel.append(np.nan)
+        else:
+            tsel.append(np.tril_indices_from(i, k=-1))
+
+    gas = np.zeros(framecount)  # empty vec that is n_frames long
+    smin = np.zeros(framecount)  # empty vec that is n_frames long
+
+    # for every frame,
+    # get the synchrony matrix,
+    # get the average of the subset matrix (lower triangle)
+    # get the minimum of that subet matrix
+    # fill the gas with the averages and smin with the minimums
+    for i in range(framecount):
+        kout = out[i]
+        if isinstance(kout, float):
+            gas[i], smin[i] = np.nan, np.nan
+        else:
+            gas[i], smin[i] = np.mean(kout[tsel[i]]), np.min(kout[tsel[i]])
+    gas = (gas + 1) / 2
+    return gas
 
 def synchrony(pose, type='static'):
     track_occurence = {}
