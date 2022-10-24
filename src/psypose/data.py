@@ -19,9 +19,6 @@ import pandas as pd
 #os.system('cd ..')
 from psypose import utils
 
-import torch
-
-
 def check_keys(obj, keystr):
 
     allkeys = list(obj.keys())
