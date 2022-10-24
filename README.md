@@ -1,21 +1,44 @@
 # psypose
-Tools for processing pose estimation for psychological research.
+This is a smaller, more light-weight version of Psypose. It retains the ability to make pose objects and use display funcitons, but it cannot run any annotations. Use this if you need some basic processing functions on the fly.
 
 ## Installation 
-The easiest way to get started with PsyPose at this point is to install the PARE branch (actively in development) using pip:
+The easiest way to get started with PsyPose at this point is to install the psypose_minimal branch using pip:
 ```
-pip install git+https://github.com/scraplab/psypose.git@psypose_pare
+pip install git+https://github.com/scraplab/psypose.git@psypose_minimal
 ```
 
-## Basic Annotation
+## Load a pose object with video file, pose file (.pkl), and face data (.csv).
 Below are a few simple lines to get you started. 
 ```
-from psypose import data, extract
-vid_path = 'path/to/video'
+from psypose import data
 t = data.pose()
-t.load_video(vid_path)
-extract.annotate(t, output_path = 'where/to/save/ouputs')
+t.load_video('path_to_video.mp4')
+t.load_pkl('path_to_pkl.pkl')
+t.load_face_data('path_to_faces.csv')
 ```
-This will save one .pkl file and one .csv, which correspond to body and face data, respectively. 
 
-*Note: Psypose requires some pre-trained model files - these will be downloaded automatically the first time psypose is imported, and they take up a couple gigs of space. 
+You can now use the pose object (here labeled `t`) in any of the display functions to look at 3D pose, face annotations, or just to view specific frames from the video. 
+
+```
+from psypose import display
+
+# View a single frame from the video 
+display.frame(t, 100)
+
+# View an interactive 3D pose skeleton
+display.track3d(t, 1) # Look at track 1
+
+# View a face
+display.face(t, 0) # The 0 corresponds to the 0th row of the face data csv
+```
+
+There are also some functions to generate n_people regressors and measures of synchrony. 
+
+```
+from psypose.features import average_synchrony
+
+# Get the average synchrony for all bodies on screen for every frame. Empty frames will be filled with NaNs. 
+sync_vec = average_synchrony(t)
+```
+
+
