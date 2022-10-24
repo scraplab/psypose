@@ -1,5 +1,5 @@
 # psypose
-This is a smaller, more light-weight version of Psypose. It retains the ability to make pose objects and use display funcitons, but it cannot run any annotations. Use this if you need some basic processing functions on the fly.
+This is a smaller, more light-weight version of Psypose. It retains the ability to make pose objects and use display functions, but it cannot run any annotations. Use this if you need some basic processing functions on the fly.
 
 ## Installation 
 The easiest way to get started with PsyPose at this point is to install the psypose_minimal branch using pip:
