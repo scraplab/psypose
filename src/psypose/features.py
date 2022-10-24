@@ -19,7 +19,7 @@ def imaging_pars(pose, functional = 'a_func_file', TR=2.0):
     pose.TR = TR
 
 
-def average_synchrony(pose):
+def synchrony_matrix(pose):
     dat = pose.pose_data
     framecount = pose.framecount
     dk = list(dat.keys())  # list of tracks
@@ -32,6 +32,35 @@ def average_synchrony(pose):
     nj = 25  # number of joints
     dsel = np.tril_indices(nj, k=-1)  # indices of lower triangle of joint similarity matrix
     out = []
+
+    # for every frame, make an array that represents the joint distance mat of every every individual (in a subloop)
+    # after it's made for each frame, get the correlation matrix of distance matrices.  These represent the synchyrony matrix for all individuals
+    dk = np.array(dk)
+    # for i in tqdm(range(framecount)): # for every frame
+    n_people = []
+    for i in tqdm(range(framecount)):
+        track_ids = dk[np.where(ptmat[i, :])[0]]
+        n_presence = len(track_ids)
+        n_people.append(n_presence)
+        if not n_presence:
+            out.append(np.nan)
+        else:
+            dmats = np.zeros((300, n_presence))  # ((25*25)-25)/2, aka len() of the lower triangle of the sync mat
+            for j in range(
+                    n_presence):  # for every track, get the distance matrix of that track with all other tracks, then subset to the lower triangle
+                # track_ids = dk[np.where(ptmat[:,i])[0]]
+                pose_loc = np.where(dat[track_ids[j]]['frame_ids'] == i)[0][0]
+                pose = dat[track_ids[j]]['joints3d'][pose_loc, :25, :]
+                dmats[:, j] = pairwise_distances(pose)[dsel]
+            out.append(np.corrcoef(dmats, rowvar=False))
+    return out
+
+def average_synchrony(pose):
+
+    #### the code belo
+    dat = pose.pose_data
+    framecount = pose.framecount
+    out = synchrony_matrix(pose)
 
     # for every frame, make an array that represents the joint distance mat of every every individual (in a subloop)
     # after it's made for each frame, get the correlation matrix of distance matrices.  These represent the synchyrony matrix for all individuals
@@ -159,35 +188,6 @@ def pose_to_wavelet_matrix(quaternion_matrix, num_windows=10, min_window_width=1
 
 
 max_distance_static = np.sqrt(2)*19
-
-def calculate_static_synchrony(A, B, frame_range='all'):
-    trackA = dict(A)
-    trackB = dict(B)
-    framesA, framesB = trackA['frame_ids'], trackB['frame_ids']
-    if frame_range != 'all':
-        assert isinstance(frame_range, tuple), 'If not "all", please input frame_range as tuple. Eg: (in_frame, out_frame).'
-        framelist = np.arange(frame_range[0], frame_range[1])
-        frameLocsA, frameLocsB = np.where(np.isin(framesA, framelist))[0], np.where(np.isin(framesB, framelist))[0]
-        #
-        # for key, value in trackA.items():
-        #     trackA[key] = value[frameLocsA]
-        # for key, value in trackB.items():
-        #     trackB[key] = value[frameLocsB]
-        framecount = len(framelist)
-    else:
-        framecount = len(framesA)
-        assert len(trackA['frame_ids']) == len(
-            trackB['frame_ids']), "Tracks are of different framecounts. Please set frame range as a tuple."
-    trackA, trackB = trackA['quaternion'], trackB['quaternion']
-    static_sync_timeseries = []
-    for i in range(framecount):
-        #pose1 = [Quaternion(j) for j in trackA[i]]
-        #pose2 = [Quaternion(j) for j in trackB[i]]
-        pose1, pose2 = trackA[i], trackB[i]
-        distance = np.sum([Quaternion.absolute_distance(pose1[k], pose2[k]) for k in range(1,20)])
-        static_sync = -(2 * (distance / max_distance_static)) + 1
-        static_sync_timeseries.append(static_sync)
-    return np.array(static_sync_timeseries)
 
 
 def static_synchrony_all_avg(pose, frame_range='all'):
