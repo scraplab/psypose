@@ -29,7 +29,7 @@ from io import BytesIO
 import shutil
 import torchvision
 import torch
-from psypose.pare_dl.download_pare_models import install_pare_models, pare_status
+#from psypose.pare_dl.download_pare_models import install_pare_models, pare_status
 
 def convert_cam_to_3d_trans(cams, weight=2.):
     trans3d = []
@@ -554,97 +554,97 @@ def make_presence_mat(pose):
     return ptmat
 
 
-PSYPOSE_DATA_FILES = {
-    'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
-    'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv'
-}
-
-PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
-
-def check_data_files(prompt_confirmation=False):
-    missing_files = PSYPOSE_DATA_FILES.copy()
-    if PSYPOSE_DATA_DIR.is_dir():
-        for fname in PSYPOSE_DATA_FILES.keys():
-            expected_loc = PSYPOSE_DATA_DIR.joinpath(fname)
-            if expected_loc.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
-                expected_loc = expected_loc.with_suffix('')
-            if expected_loc.exists():
-                missing_files.pop(fname)
-    if any(missing_files):
-        if prompt_confirmation:
-            msg = (
-                f"Psypose needs to download {len(missing_files)} "
-                f"file{'s' if len(missing_files) > 1 else ''} in order "
-                f"to run:\n\t{', '.join(missing_files.keys())}"
-                "\n\tDo you want to download them now?\n[Y/n] \n"
-            )
-            while True:
-                response = input(msg).lower().strip()
-                if response in ('y', ''):
-                    confirmed = True
-                    break
-                elif response == 'n':
-                    confirmed = False
-                    break
-        else:
-            confirmed = True
-        if confirmed:
-            if not PSYPOSE_DATA_DIR.is_dir():
-                print(f"creating {PSYPOSE_DATA_DIR} ...")
-                PSYPOSE_DATA_DIR.mkdir(parents=False, exist_ok=False)
-            errors = {}
-            for fname, url in missing_files.items():
-                # dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
-                print(f"downloading {fname} ...")
-                try:
-                    download_file_from_web(url, fname)
-                except (MissingSchema, OSError) as e:
-                    errors[fname[0]] = e
-            if any(errors):
-                print(
-                    f"Failed to download {len(errors)} files. See stack "
-                    f"trace{'s' if len(errors) > 1 else ''} below for "
-                    "more info:\n"
-                )
-                for fname, e in errors.items():
-                    print(f"{fname.upper()}:")
-                    traceback.print_exception(type(e), e, e.__traceback__)
-                    print('=' * 40, end='\n\n')
-        else:
-            warnings.warn(
-                "missing required files. Some Psypose "
-                "functionality may be unavailable"
-            )
-
-def check_pare_install():
-    if not pare_status:
-        msg = (
-            f"Pare needs to download model weights in order to run. Do you want to download them now?\n[Y/n] \n "
-        )
-        response = input(msg).lower().strip()
-        if response in ('y', ''):
-            confirmed = True
-        elif response == 'n':
-            confirmed = False
-        else:
-            confirmed = True
-        if confirmed:
-            install_pare_models()
-        else:
-            print('Psypose will try to download PARE in the future.\n\n')
-    else:
-        None
-
-
-def download_file_from_web(url, filename):
-    dest_path = PSYPOSE_DATA_DIR.joinpath(filename)
-    urllib.request.urlretrieve(url, dest_path)
-    if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
-        print(f"extracting {dest_path} ...")
-        z = zipfile.ZipFile(str(dest_path))
-        z.extractall(PSYPOSE_DATA_DIR)
-        # zipfile.extractall(str(dest_path))
-        print(f"removing {dest_path} ...")
-        dest_path.unlink()
+# PSYPOSE_DATA_FILES = {
+#     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
+#     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv'
+# }
+#
+# PSYPOSE_DATA_DIR = Path('~/.psypose').expanduser()
+#
+# def check_data_files(prompt_confirmation=False):
+#     missing_files = PSYPOSE_DATA_FILES.copy()
+#     if PSYPOSE_DATA_DIR.is_dir():
+#         for fname in PSYPOSE_DATA_FILES.keys():
+#             expected_loc = PSYPOSE_DATA_DIR.joinpath(fname)
+#             if expected_loc.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
+#                 expected_loc = expected_loc.with_suffix('')
+#             if expected_loc.exists():
+#                 missing_files.pop(fname)
+#     if any(missing_files):
+#         if prompt_confirmation:
+#             msg = (
+#                 f"Psypose needs to download {len(missing_files)} "
+#                 f"file{'s' if len(missing_files) > 1 else ''} in order "
+#                 f"to run:\n\t{', '.join(missing_files.keys())}"
+#                 "\n\tDo you want to download them now?\n[Y/n] \n"
+#             )
+#             while True:
+#                 response = input(msg).lower().strip()
+#                 if response in ('y', ''):
+#                     confirmed = True
+#                     break
+#                 elif response == 'n':
+#                     confirmed = False
+#                     break
+#         else:
+#             confirmed = True
+#         if confirmed:
+#             if not PSYPOSE_DATA_DIR.is_dir():
+#                 print(f"creating {PSYPOSE_DATA_DIR} ...")
+#                 PSYPOSE_DATA_DIR.mkdir(parents=False, exist_ok=False)
+#             errors = {}
+#             for fname, url in missing_files.items():
+#                 # dest_path = PSYPOSE_DATA_DIR.joinpath(fname)
+#                 print(f"downloading {fname} ...")
+#                 try:
+#                     download_file_from_web(url, fname)
+#                 except (MissingSchema, OSError) as e:
+#                     errors[fname[0]] = e
+#             if any(errors):
+#                 print(
+#                     f"Failed to download {len(errors)} files. See stack "
+#                     f"trace{'s' if len(errors) > 1 else ''} below for "
+#                     "more info:\n"
+#                 )
+#                 for fname, e in errors.items():
+#                     print(f"{fname.upper()}:")
+#                     traceback.print_exception(type(e), e, e.__traceback__)
+#                     print('=' * 40, end='\n\n')
+#         else:
+#             warnings.warn(
+#                 "missing required files. Some Psypose "
+#                 "functionality may be unavailable"
+#             )
+#
+# def check_pare_install():
+#     if not pare_status:
+#         msg = (
+#             f"Pare needs to download model weights in order to run. Do you want to download them now?\n[Y/n] \n "
+#         )
+#         response = input(msg).lower().strip()
+#         if response in ('y', ''):
+#             confirmed = True
+#         elif response == 'n':
+#             confirmed = False
+#         else:
+#             confirmed = True
+#         if confirmed:
+#             install_pare_models()
+#         else:
+#             print('Psypose will try to download PARE in the future.\n\n')
+#     else:
+#         None
+#
+#
+# def download_file_from_web(url, filename):
+#     dest_path = PSYPOSE_DATA_DIR.joinpath(filename)
+#     urllib.request.urlretrieve(url, dest_path)
+#     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
+#         print(f"extracting {dest_path} ...")
+#         z = zipfile.ZipFile(str(dest_path))
+#         z.extractall(PSYPOSE_DATA_DIR)
+#         # zipfile.extractall(str(dest_path))
+#         print(f"removing {dest_path} ...")
+#         dest_path.unlink()
 
 

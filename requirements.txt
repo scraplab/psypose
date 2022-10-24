@@ -1,5 +1,4 @@
 py-feat @ git+https://github.com/cosanlab/py-feat.git
-pare @ git+https://github.com/LandryBulls/PARE.git@pare_scrap
 gdown
 moviepy
 pytube
