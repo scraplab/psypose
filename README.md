@@ -35,10 +35,13 @@ display.face(t, 0) # The 0 corresponds to the 0th row of the face data csv
 There are also some functions to generate n_people regressors and measures of synchrony. 
 
 ```
-from psypose.features import average_synchrony
+from psypose import features
+
+# Get a synchrony matrix for every frame. Every idx in the retuned list is n_people x n_people.
+sync_mat = features.synchrony_matrix(t)
 
 # Get the average synchrony for all bodies on screen for every frame. Empty frames will be filled with NaNs. 
-sync_vec = average_synchrony(t)
+sync_vec = features.average_synchrony(t)
 ```
 
 
