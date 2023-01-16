@@ -18,14 +18,14 @@ keras
 tensorflow
 
 # pare-specific reqs
-torch==1.6.0
-torchvision==0.7.0
+torch
+torchvision
 joblib==0.15.1
 opencv-python
-trimesh==3.8.12
+trimesh
 pyrender==0.1.36
 smplx==0.1.28
-tqdm==4.47.0
+tqdm
 loguru==0.3.2
 albumentations==0.4.6
 scipy
