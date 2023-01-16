@@ -28,7 +28,7 @@ smplx==0.1.28
 tqdm==4.47.0
 loguru==0.3.2
 albumentations==0.4.6
-scipy==1.7.0
+scipy
 pyyaml==5.3.1
 yacs==0.1.8
 matplotlib==3.4.2
