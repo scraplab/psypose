@@ -35,7 +35,7 @@ matplotlib==3.4.2
 scikit-image
 pillow==8.2.0
 pytorch-lightning
-numba==0.54.1
+numba
 filterpy==1.4.5
 flatten-dict==0.2.0
 fastai==1.0.55
