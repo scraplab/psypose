@@ -21,7 +21,7 @@ tensorflow
 torch==1.6.0
 torchvision==0.7.0
 joblib==0.15.1
-opencv-python==4.1.1.26
+opencv-python
 trimesh==3.8.12
 pyrender==0.1.36
 smplx==0.1.28
