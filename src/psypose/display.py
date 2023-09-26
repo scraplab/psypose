@@ -245,6 +245,8 @@ def render_track(pose, track, format='mp4', outdir=None, loop=None):
     px = px = 1/plt.rcParams['figure.dpi']
 
     print("Processing video..\n")
+
+    # refactor this to first save images to image folder, then run an ffmepg command to convert to video
     
     for fr, cur_frame in tqdm(enumerate(frame_ids)):
         frame = utils.frame2array(cur_frame, vid)

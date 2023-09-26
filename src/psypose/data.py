@@ -13,6 +13,7 @@ import cv2
 import nibabel as nib
 from tqdm import tqdm
 import warnings
+from pathlib import Path
 
 import pandas as pd
 
@@ -41,6 +42,7 @@ class pose(object):
         self.face_data_path = None
         self.pose_data = None
         self.split_frames = None
+        self.output_path = None
         pass
             
     def load_fmri(self, fmri_path, TR):
@@ -84,10 +86,12 @@ class pose(object):
         self.vid_name = os.path.splitext(os.path.basename(vid_path))[0]
         self.vid_cv2 = cv2.VideoCapture(vid_path)
         self.fps = self.vid_cv2.get(cv2.CAP_PROP_FPS)
-        self.vid_path = vid_path
-        self.framecount = int(self.vid_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.vid_path = Path(vid_path)
+        #self.framecount = int(self.vid_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.framecount = utils.get_framecount(str(self.vid_path))
         self.vid_time = [(1/self.fps)*1000*frame for frame in range(self.framecount)]
         self.vid_shape = (int(self.vid_cv2.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.vid_cv2.get(cv2.CAP_PROP_FRAME_WIDTH)))
+        self.output_path = os.path.join(os.getcwd(), self.vid_name)
         
     def load_pkl(self, pkl_path):
         self.pkl_path = pkl_path

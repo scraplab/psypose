@@ -23,6 +23,7 @@ import gdown
 from requests.exceptions import MissingSchema
 import zipfile
 from sklearn.metrics import confusion_matrix
+from moviepy.editor import VideoFileClip
 from PIL import Image
 import base64
 from io import BytesIO
@@ -476,17 +477,21 @@ def crop_face(array, data):
     new_img = array[top:bottom, left:right, :]
     return new_img
 
-def get_framecount(video_path):
-    cap = cv2.VideoCapture(video_path)
-    framecount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    del cap
-    return framecount
+# def get_framecount(video_path):
+#     cap = cv2.VideoCapture(str(video_path))
+#     framecount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+#     del cap
+#     return framecount
 
 def get_framecount(vid_path):
     cap = cv2.VideoCapture(vid_path)
     fc = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     del cap
     return fc
+
+# def get_framecount(vid_path):
+#     clip = VideoFileClip(vid_path)
+#     return sum(1 for x in clip.iter_frames())
 
 def get_image_shape(vid_path):
     cap = cv2.VideoCapture(vid_path)
@@ -555,6 +560,19 @@ def make_presence_mat(pose):
     return ptmat
 
 
+
+
+def trim_video(posix_video_path, start_time, end_time, output_path):
+    """
+    Takes a posix path to a video file, a start trim value (in seconds), an end trim value (in seconds), and an output path.
+    Trims the video and saves it to the output path.
+    """
+    stringPath = str(posix_video_path)
+    duration = VideoFileClip(stringPath).duration
+    ffmpeg_command = f'ffmpeg -i {stringPath} -ss {start_time} -to {end_time} -c copy {output_path}'
+    subprocess.run(ffmpeg_command, shell=True)
+
+# I think these are google drive links
 PSYPOSE_DATA_FILES = {
     'facenet_keras.h5': '1eyE-IIHpkswHhYnPXX3HByrZrSiXk00g',
     'vgg_face_weights.h5': '1AkYZmHJ_LsyQYsML6k72A662-AdKwxsv'
@@ -639,7 +657,8 @@ def check_pare_install():
 
 def download_file_from_web(url, filename):
     dest_path = PSYPOSE_DATA_DIR.joinpath(filename)
-    urllib.request.urlretrieve(url, dest_path)
+    #urllib.request.urlretrieve(url, dest_path)
+    gdown.download(id=url, output=str(dest_path), quiet=False)
     if dest_path.suffix in {'.zip', '.gz', '.tgz', '.bz2'}:
         print(f"extracting {dest_path} ...")
         z = zipfile.ZipFile(str(dest_path))

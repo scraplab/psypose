@@ -24,7 +24,7 @@ import shutil
 from psypose.pose_estimation import estimate_pose
 
 from psypose import utils
-from psypose.face_identification import add_face_id, cluster_ID
+#from psypose.face_identification import add_face_id, cluster_ID
 
 import sys
 
@@ -33,10 +33,29 @@ from feat.detector import Detector
 sys.path.append(os.getcwd())
 
 def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepface', 
-             every=1, output_path=None, save_results=True, shot_detection=True,
-             person_tracking=True, extract_aus=True, extract_face_id=True, run_clustering=True, num_workers=None,
+             every=1, output_path=None, save_results=True, shot_detection=False,
+             person_tracking=False, extract_aus=True, extract_face_id=False, run_clustering=False, num_workers=None,
              smooth=True, image_folder=None):
 
+    """
+    Annotate a video with pose, facial expression, and face identity features.
+    @param pose: PsyPose pose() object
+    @param face_box_model: Which face detection model to use. See feat.detector.Detector for options.
+    @param au_model: Which action unit detection model to use. See feat.detector.Detector for options.
+    @param face_id_model: Which model to use to generate face embeddings.
+    @param every: Number of frames to skip for face annotation. Default is 1 (every frame).
+    @param output_path: Output directory.
+    @param save_results: (Bool) Save results to output_path.
+    @param shot_detection: (Bool) Whether to run shot detection.
+    @param person_tracking: Whether to run person tracking using face identification (better for feature films).
+    @param extract_aus: (Bool) Whether to extract facial expressions.
+    @param extract_face_id: (Bool) Whether to extract face identity features.
+    @param run_clustering: (Bool) Whether to run clustering on face identity features.
+    @param num_workers: Number of workers to use for face detection. Default is None (uses all available).
+    @param smooth: (Bool) Whether to apply smoothing via One Euro Filter to pose data.
+    @param image_folder: Where to save temporary image files. Default is None (uses default location).
+    @return: Pose object populated with annotations.
+    """
 
     # if output path is not defined, a directory named after the input video will be created in whatever directory the script is ran.
     if output_path==None:
@@ -89,8 +108,8 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      
      ########## Extract face identity encodings ##########
 
-    if extract_aus and extract_face_id:
-        add_face_id(pose)
+    # if extract_aus and extract_face_id:
+    #     add_face_id(pose)
 
     ############ Run face encoding clustering for identification ####################
 
@@ -102,6 +121,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
             pose.face_data.to_csv(os.path.join(output_path, 'psypose_faces.csv'))
 
     print('Finished annotation for file: ', os.path.basename(pose.vid_path))
+    return pose
      
      
 

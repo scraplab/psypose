@@ -24,10 +24,12 @@ import joblib
 import shutil
 import argparse
 from loguru import logger
+from pathlib import Path
 
 sys.path.append('.')
 from psypose.run_pare import PARETester
 from psypose.utils import split_tracks
+from pare.utils.smooth_pose import smooth_pose
 from pare.utils.demo_utils import (
     download_youtube_clip,
     video_to_images,
@@ -36,6 +38,9 @@ from pare.utils.demo_utils import (
 
 import pare
 pare_loc = os.path.dirname(pare.__file__)
+
+# How to make this flexible between a command-line thing and a jupyter thing.
+# I think I need to make a class that has all the arguments as attributes, and then I can just pass that class to the functions.
 
 CFG = pare_loc+'/data/pare/checkpoints/pare_w_3dpw_config.yaml'
 CKPT = pare_loc+'/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt'
@@ -92,11 +97,11 @@ parser.add_argument('--display', type=bool, default=False,
 parser.add_argument('--smooth', type=bool, default=True,
                     help='smooth the results to prevent jitter')
 
-parser.add_argument('--min_cutoff', type=float, default=0.004,
+parser.add_argument('--min_cutoff', type=float, default=1.0,
                     help='one euro filter min cutoff. '
                          'Decreasing the minimum cutoff frequency decreases slow speed jitter')
 
-parser.add_argument('--beta', type=float, default=1.0,
+parser.add_argument('--beta', type=float, default=0.1,
                     help='one euro filter beta. '
                          'Increasing the speed coefficient(beta) decreases speed lag.')
 
@@ -121,17 +126,45 @@ parser.add_argument('--save_obj', type=bool, default=False,
 parser.add_argument('--shot_detection', type=bool, default=True,
                     help='Run psypose shot detection with PySceneDetect')
 
-args = parser.parse_args()
 
+args = parser.parse_args(args=[])
 def estimate_pose(pose):
+    """
+    @param args: All of the arguments provided by the PARE developers for their model.
+    @param pose: A PsyPose pose object with a vid_path attribute.
+    @return: Returns the results of the PARE model.
+    """
 
-    args.shot_detection = pose.shot_detection
-    args.smooth = pose.smooth
+    #args.shot_detection = pose.shot_detection
+    #args.smooth = pose.smooth
+
+    pose.shot_detection = args.shot_detection
+    pose.smooth = args.smooth
 
     demo_mode = args.mode
 
+    pose.image_folder = str(pose.vid_path.parent / os.path.basename(pose.vid_path).split('.')[0]) + '_frames'
+
+    # check if image folder exists. If it does AND it has images in it already:
+    # check if n_frames==frames in video. If yes, skip extraction. If no, delete the frames and extract again.
+
+    # *** For some reason the test fails even if the frames are already extracted. Check count stuff.
+
+    parse_to_frames = True
+    if os.path.isdir(pose.image_folder):
+        n_frames = len(os.listdir(pose.image_folder))
+        if n_frames == pose.framecount:
+            parse_to_frames = False
+            print('Frames already extracted. Skipping extraction.')
+        else:
+            print('Frames already extracted, but number of frames does not match video. Deleting and extracting again.')
+            shutil.rmtree(pose.image_folder)
+            os.mkdir(pose.image_folder)
+
+    Path(pose.image_folder).mkdir(exist_ok=True)
+
     if demo_mode == 'video':
-        video_file = pose.vid_path
+        video_file = str(pose.vid_path)
 
         # ========= [Optional] download the youtube video ========= #
         if video_file.startswith('https://www.youtube.com'):
@@ -193,14 +226,16 @@ def estimate_pose(pose):
         orig_height, orig_width = img_shape[:2]
         total_time = time.time()
         tracking_results = tester.run_tracking(video_file, input_image_folder)
-        if args.shot_detection:
-            print('\n'+'\033[1m'+'Splitting tracks based on shot detection...\n')
-            tracking_results, pose.num_splits, pose.split_frames = split_tracks(tracking_results, pose.shots)
+        # if args.shot_detection:
+        #     print('\n'+'\033[1m'+'Splitting tracks based on shot detection...\n')
+        #     tracking_results, pose.num_splits, pose.split_frames = split_tracks(tracking_results, pose.shots)
         pare_time = time.time()
         pare_results = tester.run_on_video(tracking_results, input_image_folder, orig_width, orig_height)
         if not args.save_vertices:
             for track in list(pare_results.keys()):
-                del pare_results[track]['verts']
+                # removing vertices because we don't want them (too big)
+                if pose.no_render:
+                    del pare_results[track]['verts']
 
         end = time.time()
 
@@ -217,7 +252,11 @@ def estimate_pose(pose):
             logger.info(f'Saving output results to \"{os.path.join(output_path, "pare_output.pkl")}\".')
             joblib.dump(pare_results, os.path.join(output_path, "pare_output.pkl"))
 
+        args.no_render = pose.no_render
+
         if not args.no_render:
+            Path(output_path).mkdir(exist_ok=True)
+            Path(output_img_folder).mkdir(exist_ok=True)
             tester.render_results(pare_results, input_image_folder, output_img_folder, output_path,
                                   orig_width, orig_height, num_frames)
 
@@ -233,6 +272,9 @@ def estimate_pose(pose):
             shutil.rmtree(output_img_folder)
 
         shutil.rmtree(input_image_folder)
+        if args.save_obj:
+            logger.info(f'Saving output results to \"{os.path.join(output_path, "pare_output.pkl")}\".')
+            joblib.dump(pare_results, os.path.join(output_path, "pare_output.pkl"))
         return pare_results
     elif args.mode == 'folder':
         logger.info(f'Number of input frames {num_frames}')

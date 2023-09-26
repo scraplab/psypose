@@ -41,3 +41,4 @@ src/psypose/models/__pycache__
 
 venv
 src/psypose.egg-info
+dev.ipynb

@@ -20,7 +20,7 @@ tensorflow
 # pare-specific reqs
 torch
 torchvision
-joblib==0.15.1
+joblib
 opencv-python
 trimesh
 pyrender==0.1.36
