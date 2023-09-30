@@ -677,7 +677,7 @@ def draw_box(fig, bbox, color='Red'):
     # draws the body bbox on to the left subplot (the video frame)
     # cx, cy, w, h where the corner is bottom left.
     cx, cy, w, h = [float(i) for i in bbox]
-    top, right, bottom, left = int(round(i for i in [(cy-h), (cx+w), (cy), (cx)]))
+    top, right, bottom, left = [int(round(i)) for i in [(cy-h), (cx+w), (cy), (cx)]]
     fig.add_shape(type="rect", xref="x", yref="y", x0=left, y0=top, x1=right, y1=bottom,
         line=dict(
             color=color,
@@ -786,8 +786,14 @@ def track3d(pose, track_id, export_to_path=None, subset_range=None):
     data = pose.pose_data[track_id]
     vid = pose.vid_cv2
     frame_ids = data['frame_ids']
-    pose_data = data['joints3d']
-    bboxes = data['bboxes']
+    n_frames = len(frame_ids)
+    if subset_range != None:
+        frame_ids = frame_ids[subset_range[0]:subset_range[1]]
+        n_frames = len(frame_ids)
+    else:
+        subset_range = [0, n_frames]
+    pose_data = data['joints3d'][subset_range[0]:subset_range[1]]
+    bboxes = data['bboxes'][subset_range[0]:subset_range[1]]
     n_frames = len(frame_ids)
     vid_shape = pose.vid_shape
     in_data = {'vid':vid, 'shape':vid_shape,'frame_ids':frame_ids, 'pose_data':pose_data, 'bboxes':bboxes, 'n_frames':n_frames}
