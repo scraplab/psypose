@@ -46,7 +46,7 @@ from pare.utils.vibe_image_utils import get_single_image_crop_demo
 
 from psypose.utils import split_tracks
 
-MIN_NUM_FRAMES = 0
+MIN_NUM_FRAMES = 3
 
 
 class PARETester:
@@ -57,6 +57,7 @@ class PARETester:
         self.model = self._build_model()
         self._load_pretrained_model()
         self.model.eval()
+        self.static_cam = args.static_cam
 
     def _build_model(self):
         # ========= Define PARE model ========= #
@@ -350,8 +351,11 @@ class PARETester:
             smpl_joints2d = smpl_joints2d.cpu().numpy()
 
             if self.args.smooth:
+                print("SMOOTH IS TRUE")
                 min_cutoff = self.args.min_cutoff  # 0.004
+                print("MIN CUTOFF: ", min_cutoff)
                 beta = self.args.beta  # 1.5
+                print("BETA: ", beta)
                 logger.info(f'Running smoothing on person {person_id}, min_cutoff: {min_cutoff}, beta: {beta}')
                 pred_verts, pred_pose, pred_joints3d = smooth_pose(pred_pose, pred_betas,
                                                                    min_cutoff=min_cutoff, beta=beta)

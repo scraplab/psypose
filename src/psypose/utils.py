@@ -208,7 +208,7 @@ def check_match(bod, fac):
     
 def frame2array(frame_no, video_opened):
     # returns a video from as a numpy array in uint8
-    video_opened.set(cv2.CAP_PROP_POS_FRAMES,frame_no)
+    video_opened.set(cv2.CAP_PROP_POS_FRAMES, frame_no)
     ret, frame = video_opened.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     #cv2.destroyAllWindows()

@@ -38,6 +38,8 @@ src/psypose/models/__pycache__
 *.idea
 *.pkl
 *.idea
+psypose-env.yml
+psypose_env.txt
 
 venv
 src/psypose.egg-info

@@ -13,7 +13,7 @@ __all__ = ['augment', 'data', 'display', 'extract', 'face_identification', 'feat
 from psypose.utils import check_data_files, check_pare_install
 
 # On import, check for PARE installation. If not installed, offer installation.
-check_data_files()
+#check_data_files()
 check_pare_install()
 
 

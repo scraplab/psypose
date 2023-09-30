@@ -22,6 +22,7 @@ import cv2
 import time
 import joblib
 import shutil
+import numpy as np
 import argparse
 from loguru import logger
 from pathlib import Path
@@ -97,7 +98,7 @@ parser.add_argument('--display', type=bool, default=False,
 parser.add_argument('--smooth', type=bool, default=True,
                     help='smooth the results to prevent jitter')
 
-parser.add_argument('--min_cutoff', type=float, default=1.0,
+parser.add_argument('--min_cutoff', type=float, default=1,
                     help='one euro filter min cutoff. '
                          'Decreasing the minimum cutoff frequency decreases slow speed jitter')
 
@@ -126,20 +127,32 @@ parser.add_argument('--save_obj', type=bool, default=False,
 parser.add_argument('--shot_detection', type=bool, default=True,
                     help='Run psypose shot detection with PySceneDetect')
 
+parser.add_argument('--static_cam', type=bool, default=True,
+                    help='Whether camera is static or not. If True, multiperson tracker will only track a small number of frames.')
+
+parser.add_argument('--expected_n_people', type=int, default=None,
+                    help='Number of people expected to be in the frame. If None, will use the number of people in the first frame.')
+
 
 args = parser.parse_args(args=[])
+
 def estimate_pose(pose):
     """
     @param args: All of the arguments provided by the PARE developers for their model.
     @param pose: A PsyPose pose object with a vid_path attribute.
     @return: Returns the results of the PARE model.
     """
+    args.min_cutoff = pose.min_cutoff
+    args.beta = pose.beta
+    args.smooth = pose.smooth
 
-    #args.shot_detection = pose.shot_detection
-    #args.smooth = pose.smooth
+    # add all args in args to pose object
+    for arg in vars(args):
+        setattr(pose, arg, getattr(args, arg))
 
     pose.shot_detection = args.shot_detection
     pose.smooth = args.smooth
+    pose.subset_folder = None
 
     demo_mode = args.mode
 
@@ -160,6 +173,7 @@ def estimate_pose(pose):
             print('Frames already extracted, but number of frames does not match video. Deleting and extracting again.')
             shutil.rmtree(pose.image_folder)
             os.mkdir(pose.image_folder)
+
 
     Path(pose.image_folder).mkdir(exist_ok=True)
 
@@ -188,11 +202,22 @@ def estimate_pose(pose):
         #     num_frames = len(os.listdir(input_image_folder))
         #     img_shape = cv2.imread(os.path.join(input_image_folder, '000001.png')).shape
         # else:
+        print('Extracting frames using ffmpeg...')
         input_image_folder, num_frames, img_shape = video_to_images(
             video_file,
             img_folder=pose.image_folder,
             return_info=True
         )
+
+        if pose.static_cam:
+            pose.subset_folder = pose.image_folder + '_subset'
+            subset_folder = Path(pose.subset_folder)
+            subset_folder.mkdir(exist_ok=True)
+            select_frames = [pose.framecount // 4, pose.framecount // 2, (pose.framecount // 4) * 3]
+            # copy select frames to subset folder
+            for frame in select_frames:
+                shutil.copy(os.path.join(pose.image_folder, f'{frame:06d}.png'), pose.subset_folder)
+
         output_img_folder = f'{input_image_folder}_output'
         #os.makedirs(output_img_folder, exist_ok=True)
     elif demo_mode == 'folder':
@@ -225,11 +250,24 @@ def estimate_pose(pose):
         logger.info(f'Input video number of frames {num_frames}')
         orig_height, orig_width = img_shape[:2]
         total_time = time.time()
-        tracking_results = tester.run_tracking(video_file, input_image_folder)
-        # if args.shot_detection:
-        #     print('\n'+'\033[1m'+'Splitting tracks based on shot detection...\n')
-        #     tracking_results, pose.num_splits, pose.split_frames = split_tracks(tracking_results, pose.shots)
+        if pose.static_cam:
+            tracking_results = tester.run_tracking(video_file, pose.subset_folder)
+            # reformat results to static bbox
+            for track in list(tracking_results.keys()):
+                avg_bbox = np.mean(tracking_results[track]['bbox'], axis=0)
+                # repeat for n_frames
+                tracking_results[track]['bbox'] = np.repeat(avg_bbox[np.newaxis,:], num_frames, axis=0)
+                tracking_results[track]['frames'] = np.arange(num_frames)
+
+        else:
+            tracking_results = tester.run_tracking(video_file, input_image_folder)
+            # if args.shot_detection:
+            #     print('\n'+'\033[1m'+'Splitting tracks based on shot detection...\n')
+            #     tracking_results, pose.num_splits, pose.split_frames = split_tracks(tracking_results, pose.shots)
         pare_time = time.time()
+        print('INPUT IMAGE FOLDER', input_image_folder)
+        print(f'TRACKING RESULTS: {tracking_results}')
+
         pare_results = tester.run_on_video(tracking_results, input_image_folder, orig_width, orig_height)
         if not args.save_vertices:
             for track in list(pare_results.keys()):
@@ -272,9 +310,16 @@ def estimate_pose(pose):
             shutil.rmtree(output_img_folder)
 
         shutil.rmtree(input_image_folder)
+        shutil.rmtree(pose.subset_folder)
         if args.save_obj:
             logger.info(f'Saving output results to \"{os.path.join(output_path, "pare_output.pkl")}\".')
             joblib.dump(pare_results, os.path.join(output_path, "pare_output.pkl"))
+        # change track ids to start from 0
+        count = -1
+        for track in list(pare_results.keys()):
+            count+=1
+            pare_results[count] = pare_results[track]
+            del pare_results[track]
         return pare_results
     elif args.mode == 'folder':
         logger.info(f'Number of input frames {num_frames}')
