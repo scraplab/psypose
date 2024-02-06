@@ -350,6 +350,8 @@ class PARETester:
             pred_joints3d = pred_joints3d.cpu().numpy()
             smpl_joints2d = smpl_joints2d.cpu().numpy()
 
+            # printing stuff here for sanity
+
             if self.args.smooth:
                 print("SMOOTH IS TRUE")
                 min_cutoff = self.args.min_cutoff  # 0.004

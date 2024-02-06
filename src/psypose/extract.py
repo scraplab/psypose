@@ -28,7 +28,7 @@ from psypose import utils
 
 import sys
 
-from feat.detector import Detector
+#from feat.detector import Detector
 
 sys.path.append(os.getcwd())
 

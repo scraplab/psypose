@@ -210,10 +210,13 @@ def estimate_pose(pose):
             return_info=True
         )
 
+        # static cam mode is for videos where the camera is static and the number of people is constant
+        # I use this to reduce the number of frames to track for faster processing
         if pose.static_cam:
             pose.subset_folder = pose.image_folder + '_subset'
             subset_folder = Path(pose.subset_folder)
             subset_folder.mkdir(exist_ok=True)
+            # select frames to use for tracking
             select_frames = [pose.framecount // 4, pose.framecount // 2, (pose.framecount // 4) * 3]
             # copy select frames to subset folder
             for frame in select_frames:
@@ -251,6 +254,7 @@ def estimate_pose(pose):
         logger.info(f'Input video number of frames {num_frames}')
         orig_height, orig_width = img_shape[:2]
         total_time = time.time()
+        # Here static cam is used to reduce the number of frames to track for faster processing
         if pose.static_cam:
             tracking_results = tester.run_tracking(video_file, pose.subset_folder)
             # reformat results to static bbox
@@ -267,7 +271,6 @@ def estimate_pose(pose):
             #     tracking_results, pose.num_splits, pose.split_frames = split_tracks(tracking_results, pose.shots)
         pare_time = time.time()
         print('INPUT IMAGE FOLDER', input_image_folder)
-        print(f'TRACKING RESULTS: {tracking_results}')
 
         pare_results = tester.run_on_video(tracking_results, input_image_folder, orig_width, orig_height)
         if not args.save_vertices:
@@ -310,11 +313,12 @@ def estimate_pose(pose):
             images_to_video(img_folder=input_image_folder, output_vid_file=os.path.join(output_path, vid_name))
             shutil.rmtree(output_img_folder)
 
-        shutil.rmtree(input_image_folder)
+        #shutil.rmtree(input_image_folder)
         shutil.rmtree(pose.subset_folder)
         if args.save_obj:
             logger.info(f'Saving output results to \"{os.path.join(output_path, "pare_output.pkl")}\".')
             joblib.dump(pare_results, os.path.join(output_path, "pare_output.pkl"))
+
         # change track ids to start from 0
         count = -1
         for track in list(pare_results.keys()):
@@ -339,6 +343,11 @@ def estimate_pose(pose):
         total_time = time.time() - total_time
         logger.info(f'Total time spent: {total_time:.2f} seconds (including model loading time).')
         logger.info(f'Total FPS (including model loading time): {num_frames / total_time:.2f}.')
+
+        outputs = {
+            'pare_results': pare_results,
+            'image_folder': input_image_folder,
+        }
 
         return pare_results
 

@@ -43,6 +43,9 @@ class pose(object):
         self.pose_data = None
         self.split_frames = None
         self.output_path = None
+        # these are the smoothing parameters for one euro filter
+        self.min_cutoff = 0.004
+        self.beta = 0.7
         pass
             
     def load_fmri(self, fmri_path, TR):

@@ -220,7 +220,11 @@ def resize_image(array, newsize):
     return array
 
 def crop_image(array, bbox):
+    shape = array.shape
+    bbox = [int(round(i)) for i in bbox]
     top, right, bottom, left = bbox
+    bottom = shape[0]-bottom
+    left = shape[1]-left
     new_img = array[top:bottom, left:right, :]
     return new_img
 
@@ -234,11 +238,42 @@ def crop_image_wh(array, data):
     return new_img
 
 def crop_image_body(array, data):
-    # you can now just use on crop image function because the body and face bboxes are in the same format
-    #cx, cy, w, h = [float(i) for i in data]
-    #top, right, bottom, left = [int(round(i)) for i in [(cy - h / 2), (cx + w / 2), (cy + h / 2), (cx - w / 2)]]
+    """
+    Given an image in the form of a numpy array and a bounding box, returns the cropped body.
+    @param array: Numpy array representing video frame.
+    @type array: numpy.ndarray
+    @param data: Bounding box [cx, cy, w, h]
+    @type data: list
+    @param downsample: Whether to normalize to 100x100 pixels
+    @type downsample: bool
+    @return: Cropped image as numpy array
+    @rtype: numpy.ndarray
+    """
+    # This takes an image in numpy format and a body bbox, crops the image, and scales it down to 100x100
+    abs_h, abs_w = array.shape[0], array.shape[1]
     cx, cy, w, h = [i for i in data]
-    top, right, bottom, left = [int(round(i)) for i in [cy, cx+w, cy+h, cx]]
+    # this 
+    top, right, bottom, left = [int(round(i)) for i in [(cy-h/2), int(cx+w/2), int(cy+h/2), (cx-w/2)]]
+
+    # Padding images with black if the bbox is out-of-frame
+
+    if right > abs_w:
+      r_overhang = right-round(abs_w) + 10
+      array = np.pad(array, ((0,r_overhang),(0,0),(0,0)))
+    if left < 0:
+      l_overhang = -1*left
+      right-=left
+      left = 0
+      array = np.pad(array, ((l_overhang,0),(0,0),(0,0)))
+    if bottom > abs_h:
+      b_overhang = bottom-round(abs_h) + 10
+      array = np.pad(array, ((0,0),(0,b_overhang),(0,0)))
+    if top < 0:
+      t_overhang = -1*top
+      bottom-=top
+      top=0
+      array = np.pad(array, ((0,0),(t_overhang,0),(0,0)))
+
     new_img = array[top:bottom, left:right, :]
     return new_img
 
