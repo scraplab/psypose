@@ -277,6 +277,28 @@ def crop_image_body(array, data):
     new_img = array[top:bottom, left:right, :]
     return new_img
 
+def get_face(joints2d_data):
+    head = joints2d_data[15]
+    face_bbox = [head[0]-100, head[1]+100, head[0]+100, head[1]-100]
+    # returns top, right, bottom, left
+    # use these as indices for cropping a face image in the form of a numpy array
+    return face_bbox
+
+def get_face(joints2d_frame):
+    head = joints2d_frame[15]
+    face_bbox = [head[0]-100, head[1]+100, head[0]+100, head[1]-100]
+    # returns top, right, bottom, left
+    # use these as indices for cropping a face image in the form of a numpy array
+    return face_bbox
+
+def add_faces(pose_data):
+    for person, data in pose_data.items():
+        pose_data[person]['face'] = {}
+        bboxes = []
+        for frame, joints2d in enumerate(data['smpl_joints2d']):
+            bboxes.append(get_face(joints2d))
+        pose_data[person]['face']['bbox'] = np.array(bboxes)
+
 def evaluate_pred_ID(charList, ground, pred):
     
     #ground and pred need to be same-shape np arrays
@@ -309,8 +331,6 @@ def evaluate_pred_ID(charList, ground, pred):
     return acc_df
 
             
-
-
 #def default_encoding(face_array):
 #    # This is a janky implmementation. Right?
 #    resized_array = resize_image(face_array, (150, 150))

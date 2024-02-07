@@ -314,7 +314,7 @@ def estimate_pose(pose):
             shutil.rmtree(output_img_folder)
 
         #shutil.rmtree(input_image_folder)
-        shutil.rmtree(pose.subset_folder)
+        #shutil.rmtree(pose.subset_folder)
         if args.save_obj:
             logger.info(f'Saving output results to \"{os.path.join(output_path, "pare_output.pkl")}\".')
             joblib.dump(pare_results, os.path.join(output_path, "pare_output.pkl"))
