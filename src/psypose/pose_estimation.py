@@ -89,7 +89,7 @@ parser.add_argument('--tracker_batch_size', type=int, default=12,
 parser.add_argument('--staf_dir', type=str, default='/home/mkocabas/developments/openposetrack',
                     help='path to directory STAF pose tracking method installed.')
 
-parser.add_argument('--batch_size', type=int, default=16,
+parser.add_argument('--batch_size', type=int, default=4,
                     help='batch size of PARE')
 
 parser.add_argument('--display', type=bool, default=False,
@@ -165,8 +165,8 @@ def estimate_pose(pose):
     parse_to_frames = True
     if os.path.isdir(pose.image_folder):
         n_frames = len(os.listdir(pose.image_folder))
-        print('N_FRAMES', n_frames)
-        print('FRAMECOUNT', pose.framecount)
+        print('N_FRAMES: ', n_frames)
+        print('FRAMECOUNT: ', pose.framecount)
         if n_frames == pose.framecount:
             parse_to_frames = False
             print('Frames already extracted. Skipping extraction.')
@@ -194,8 +194,9 @@ def estimate_pose(pose):
         if not os.path.isfile(video_file):
             exit(f'Input video \"{video_file}\" does not exist!')
 
-        output_path = os.path.join(pose.output_path, os.path.basename(video_file).replace('.mp4', '_data' + args.exp))
-        os.makedirs(output_path, exist_ok=True)
+        # I think I can delete the two lines below.
+        #output_path = os.path.join(pose.output_path, os.path.basename(video_file).replace('.mp4', '_data' + args.exp))
+        #os.makedirs(output_path, exist_ok=True)
 
         # if os.path.isdir(os.path.join(output_path, 'tmp_images')):
         #     input_image_folder = os.path.join(output_path, 'tmp_images')
@@ -203,12 +204,19 @@ def estimate_pose(pose):
         #     num_frames = len(os.listdir(input_image_folder))
         #     img_shape = cv2.imread(os.path.join(input_image_folder, '000001.png')).shape
         # else:
-        print('Extracting frames using ffmpeg...')
-        input_image_folder, num_frames, img_shape = video_to_images(
-            video_file,
-            img_folder=pose.image_folder,
-            return_info=True
-        )
+        if parse_to_frames:
+            print('Extracting frames using ffmpeg...')
+            input_image_folder, num_frames, img_shape = video_to_images(
+                video_file,
+                img_folder=pose.image_folder,
+                return_info=True
+            )
+        else:
+            input_image_folder = pose.image_folder
+            num_frames = pose.framecount
+            img_shape = cv2.imread(os.path.join(input_image_folder, '000001.png')).shape
+
+        pose.images = [os.path.join(input_image_folder, f'{frame:06d}.png') for frame in range(num_frames)]
 
         if pose.static_cam:
             pose.subset_folder = pose.image_folder + '_subset'
@@ -237,12 +245,12 @@ def estimate_pose(pose):
     else:
         raise ValueError(f'{demo_mode} is not a valid demo mode.')
 
-    logger.add(
-        os.path.join(output_path, 'demo.log'),
-        level='INFO',
-        colorize=False,
-    )
-    logger.info(f'Demo options: \n {args}')
+    # logger.add(
+    #     os.path.join(output_path, 'demo.log'),
+    #     level='INFO',
+    #     colorize=False,
+    # )
+    # logger.info(f'Demo options: \n {args}')
 
     tester = PARETester(args)
 
@@ -251,6 +259,7 @@ def estimate_pose(pose):
         logger.info(f'Input video number of frames {num_frames}')
         orig_height, orig_width = img_shape[:2]
         total_time = time.time()
+        # if static_cam==True, only tracks the first, middle, and last frames, averages them, repeats them for n_frames (for speedup)
         if pose.static_cam:
             tracking_results = tester.run_tracking(video_file, pose.subset_folder)
             # reformat results to static bbox
@@ -267,14 +276,15 @@ def estimate_pose(pose):
             #     tracking_results, pose.num_splits, pose.split_frames = split_tracks(tracking_results, pose.shots)
         pare_time = time.time()
         print('INPUT IMAGE FOLDER', input_image_folder)
-        print(f'TRACKING RESULTS: {tracking_results}')
+        print(f'TRACKING RESULTS: {tracking_results}\n')
+        print('N PEOPLE DETECTED: ', len(tracking_results))
 
         pare_results = tester.run_on_video(tracking_results, input_image_folder, orig_width, orig_height)
-        if not args.save_vertices:
-            for track in list(pare_results.keys()):
-                # removing vertices because we don't want them (too big)
-                if pose.no_render:
-                    del pare_results[track]['verts']
+        # if not args.save_vertices:
+        #     for track in list(pare_results.keys()):
+        #         # removing vertices because we don't want them (too big)
+        #         if pose.no_render:
+        #             del pare_results[track]['verts']
 
         end = time.time()
 
@@ -287,41 +297,43 @@ def estimate_pose(pose):
         logger.info(f'Total time spent: {total_time:.2f} seconds (including model loading time).')
         logger.info(f'Total FPS (including model loading time): {num_frames / total_time:.2f}.')
 
-        if not args.no_save:
-            logger.info(f'Saving output results to \"{os.path.join(output_path, "pare_output.pkl")}\".')
-            joblib.dump(pare_results, os.path.join(output_path, "pare_output.pkl"))
+        # if not args.no_save:
+        #     logger.info(f'Saving output results to \"{os.path.join(output_path, "pare_output.pkl")}\".')
+        #     joblib.dump(pare_results, os.path.join(output_path, "pare_output.pkl"))
 
         args.no_render = pose.no_render
 
-        if not args.no_render:
-            Path(output_path).mkdir(exist_ok=True)
-            Path(output_img_folder).mkdir(exist_ok=True)
-            tester.render_results(pare_results, input_image_folder, output_img_folder, output_path,
-                                  orig_width, orig_height, num_frames)
+        # if not args.no_render:
+        #     Path(output_path).mkdir(exist_ok=True)
+        #     Path(output_img_folder).mkdir(exist_ok=True)
+        #     tester.render_results(pare_results, input_image_folder, output_img_folder, output_path,
+        #                           orig_width, orig_height, num_frames)
 
-            # ========= Save rendered video ========= #
-            vid_name = os.path.basename(video_file)
-            save_name = f'{vid_name.replace(".mp4", "")}_{args.exp}_result.mp4'
-            save_name = os.path.join(output_path, save_name)
-            logger.info(f'Saving result video to {save_name}')
-            images_to_video(img_folder=output_img_folder, output_vid_file=save_name)
+        #     # ========= Save rendered video ========= #
+        #     vid_name = os.path.basename(video_file)
+        #     save_name = f'{vid_name.replace(".mp4", "")}_{args.exp}_result.mp4'
+        #     save_name = os.path.join(output_path, save_name)
+        #     logger.info(f'Saving result video to {save_name}')
+        #     images_to_video(img_folder=output_img_folder, output_vid_file=save_name)
 
-            # Save the input video as well
-            images_to_video(img_folder=input_image_folder, output_vid_file=os.path.join(output_path, vid_name))
-            shutil.rmtree(output_img_folder)
+        #     # Save the input video as well
+        #     images_to_video(img_folder=input_image_folder, output_vid_file=os.path.join(output_path, vid_name))
+        #     shutil.rmtree(output_img_folder)
 
-        shutil.rmtree(input_image_folder)
-        shutil.rmtree(pose.subset_folder)
-        if args.save_obj:
-            logger.info(f'Saving output results to \"{os.path.join(output_path, "pare_output.pkl")}\".')
-            joblib.dump(pare_results, os.path.join(output_path, "pare_output.pkl"))
+        # silencing these for now (need to undo this at a later point)
+        #shutil.rmtree(input_image_folder)
+        #shutil.rmtree(pose.subset_folder)
+        
+        # if args.save_obj:
+        #     logger.info(f'Saving output results to \"{os.path.join(output_path, "pare_output.pkl")}\".')
+        #     joblib.dump(pare_results, os.path.join(output_path, "pare_output.pkl"))
+
         # change track ids to start from 0
-        count = -1
-        for track in list(pare_results.keys()):
-            count+=1
-            pare_results[count] = pare_results[track]
-            del pare_results[track]
+        keynames = list(pare_results.keys())
+        renames = {keynames[i]: i for i in range(len(keynames))}
+        pare_results = {renames[track]: pare_results[track] for track in keynames}
         return pare_results
+    
     elif args.mode == 'folder':
         logger.info(f'Number of input frames {num_frames}')
 

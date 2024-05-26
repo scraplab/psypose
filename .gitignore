@@ -20,6 +20,7 @@ src/psypose/models/__pycache__
 # insert paths here
 
 # Ignore all files of these types
+*ipynb
 *.7z
 *.dmg
 *.gz

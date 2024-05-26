@@ -284,6 +284,21 @@ def get_face(joints2d_data):
     # use these as indices for cropping a face image in the form of a numpy array
     return face_bbox
 
+def get_face(pose_data, track, frame):
+    # this will return a np array representing the face in the frame
+    # first check if frame is in frame_ids for that track
+    if not pose_data.images_loaded:
+        raise ValueError('Images not loaded')
+    elif frame not in pose_data[track]['frame_ids']:
+        raise ValueError('frame not in frame_ids for this track')
+    else:
+        imgs = pose_data.images
+        loc = np.where(pose_data[track]['frame_ids']==frame)[0][0]
+        face_bbox = pose_data[track]['face']['bbox'][loc]
+        img = np.array(Image.open(imgs[frame]))
+        face = img[face_bbox[1]:face_bbox[3], face_bbox[0]:face_bbox[2]]
+        return face
+
 def get_face(joints2d_frame):
     head = joints2d_frame[15]
     face_bbox = [head[0]-100, head[1]+100, head[0]+100, head[1]-100]

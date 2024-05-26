@@ -46,6 +46,10 @@ class pose(object):
         # these are the smoothing parameters for one euro filter
         self.min_cutoff = 0.004
         self.beta = 0.7
+        # these two parameters will be briefly populated during annotation for quick access
+        self.images_loaded = False
+        self.image_folder = None
+        self.images = None
         pass
             
     def load_fmri(self, fmri_path, TR):
@@ -85,9 +89,9 @@ class pose(object):
         self.face_data = pd.read_csv(face_data)
 
     def load_video(self, vid_path):
-        vid_path = os.path.abspath(vid_path)
+        self.vid_path = os.path.abspath(vid_path)
         self.vid_name = os.path.splitext(os.path.basename(vid_path))[0]
-        self.vid_cv2 = cv2.VideoCapture(vid_path)
+        self.vid_cv2 = cv2.VideoCapture(self.vid_path)
         self.fps = self.vid_cv2.get(cv2.CAP_PROP_FPS)
         self.vid_path = Path(vid_path)
         #self.framecount = int(self.vid_cv2.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -150,21 +154,21 @@ class pose(object):
         @param pose_path: Path to .pose file.
         @type pose_path: str
         """
-        if 'pkl' in pose_path:
-            warnings.Warn('This is an unlabeled pkl file carrying pose information. The source video is unknown.', UserWarning)
-            self.load_pkl(pose_path)
-        else:
-            poseobj = joblib.load(pose_path)
-            self.vid_path = poseobj['vid_path']
-            self.vid_name = poseobj['vid_name']
-            self.framecount = poseobj['framecount']
-            self.fps = poseobj['fps']
-            self.vid_time = poseobj['vid_time']
-            self.vid_shape = poseobj['vid_shape']
-            if check_keys(poseobj, 'face_data'):
-                self.face_data = pose_obj['face_data']
-            if check_keys(poseobj, 'pose_data'):
-                self.pose_data = poseobj['pose_data']
+        #poseobj = joblib.load(pose_path)
+        self.pose_data = joblib.load(pose_path)
+        # The code below will be great to integrate into the annotation side of things
+        # so that the psypose has all the metadata it needs
+
+        #self.vid_path = poseobj['vid_path']
+        #self.vid_name = poseobj['vid_name']
+        #self.framecount = poseobj['framecount']
+        #self.fps = poseobj['fps']
+        #self.vid_time = poseobj['vid_time']
+        #self.vid_shape = poseobj['vid_shape']
+        # if check_keys(poseobj, 'face_data'):
+        #     self.face_data = poseobj['face_data']
+        # if check_keys(poseobj, 'pose_data'):
+        #     self.pose_data = poseobj['pose_data']
 
 
 

@@ -87,6 +87,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
      ########## Run pose estimation ##########
     pose.smooth = smooth
     pose_data = estimate_pose(pose)
+    pose.images_loaded = True
     print("Processing output data...")
     # Split tracks based on shot detection
 

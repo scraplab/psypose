@@ -1,5 +1,5 @@
 """
-Tools for formatting the ROMP pose estimation outputs, including track-stitching and quaternion calculation.
+Tools for formatting the PARE pose estimation outputs, including track-stitching and quaternion calculation.
 """
 
 from psypose import utils

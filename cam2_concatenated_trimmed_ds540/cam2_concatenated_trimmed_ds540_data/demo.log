@@ -1,0 +1,78 @@
+2024-04-19 11:18:25.184 | INFO     | psypose.pose_estimation:estimate_pose:247 - Demo options: 
+ Namespace(save_vertices=False, cfg='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_config.yaml', ckpt='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt', exp='', mode='video', vid_file=None, image_folder=None, output_folder='logs/demo/demo_results', tracking_method='bbox', detector='yolo', yolo_img_size=416, tracker_batch_size=12, staf_dir='/home/mkocabas/developments/openposetrack', batch_size=4, display=False, smooth=True, min_cutoff=0.004, beta=0.7, no_render=True, no_save=True, wireframe=False, sideview=False, draw_keypoints=False, save_obj=False, shot_detection=True, static_cam=True, expected_n_people=None)
+2024-04-19 11:18:25.653 | INFO     | pare.models.backbone.hrnet:init_weights:530 - => init weights from normal distribution
+2024-04-19 11:18:25.797 | WARNING  | pare.models.backbone.hrnet:init_weights:558 - IMPORTANT WARNING!! Please download pre-trained models if you are in TRAINING mode!
+2024-04-19 11:18:25.797 | INFO     | pare.models.head.pare_head:__init__:125 - "Keypoint Attention" should be activated to be able to use part segmentation
+2024-04-19 11:18:25.797 | INFO     | pare.models.head.pare_head:__init__:126 - Overriding use_keypoint_attention
+2024-04-19 11:18:25.977 | INFO     | pare.models.head.pare_head:__init__:327 - Keypoint attention is active
+2024-04-19 11:18:33.304 | INFO     | psypose.run_pare:_load_pretrained_model:117 - Loading pretrained model from /safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt
+2024-04-19 11:18:35.594 | WARNING  | pare.utils.train_utils:load_pretrained_model:45 - Removing "model." keyword from state_dict keys..
+2024-04-19 11:18:35.674 | INFO     | psypose.run_pare:_load_pretrained_model:120 - Loaded pretrained weights from "/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt"
+2024-04-19 11:18:35.680 | INFO     | psypose.pose_estimation:estimate_pose:253 - Input video number of frames 120583
+2024-04-19 11:18:48.214 | INFO     | psypose.run_pare:run_on_video:291 - Running PARE on each tracklet...
+2024-04-19 11:46:05.051 | INFO     | psypose.pose_estimation:estimate_pose:247 - Demo options: 
+ Namespace(save_vertices=False, cfg='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_config.yaml', ckpt='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt', exp='', mode='video', vid_file=None, image_folder=None, output_folder='logs/demo/demo_results', tracking_method='bbox', detector='yolo', yolo_img_size=416, tracker_batch_size=12, staf_dir='/home/mkocabas/developments/openposetrack', batch_size=4, display=False, smooth=True, min_cutoff=0.004, beta=0.7, no_render=True, no_save=True, wireframe=False, sideview=False, draw_keypoints=False, save_obj=False, shot_detection=True, static_cam=True, expected_n_people=None)
+2024-04-19 11:46:05.294 | INFO     | pare.models.backbone.hrnet:init_weights:530 - => init weights from normal distribution
+2024-04-19 11:46:05.429 | WARNING  | pare.models.backbone.hrnet:init_weights:558 - IMPORTANT WARNING!! Please download pre-trained models if you are in TRAINING mode!
+2024-04-19 11:46:05.429 | INFO     | pare.models.head.pare_head:__init__:125 - "Keypoint Attention" should be activated to be able to use part segmentation
+2024-04-19 11:46:05.429 | INFO     | pare.models.head.pare_head:__init__:126 - Overriding use_keypoint_attention
+2024-04-19 11:46:05.440 | INFO     | pare.models.head.pare_head:__init__:327 - Keypoint attention is active
+2024-04-19 11:46:06.389 | INFO     | psypose.run_pare:_load_pretrained_model:117 - Loading pretrained model from /safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt
+2024-04-19 11:46:06.890 | WARNING  | pare.utils.train_utils:load_pretrained_model:45 - Removing "model." keyword from state_dict keys..
+2024-04-19 11:46:06.937 | INFO     | psypose.run_pare:_load_pretrained_model:120 - Loaded pretrained weights from "/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt"
+2024-04-19 11:46:06.941 | INFO     | psypose.pose_estimation:estimate_pose:253 - Input video number of frames 120583
+2024-04-19 11:46:08.411 | INFO     | psypose.run_pare:run_on_video:291 - Running PARE on each tracklet...
+2024-04-19 12:32:25.521 | INFO     | psypose.pose_estimation:estimate_pose:247 - Demo options: 
+ Namespace(save_vertices=False, cfg='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_config.yaml', ckpt='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt', exp='', mode='video', vid_file=None, image_folder=None, output_folder='logs/demo/demo_results', tracking_method='bbox', detector='yolo', yolo_img_size=416, tracker_batch_size=12, staf_dir='/home/mkocabas/developments/openposetrack', batch_size=4, display=False, smooth=True, min_cutoff=0.004, beta=0.7, no_render=True, no_save=True, wireframe=False, sideview=False, draw_keypoints=False, save_obj=False, shot_detection=True, static_cam=True, expected_n_people=None)
+2024-04-19 12:32:25.763 | INFO     | pare.models.backbone.hrnet:init_weights:530 - => init weights from normal distribution
+2024-04-19 12:32:25.896 | WARNING  | pare.models.backbone.hrnet:init_weights:558 - IMPORTANT WARNING!! Please download pre-trained models if you are in TRAINING mode!
+2024-04-19 12:32:25.896 | INFO     | pare.models.head.pare_head:__init__:125 - "Keypoint Attention" should be activated to be able to use part segmentation
+2024-04-19 12:32:25.896 | INFO     | pare.models.head.pare_head:__init__:126 - Overriding use_keypoint_attention
+2024-04-19 12:32:25.907 | INFO     | pare.models.head.pare_head:__init__:327 - Keypoint attention is active
+2024-04-19 12:32:26.861 | INFO     | psypose.run_pare:_load_pretrained_model:117 - Loading pretrained model from /safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt
+2024-04-19 12:32:27.365 | WARNING  | pare.utils.train_utils:load_pretrained_model:45 - Removing "model." keyword from state_dict keys..
+2024-04-19 12:32:27.415 | INFO     | psypose.run_pare:_load_pretrained_model:120 - Loaded pretrained weights from "/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt"
+2024-04-19 12:32:27.419 | INFO     | psypose.pose_estimation:estimate_pose:253 - Input video number of frames 120583
+2024-04-19 12:32:28.908 | INFO     | psypose.run_pare:run_on_video:291 - Running PARE on each tracklet...
+2024-04-19 15:21:52.908 | INFO     | psypose.pose_estimation:estimate_pose:247 - Demo options: 
+ Namespace(save_vertices=False, cfg='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_config.yaml', ckpt='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt', exp='', mode='video', vid_file=None, image_folder=None, output_folder='logs/demo/demo_results', tracking_method='bbox', detector='yolo', yolo_img_size=416, tracker_batch_size=12, staf_dir='/home/mkocabas/developments/openposetrack', batch_size=4, display=False, smooth=True, min_cutoff=0.004, beta=0.7, no_render=True, no_save=True, wireframe=False, sideview=False, draw_keypoints=False, save_obj=False, shot_detection=True, static_cam=True, expected_n_people=None)
+2024-04-19 15:21:53.137 | INFO     | pare.models.backbone.hrnet:init_weights:530 - => init weights from normal distribution
+2024-04-19 15:21:53.265 | WARNING  | pare.models.backbone.hrnet:init_weights:558 - IMPORTANT WARNING!! Please download pre-trained models if you are in TRAINING mode!
+2024-04-19 15:21:53.266 | INFO     | pare.models.head.pare_head:__init__:125 - "Keypoint Attention" should be activated to be able to use part segmentation
+2024-04-19 15:21:53.266 | INFO     | pare.models.head.pare_head:__init__:126 - Overriding use_keypoint_attention
+2024-04-19 15:21:53.276 | INFO     | pare.models.head.pare_head:__init__:327 - Keypoint attention is active
+2024-04-19 15:21:54.181 | INFO     | psypose.run_pare:_load_pretrained_model:117 - Loading pretrained model from /safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt
+2024-04-19 15:21:54.671 | WARNING  | pare.utils.train_utils:load_pretrained_model:45 - Removing "model." keyword from state_dict keys..
+2024-04-19 15:21:54.719 | INFO     | psypose.run_pare:_load_pretrained_model:120 - Loaded pretrained weights from "/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt"
+2024-04-19 15:21:54.725 | INFO     | psypose.pose_estimation:estimate_pose:253 - Input video number of frames 120583
+2024-04-19 15:21:56.175 | INFO     | psypose.run_pare:run_on_video:291 - Running PARE on each tracklet...
+2024-04-19 15:41:52.503 | INFO     | psypose.run_pare:run_on_video:363 - Running smoothing on person 2, min_cutoff: 0.004, beta: 0.7
+2024-04-19 15:47:46.075 | INFO     | psypose.pose_estimation:estimate_pose:247 - Demo options: 
+ Namespace(save_vertices=False, cfg='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_config.yaml', ckpt='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt', exp='', mode='video', vid_file=None, image_folder=None, output_folder='logs/demo/demo_results', tracking_method='bbox', detector='yolo', yolo_img_size=416, tracker_batch_size=12, staf_dir='/home/mkocabas/developments/openposetrack', batch_size=4, display=False, smooth=True, min_cutoff=0.004, beta=0.7, no_render=True, no_save=True, wireframe=False, sideview=False, draw_keypoints=False, save_obj=False, shot_detection=True, static_cam=True, expected_n_people=None)
+2024-04-19 15:47:46.314 | INFO     | pare.models.backbone.hrnet:init_weights:530 - => init weights from normal distribution
+2024-04-19 15:47:46.449 | WARNING  | pare.models.backbone.hrnet:init_weights:558 - IMPORTANT WARNING!! Please download pre-trained models if you are in TRAINING mode!
+2024-04-19 15:47:46.449 | INFO     | pare.models.head.pare_head:__init__:125 - "Keypoint Attention" should be activated to be able to use part segmentation
+2024-04-19 15:47:46.450 | INFO     | pare.models.head.pare_head:__init__:126 - Overriding use_keypoint_attention
+2024-04-19 15:47:46.460 | INFO     | pare.models.head.pare_head:__init__:327 - Keypoint attention is active
+2024-04-19 15:47:47.407 | INFO     | psypose.run_pare:_load_pretrained_model:117 - Loading pretrained model from /safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt
+2024-04-19 15:47:47.904 | WARNING  | pare.utils.train_utils:load_pretrained_model:45 - Removing "model." keyword from state_dict keys..
+2024-04-19 15:47:47.956 | INFO     | psypose.run_pare:_load_pretrained_model:120 - Loaded pretrained weights from "/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt"
+2024-04-19 15:47:47.963 | INFO     | psypose.pose_estimation:estimate_pose:253 - Input video number of frames 120583
+2024-04-19 15:47:49.443 | INFO     | psypose.run_pare:run_on_video:291 - Running PARE on each tracklet...
+2024-04-19 16:08:01.950 | INFO     | psypose.run_pare:run_on_video:363 - Running smoothing on person 2, min_cutoff: 0.004, beta: 0.7
+2024-04-19 16:48:08.019 | INFO     | psypose.pose_estimation:estimate_pose:252 - Demo options: 
+ Namespace(save_vertices=False, cfg='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_config.yaml', ckpt='/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt', exp='', mode='video', vid_file=None, image_folder=None, output_folder='logs/demo/demo_results', tracking_method='bbox', detector='yolo', yolo_img_size=416, tracker_batch_size=12, staf_dir='/home/mkocabas/developments/openposetrack', batch_size=4, display=False, smooth=True, min_cutoff=0.004, beta=0.7, no_render=True, no_save=True, wireframe=False, sideview=False, draw_keypoints=False, save_obj=False, shot_detection=True, static_cam=True, expected_n_people=None)
+2024-04-19 16:48:08.597 | INFO     | pare.models.backbone.hrnet:init_weights:530 - => init weights from normal distribution
+2024-04-19 16:48:08.735 | WARNING  | pare.models.backbone.hrnet:init_weights:558 - IMPORTANT WARNING!! Please download pre-trained models if you are in TRAINING mode!
+2024-04-19 16:48:08.735 | INFO     | pare.models.head.pare_head:__init__:125 - "Keypoint Attention" should be activated to be able to use part segmentation
+2024-04-19 16:48:08.735 | INFO     | pare.models.head.pare_head:__init__:126 - Overriding use_keypoint_attention
+2024-04-19 16:48:08.874 | INFO     | pare.models.head.pare_head:__init__:327 - Keypoint attention is active
+2024-04-19 16:48:16.074 | INFO     | psypose.run_pare:_load_pretrained_model:117 - Loading pretrained model from /safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt
+2024-04-19 16:48:18.165 | WARNING  | pare.utils.train_utils:load_pretrained_model:45 - Removing "model." keyword from state_dict keys..
+2024-04-19 16:48:18.240 | INFO     | psypose.run_pare:_load_pretrained_model:120 - Loaded pretrained weights from "/safestore/users/landry/.local/lib/python3.10/site-packages/pare/data/pare/checkpoints/pare_w_3dpw_checkpoint.ckpt"
+2024-04-19 16:48:18.244 | INFO     | psypose.pose_estimation:estimate_pose:258 - Input video number of frames 120583
+2024-04-19 16:48:30.565 | INFO     | psypose.run_pare:run_on_video:291 - Running PARE on each tracklet...
+2024-04-19 17:08:15.794 | INFO     | psypose.run_pare:run_on_video:363 - Running smoothing on person 2, min_cutoff: 0.004, beta: 0.7
+2024-04-19 17:15:08.443 | INFO     | psypose.run_pare:run_on_video:374 - Converting smpl keypoints 2d to original image coordinate
+2024-04-19 17:34:50.303 | INFO     | psypose.run_pare:run_on_video:363 - Running smoothing on person 1, min_cutoff: 0.004, beta: 0.7
+2024-04-19 17:41:38.006 | INFO     | psypose.run_pare:run_on_video:374 - Converting smpl keypoints 2d to original image coordinate

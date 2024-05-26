@@ -48,7 +48,6 @@ from psypose.utils import split_tracks
 
 MIN_NUM_FRAMES = 3
 
-
 class PARETester:
     def __init__(self, args):
         self.args = args
@@ -313,10 +312,12 @@ class PARETester:
             frames = dataset.frames
             has_keypoints = True if joints2d is not None else False
 
-            dataloader = DataLoader(dataset, batch_size=self.args.batch_size, num_workers=8)
+            dataloader = DataLoader(dataset, batch_size=self.args.batch_size, num_workers=4, pin_memory=True)
 
-            pred_cam, pred_verts, pred_pose, pred_betas, \
-            pred_joints3d, smpl_joints2d, norm_joints2d = [], [], [], [], [], [], []
+            #pred_cam, pred_verts, pred_pose, pred_betas, \
+            # I believe these are all on the CPU at this point
+            pred_cam, pred_pose, pred_betas, \
+            pred_joints3d, smpl_joints2d, norm_joints2d = [], [], [], [], [], []
 
             for batch in dataloader:
                 if has_keypoints:
@@ -328,23 +329,24 @@ class PARETester:
                 output = self.model(batch)
 
                 pred_cam.append(output['pred_cam'])  # [:, :, :3].reshape(batch_size, -1))
-                pred_verts.append(output['smpl_vertices'])  # .reshape(batch_size * seqlen, -1, 3))
+                #pred_verts.append(output['smpl_vertices'])  # .reshape(batch_size * seqlen, -1, 3))
                 pred_pose.append(output['pred_pose'])  # [:,:,3:75].reshape(batch_size * seqlen, -1))
                 pred_betas.append(output['pred_shape'])  # [:, :,75:].reshape(batch_size * seqlen, -1))
                 pred_joints3d.append(output['smpl_joints3d'])  # .reshape(batch_size * seqlen, -1, 3))
                 smpl_joints2d.append(output['smpl_joints2d'])
 
             pred_cam = torch.cat(pred_cam, dim=0)
-            pred_verts = torch.cat(pred_verts, dim=0)
+            #pred_verts = torch.cat(pred_verts, dim=0)
             pred_pose = torch.cat(pred_pose, dim=0)
             pred_betas = torch.cat(pred_betas, dim=0)
             pred_joints3d = torch.cat(pred_joints3d, dim=0)
             smpl_joints2d = torch.cat(smpl_joints2d, dim=0)
 
             del batch
+            torch.cuda.empty_cache()
 
             pred_cam = pred_cam.cpu().numpy()
-            pred_verts = pred_verts.cpu().numpy()
+            #pred_verts = pred_verts.cpu().numpy()
             pred_pose = pred_pose.cpu().numpy()
             pred_betas = pred_betas.cpu().numpy()
             pred_joints3d = pred_joints3d.cpu().numpy()
@@ -359,8 +361,9 @@ class PARETester:
                 beta = self.args.beta  # 1.5
                 print("BETA: ", beta)
                 logger.info(f'Running smoothing on person {person_id}, min_cutoff: {min_cutoff}, beta: {beta}')
-                pred_verts, pred_pose, pred_joints3d = smooth_pose(pred_pose, pred_betas,
-                                                                   min_cutoff=min_cutoff, beta=beta)
+                # pred_verts, pred_pose, pred_joints3d = smooth_pose(pred_pose, pred_betas,
+                #                                                    min_cutoff=min_cutoff, beta=beta)
+                pred_pose, pred_joints3d = smooth_pose(pred_pose, pred_betas, min_cutoff=min_cutoff, beta=beta)
 
             orig_cam = convert_crop_cam_to_orig_img(
                 cam=pred_cam,
@@ -379,7 +382,7 @@ class PARETester:
             output_dict = {
                 'pred_cam': pred_cam,
                 'orig_cam': orig_cam,
-                'verts': pred_verts,
+               # 'verts': pred_verts,
                 'pose': pred_pose,
                 'betas': pred_betas,
                 'joints3d': pred_joints3d,
