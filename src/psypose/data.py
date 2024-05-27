@@ -31,7 +31,7 @@ def check_keys(obj, keystr):
     else:
         return False
 
-class pose(object):
+class Camera(object):
     
     def __init__(self):
         self.is_clustered = False

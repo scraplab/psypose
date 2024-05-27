@@ -161,6 +161,12 @@ def pose_to_wavelet_matrix(quaternion_matrix, num_windows=10, min_window_width=1
 max_distance_static = np.sqrt(2)*19
 
 def calculate_static_synchrony(A, B, frame_range='all'):
+    """
+    Args:
+        A: Track A
+        B: Track B
+        frame_range: Tuple of frame range to consider for synchrony calculation.
+    """
     trackA = dict(A)
     trackB = dict(B)
     framesA, framesB = trackA['frame_ids'], trackB['frame_ids']
