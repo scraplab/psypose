@@ -39,9 +39,14 @@ src/psypose/models/__pycache__
 *.idea
 *.pkl
 *.idea
+*.mp3
+*.mp4
+*.avi
 psypose-env.yml
 psypose_env.txt
 
 venv
 src/psypose.egg-info
 dev.ipynb
+./extract_all_poses.py
+
