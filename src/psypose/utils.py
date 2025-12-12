@@ -127,6 +127,17 @@ def bytes_to_arr(bString):
     return q
 
 
+def body2tblr(bbox):
+    x, y, w, h = bbox
+    top, bottom, left, right = [int(round(i)) for i in [y-h/2, y+h/2, x-w/2, x+w/2]]
+    return top, left, bottom, right
+
+def face2tblr(bbox):
+    cx, xy, w, h = bbox
+    top, bottom, left, right = [int(round(i)) for i in [cy, cy+h, cx, cx+w]]
+    return top, left, bottom, right
+
+
 def video_to_images(vid_file, img_folder=None, return_info=False):
     if img_folder is None:
         img_folder = osp.join('/scratch', osp.basename(vid_file).replace('.', '_'))
@@ -594,8 +605,6 @@ def track_presence_per_frame(pose):
     return track_presence
 
 
-
-
 def slice_pose(pose, frame_range):
 
     """
@@ -628,8 +637,6 @@ def make_presence_mat(pose):
     for i in range(ntt):
         ptmat[dat[dk[i]]['frame_ids'], i] = 1
     return ptmat
-
-
 
 
 def trim_video(posix_video_path, start_time, end_time, output_path):

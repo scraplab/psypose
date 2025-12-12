@@ -312,7 +312,7 @@ class PARETester:
             frames = dataset.frames
             has_keypoints = True if joints2d is not None else False
 
-            dataloader = DataLoader(dataset, batch_size=self.args.batch_size, num_workers=4, pin_memory=True)
+            dataloader = DataLoader(dataset, batch_size=self.args.batch_size, num_workers=16, pin_memory=True)
 
             #pred_cam, pred_verts, pred_pose, pred_betas, \
             # I believe these are all on the CPU at this point

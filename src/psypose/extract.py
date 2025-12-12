@@ -84,7 +84,7 @@ def annotate(pose, face_box_model='mtcnn', au_model='rf', face_id_model='deepfac
         #pose_data, pose.splitcount = utils.split_tracks(pose_data, shots)
         pose.shots = shots
 
-     ########## Run pose estimation ##########
+    ########## Run pose estimation ##########
     pose.smooth = smooth
     pose_data = estimate_pose(pose)
     pose.images_loaded = True

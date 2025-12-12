@@ -607,6 +607,16 @@ def calculate_meta_synchrony_average_all(pose, frame_range='all', exclude_under=
             meta_timeseries.append(np.mean(np.corrcoef(power_spectrums)[0]))
     return meta_timeseries
 
+# total motion synchrony
+
+# joint total motion w and w/o direction information
+
+# windowed
+# - synchrony
+# - generalized synchrony (dependence)
+# - influence 
+# - meta and transition synchrony more computationally intensive 
+
 
 
 

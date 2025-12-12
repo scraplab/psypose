@@ -89,13 +89,13 @@ parser.add_argument('--tracker_batch_size', type=int, default=12,
 parser.add_argument('--staf_dir', type=str, default='/home/mkocabas/developments/openposetrack',
                     help='path to directory STAF pose tracking method installed.')
 
-parser.add_argument('--batch_size', type=int, default=4,
+parser.add_argument('--batch_size', type=int, default=64,
                     help='batch size of PARE')
 
 parser.add_argument('--display', type=bool, default=False,
                     help='visualize the results of each step during demo')
 
-parser.add_argument('--smooth', type=bool, default=True,
+parser.add_argument('--smooth', type=bool, default=False,
                     help='smooth the results to prevent jitter')
 
 parser.add_argument('--min_cutoff', type=float, default=0.004,
@@ -148,6 +148,10 @@ def estimate_pose(pose):
         if arg not in pose.__dict__:
             setattr(pose, arg, getattr(args, arg))
 
+    # Keep user-specified settings
+    if hasattr(pose, 'smooth'):
+        args.smooth = pose.smooth
+    
     pose.shot_detection = args.shot_detection
     pose.smooth = args.smooth
     pose.subset_folder = None
@@ -222,7 +226,9 @@ def estimate_pose(pose):
             pose.subset_folder = pose.image_folder + '_subset'
             subset_folder = Path(pose.subset_folder)
             subset_folder.mkdir(exist_ok=True)
-            select_frames = [pose.framecount // 4, pose.framecount // 2, (pose.framecount // 4) * 3]
+            # Use 100 evenly distributed frames for more robust bbox estimation
+            n_subset_frames = min(100, pose.framecount)
+            select_frames = np.linspace(0, pose.framecount - 1, n_subset_frames, dtype=int).tolist()
             # copy select frames to subset folder
             for frame in select_frames:
                 shutil.copy(os.path.join(pose.image_folder, f'{frame:06d}.png'), pose.subset_folder)
