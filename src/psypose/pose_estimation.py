@@ -227,8 +227,9 @@ def estimate_pose(pose):
             subset_folder = Path(pose.subset_folder)
             subset_folder.mkdir(exist_ok=True)
             # Use 100 evenly distributed frames for more robust bbox estimation
+            # Note: frames are 1-indexed (000001.png, 000002.png, ...)
             n_subset_frames = min(100, pose.framecount)
-            select_frames = np.linspace(0, pose.framecount - 1, n_subset_frames, dtype=int).tolist()
+            select_frames = np.linspace(1, pose.framecount, n_subset_frames, dtype=int).tolist()
             # copy select frames to subset folder
             for frame in select_frames:
                 shutil.copy(os.path.join(pose.image_folder, f'{frame:06d}.png'), pose.subset_folder)
